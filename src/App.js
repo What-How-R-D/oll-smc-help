@@ -15,6 +15,9 @@ import Login from "./components/Login"
 import Logout from "./components/Logout"
 import Home from "./components/Home"
 
+import UserList from './components/user-list.component'
+import EditUser from './components/user-edit.component'
+
 function App() {
   console.log("hi there")
   const isLoggedIn = localStorage.getItem("token")
@@ -66,10 +69,10 @@ function App() {
                   <Route exact path="/register" component={Register} />
                   <Route exact path="/" component={(props) => <Home {...props} isLoggedIn={isLoggedIn} user={user} />} />
 
-                  {/* <Route exact path="/user-list" component={(props) => <UserList {...props} />} />
+                  <Route exact path="/user-list" component={(props) => <UserList {...props} />} />
                   <Route exact path="/edit-user/:id" component={(props) => <EditUser {...props} />} />
                   
-                  <Route exact path="/room-list" component={(props) => <RoomList {...props} />} />
+                  {/* <Route exact path="/room-list" component={(props) => <RoomList {...props} />} />
                   <Route exact path="/create-room" component={(props) => <CreateRoom {...props} />} />
                   <Route exact path="/edit-room/:id" component={(props) => <EditRoom {...props} />} /> */}
 

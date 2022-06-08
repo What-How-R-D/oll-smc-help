@@ -65,5 +65,58 @@ router.route('/register').post(async (req, res, next) => {
 	})
   })
 
+ router.route('/find-all', requireLogin).get((req, res) => {
+	userSchema.find((error, data) => {
+	  if (error) {
+		return next(error)
+	  } else {
+		res.json(data)
+	  }
+	})
+  })
+
+router.route('/find-id/:id').get((req, res) => {
+	userSchema.findById(req.params.id, (error, data) => {
+	  if (error) {
+		return next(error)
+	  } else {
+		res.json(data)
+	  }
+	})
+  })
+
+// Update User
+router.route('/update/:id').put((req, res, next) => {
+	userSchema.findByIdAndUpdate(
+	  req.params.id,
+	  {
+		$set: req.body,
+	  },
+	  (error, data) => {
+		if (error) {
+		  return next(error)
+		  console.log(error)
+		} else {
+		  res.json(data)
+		  console.log('User updated successfully !')
+		}
+	  },
+	)
+  })
+
+// Delete User
+router.route('/delete/:id').delete((req, res, next) => {
+	userSchema.findByIdAndRemove(req.params.id, (error, data) => {
+	  if (error) {
+		return next(error)
+	  } else {
+		res.status(200).json({
+		  msg: data,
+		})
+	  }
+	})
+  })
+
+
 
 module.exports = router

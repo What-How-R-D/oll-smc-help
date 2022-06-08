@@ -12,7 +12,7 @@ const userSchema = new mongoose.Schema(
 		},
 	bm: {type: Boolean, default: false,},
 	hvac: {type: Boolean, default: false,},
-	keys: {type: Boolean, default: false,},
+	locks: {type: Boolean, default: false,},
 	},
  	{ timestamps: true }
 )
