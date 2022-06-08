@@ -18,8 +18,12 @@ import Home from "./components/Home"
 import UserList from './components/user-list.component'
 import EditUser from './components/user-edit.component'
 
+import RoomList from './components/room-list.component'
+import CreateRoom from './components/room-create.component'
+import EditRoom from './components/room-edit.component'
+
+
 function App() {
-  console.log("hi there")
   const isLoggedIn = localStorage.getItem("token")
   
   const [user, setUser] = useState(null)
@@ -72,9 +76,9 @@ function App() {
                   <Route exact path="/user-list" component={(props) => <UserList {...props} />} />
                   <Route exact path="/edit-user/:id" component={(props) => <EditUser {...props} />} />
                   
-                  {/* <Route exact path="/room-list" component={(props) => <RoomList {...props} />} />
+                  <Route exact path="/room-list" component={(props) => <RoomList {...props} />} />
                   <Route exact path="/create-room" component={(props) => <CreateRoom {...props} />} />
-                  <Route exact path="/edit-room/:id" component={(props) => <EditRoom {...props} />} /> */}
+                  <Route exact path="/edit-room/:id" component={(props) => <EditRoom {...props} />} />
 
                 </Switch>
               </div>

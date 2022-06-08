@@ -10,7 +10,7 @@ const requireLogin = require("../backend/middleware/auth")
 
 // Express Route
 const userRoute = require('../backend/routes/user.route')
-// const roomRoute = require('../backend/routes/room.route')
+const roomRoute = require('../backend/routes/room.route')
 // const eventRoute = require('../backend/routes/event.route')
 
 // Connecting mongoDB Database
@@ -32,7 +32,7 @@ app.use(bodyParser.urlencoded({
 }));
 app.use(cors());
 app.use('/users', userRoute)
-// app.use('/room', roomRoute)
+app.use('/room', roomRoute)
 // app.use('/event', eventRoute)
 
 // PORT

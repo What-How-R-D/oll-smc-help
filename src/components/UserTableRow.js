@@ -38,7 +38,8 @@ export default class UserTableRow extends Component {
           >
             Edit
           </Link>
-        </td><td>
+        </td>
+        <td>
           <Button type="submit" size="sm" variant="danger" onClick={() => { if (window.confirm('Are you sure you want to delete this user ?')) this.deleteUser() } }> Delete </Button>
         </td>
       </tr>
