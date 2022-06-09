@@ -191,21 +191,25 @@ export default class CreateEventRequest extends Component {
   //   this.setState({ date: e })
   // }
 
-  onSubmit(e) {
+  async onSubmit(e) {
     e.preventDefault()
 
-    const roomRequestObject = {
+    const eventRequestObject = {
       name: this.state.name,
       room: this.state.room,
       attendance: this.state.attendance,
       startTime: this.state.startTime,
       endTime: this.state.endTime
     };
-    axios.post('http://localhost:4000/event/create', roomRequestObject)
+    await axios.post('http://localhost:4000/event/create', eventRequestObject)
       .then(res => console.log(res.data));
 
-    this.setState({ name: '', room: '', attendance: '' })
-    this.props.history.push('/')
+    // this.setState({ name: '', room: '', attendance: '' })
+
+    // console.log('made it here')
+    window.confirm('Thank you for your event request')
+    window.location.reload(true);
+    console.log('and here')
   }
 
   render() {
