@@ -7,13 +7,12 @@ body h3 {
 }
 
 .navbar-brand a {
-  /* color: #ffffff; */
-  color: black;
+  color: #ffffff;
 }
 
 .form-wrapper,
 .table-wrapper {
-  max-width: 500px;
+  max-width: 750px;
   margin: 0 auto;
 }
 

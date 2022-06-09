@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react"
 import { Link } from "react-router-dom"
 import axios from "axios"
 
-// import CreateEvent from './create-event.component'
+import CreateEventRequest from "./event-create.component"
 
 const Home = (props) => {
   console.log("wat up")
@@ -15,8 +15,8 @@ const Home = (props) => {
   
   return (
     <div>
-      {/* <CreateEvent /> */}
-      <p>Welcome {props.user && props.user.name}</p>
+      <p>Logged in as: {props.user && props.user.name}</p>
+      <CreateEventRequest />
       <Link to="/logout">Logout</Link>
     </div>
   )
