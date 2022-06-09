@@ -21,7 +21,6 @@ export default class CreateEventRequest extends Component {
     this.onChangeName = this.onChangeName.bind(this);
     this.onChangeAttendance = this.onChangeAttendance.bind(this);
     this.onChangeRoom = this.onChangeRoom.bind(this);
-    // this.onChangeDate = this.onChangeDate.bind(this);
     this.onSubmit = this.onSubmit.bind(this);
 
     // Setting up state
@@ -35,8 +34,6 @@ export default class CreateEventRequest extends Component {
       endTime: '',
       //
       events: [],
-      // view: "week",
-      // defaultView: "month"
     }
   }
 
@@ -47,24 +44,14 @@ export default class CreateEventRequest extends Component {
   }
 
   GetCalendarEvents(date, view) {
-    console.log("Hi from events")
-    console.log(date)
-    console.log(view)
-
     let start, end;
     start = moment(date).startOf('month')._d
     end = moment(date).endOf('month')._d
 
-    // console.log(start, end)
-    // this.setState({view: view, defaultView: view})
-    // console.log(dates.firstVisibleDay(date), dates.lastVisibleDay(date));
-
     axios.get('http://localhost:4000/event/find-all')
       .then(res => {
-        console.log("finding events")
         
         var room_events = res.data.filter(item => item.room === this.state.room)
-        console.log(room_events)
 
         var events = room_events.map((
           { startTime, endTime, name} ) => ({
@@ -83,11 +70,10 @@ export default class CreateEventRequest extends Component {
             title: this.state.name,
             description: '',
             allDay: false,
-            // free: true,
             color: '#009788'
           })
         }
-        console.log(events)
+        
         this.setState({
           events: events
         });
@@ -100,8 +86,6 @@ export default class CreateEventRequest extends Component {
   }
 
   handleCalendarSelect = (event, e) => {
-    console.log("done selecting")
-    console.log(event)
     const { start, end } = event;
     const data = { title: this.state.name, subject: '', start, end, allDay: false };
 
@@ -118,38 +102,15 @@ export default class CreateEventRequest extends Component {
 
     return <DnDCalendar
           localizer={localizer}
-          // resources={resources}
           selectable={true}
           events={this.state.events}
           startAccessor="start"
           endAccessor="end"
           defaultView={"week"}
-          // view={this.state.view}
-          // defaultDate={ this.defaultDate}
-          // selectable={true}
-          // resizable={true}
-          // onEventDrop={handleDragEvent}
           style={{ height: '70vh' }}
           onSelectSlot={this.handleCalendarSelect}
           onNavigate={this.GetCalendarEvents}
           onView={this.GetCalendarEvents}
-          // onSelectEvent={handleSelectEvent}
-          // min={
-          //   new Date(today.getFullYear(), today.getMonth(), today.getDate(), 8)
-          // }
-          // max={
-          //   new Date(today.getFullYear(), today.getMonth(), today.getDate(), 23)
-          // }
-          // messages={{
-          //   month: 'mois',
-          //   week: 'semaine',
-          //   day: 'jour',
-          //   today: "aujourd'hui",
-          //   next: 'suiv.',
-          //   previous: 'préc.',
-          // }}
-          // resource="Test ressource"
-          // views={['month']}
           views={['month', 'week', 'day']}
           eventPropGetter={(event) => ({
             style: {
@@ -157,8 +118,6 @@ export default class CreateEventRequest extends Component {
             },
           })}
           />
-
-
   }
 
   onChangeName(e) {
@@ -168,7 +127,6 @@ export default class CreateEventRequest extends Component {
   async onChangeAttendance(e) {
     await axios.get('http://localhost:4000/room/find-all')
       .then(res => {
-        console.log(res.data)
         this.setState({
           rooms: res.data.filter(item => item.occupancy > this.state.attendance)
         });
@@ -187,10 +145,6 @@ export default class CreateEventRequest extends Component {
     this.GetCalendarEvents()
   }
 
-  // onChangeDate(e) {
-  //   this.setState({ date: e })
-  // }
-
   async onSubmit(e) {
     e.preventDefault()
 
@@ -204,12 +158,8 @@ export default class CreateEventRequest extends Component {
     await axios.post('http://localhost:4000/event/create', eventRequestObject)
       .then(res => console.log(res.data));
 
-    // this.setState({ name: '', room: '', attendance: '' })
-
-    // console.log('made it here')
     window.confirm('Thank you for your event request')
     window.location.reload(true);
-    console.log('and here')
   }
 
   render() {
@@ -233,11 +183,6 @@ export default class CreateEventRequest extends Component {
             {this.OptionList()}
           </Form.Select>
         </Form.Group>
-
-        {/* <div>
-          Event date 
-          <DatePicker calendarType="US" onChange={this.onChangeDate} value={this.state.date} />
-        </div> */}
 
         <div>
           {this.Scheduler()}
