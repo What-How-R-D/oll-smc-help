@@ -73,7 +73,6 @@ export default class CreateEventRequest extends Component {
             title: "Reserved",
             description: '',
             allDay: false,
-            color: '#009788'
           }))
 
         if (this.state.startTime) {
@@ -108,47 +107,14 @@ export default class CreateEventRequest extends Component {
 
     this.setState({ startTime: start })
     this.setState({ endTime: end })
-    console.log('were here')
-    console.log(this.state)
-
-    if (event.action == "select") {
-      console.log("selected")
-      // this.setState({
-      //   events: data
-      // });
-
-    }
-    // setShowAddModal(true);
-    // setShowEditModal(false);
-    // setCalendarEvent(data);
 
     
     this.GetCalendarEvents()
   };
 
   Scheduler() {
-    // console.log("hi there")
-    // const date = this.state.date.toString()
-    // console.log(date)
     const localizer = momentLocalizer(moment)
-    // console.log(localizer)
     const DnDCalendar = withDragAndDrop(Calendar);
-   
-    // let resources = [
-    //   {
-    //     id: 'r1',
-    //     name: 'Resource1',
-    //     label: "some name"
-    //   },
-    //   {
-    //     id: 'r2',
-    //     name: 'Resource2'
-    //   },
-    //   {
-    //     id: 'r3',
-    //     name: 'Resource3'
-    //   }
-    // ];
 
     return <DnDCalendar
           localizer={localizer}
@@ -187,7 +153,7 @@ export default class CreateEventRequest extends Component {
           views={['month', 'week', 'day']}
           eventPropGetter={(event) => ({
             style: {
-              backgroundColor: event.isDone === true ? '#ad4ca4' : '#3174ad',
+              backgroundColor: event.title === "Reserved" ? '#FF0000' : '#3174ad',
             },
           })}
           />
