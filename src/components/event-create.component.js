@@ -34,6 +34,8 @@ export default class CreateEventRequest extends Component {
       endTime: '',
       //
       events: [],
+      defaultView: "week",
+      defaultDate: ""
     }
   }
 
@@ -92,9 +94,25 @@ export default class CreateEventRequest extends Component {
     this.setState({ startTime: start })
     this.setState({ endTime: end })
 
-    
     this.GetCalendarEvents()
   };
+  
+  handleChangeView = (view, date) => {
+    console.log("hi from change view")
+    console.log(view)
+    console.log(date)
+    this.setState({
+        defaultView: view
+      })
+    this.GetCalendarEvents()
+  }
+
+  handleOnNavigate = (date) => {
+    this.setState({
+        defaultDate: date
+      })
+    this.GetCalendarEvents()
+  }
 
   Scheduler() {
     const localizer = momentLocalizer(moment)
@@ -104,13 +122,14 @@ export default class CreateEventRequest extends Component {
           localizer={localizer}
           selectable={true}
           events={this.state.events}
+          defaultDate={this.state.defaultDate}
           startAccessor="start"
           endAccessor="end"
-          defaultView={"week"}
+          defaultView={this.state.defaultView}
           style={{ height: '70vh' }}
           onSelectSlot={this.handleCalendarSelect}
-          onNavigate={this.GetCalendarEvents}
-          onView={this.GetCalendarEvents}
+          onNavigate={this.handleOnNavigate}
+          onView={this.handleChangeView}
           views={['month', 'week', 'day']}
           eventPropGetter={(event) => ({
             style: {
