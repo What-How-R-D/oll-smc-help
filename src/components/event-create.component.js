@@ -169,6 +169,7 @@ export default class CreateEventRequest extends Component {
 
     const eventRequestObject = {
       name: this.state.name,
+      requestor: this.props.user._id,
       room: this.state.room,
       attendance: this.state.attendance,
       startTime: this.state.startTime,
@@ -183,8 +184,7 @@ export default class CreateEventRequest extends Component {
 
   render() {
     let html
-    if (localStorage.getItem("token")) {
-      html = <div className="form-wrapper">
+    html = <div className="form-wrapper">
       <Form onSubmit={this.onSubmit}>
         <Form.Group controlId="Name">
           <Form.Label>Event Name</Form.Label>
@@ -212,12 +212,6 @@ export default class CreateEventRequest extends Component {
         </Button>
       </Form>
     </div>
-    } else {
-      html = <div>
-          <p> Please login</p>
-          <Link to="/login">Login</Link>
-        </div>
-    }
     return (html);
   }
 }
