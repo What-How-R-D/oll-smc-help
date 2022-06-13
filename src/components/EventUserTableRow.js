@@ -34,7 +34,7 @@ export default class RoomTableRow extends Component {
         <td>{this.state.room_name}</td>
         <td>{format(new Date(this.props.obj.startTime), "M/d/yyyy H:mm a")}</td>
         <td>{format(new Date(this.props.obj.endTime), "M/d/yyyy H:mm a")}</td>
-        <td>{this.props.obj.approved.toString()}</td>
+        <td>{this.props.obj.status}</td>
         {/* <td>
           <Link
             className="edit-link" path={"room/:id"}

@@ -14,7 +14,11 @@ const eventSchema = new mongoose.Schema(
 		endTime: {type: Date},
 		lockStartTime: {type: Date}, 
 		lockEndTime: {type: Date},
-		approved: {type:Boolean, default:false},
+		status: {    
+			type: String,
+			enum: ["Pending", "Approved", "Rejected", "Canceled"],
+			default: "Pending", 
+			},
 		canceled: {type:Boolean, default:false},
 		paid: {type:Boolean, default:false},
 		locksSet: {type:Boolean, default:false},
