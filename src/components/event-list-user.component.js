@@ -12,7 +12,6 @@ export default class EventList extends Component {
       user_id: this.props.user._id,
       events: []
     };
-    console.log(this.props.user)
   }
 
   async componentDidMount() {
