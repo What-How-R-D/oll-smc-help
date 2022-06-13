@@ -2,6 +2,8 @@ import React, { Component } from 'react'
 // import { Link } from 'react-router-dom'
 import axios from 'axios'
 // import Button from 'react-bootstrap/Button'
+import { format } from "date-fns";
+
 
 export default class RoomTableRow extends Component {
 
@@ -30,6 +32,8 @@ export default class RoomTableRow extends Component {
       <tr>
         <td>{this.props.obj.name}</td>
         <td>{this.state.room_name}</td>
+        <td>{format(new Date(this.props.obj.startTime), "M/d/yyyy H:mm a")}</td>
+        <td>{format(new Date(this.props.obj.endTime), "M/d/yyyy H:mm a")}</td>
         <td>{this.props.obj.approved.toString()}</td>
         {/* <td>
           <Link

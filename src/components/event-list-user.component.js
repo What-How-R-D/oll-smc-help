@@ -17,8 +17,10 @@ export default class EventList extends Component {
   async componentDidMount() {
     await axios.get('http://localhost:4000/event/find-user/' + this.state.user_id)
       .then(res => {
+        var valid_events = res.data.filter(item => new Date(item.endTime).getTime() > new Date().getTime())
+        
         this.setState({
-          events: res.data
+          events: valid_events
         });
       })
       .catch((error) => {
@@ -42,6 +44,8 @@ export default class EventList extends Component {
             <tr>
               <th>Name</th>
               <th>Room</th>
+              <th>Start Time</th>
+              <th>End Time</th>
               <th>Status</th>
             </tr>
           </thead>
