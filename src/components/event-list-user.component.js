@@ -18,7 +18,8 @@ export default class EventList extends Component {
     await axios.get('http://localhost:4000/event/find-user/' + this.state.user_id)
       .then(res => {
         var valid_events = res.data.filter(item => new Date(item.endTime).getTime() > new Date().getTime())
-        
+        valid_events.sort((a, b) => new Date(a.startTime).getTime() > new Date(b.startTime).getTime() ? 1 : -1 )
+
         this.setState({
           events: valid_events
         });
