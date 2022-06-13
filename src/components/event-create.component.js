@@ -1,11 +1,7 @@
 import React, { Component } from "react";
-import { Link } from "react-router-dom"
 import Form from 'react-bootstrap/Form'
 import Button from 'react-bootstrap/Button';
 import axios from 'axios';
-import DatePicker from 'react-date-picker';
-
-import dates from 'react-big-calendar/lib/utils/dates';
 
 import { Calendar, momentLocalizer } from 'react-big-calendar'
 import moment from 'moment'
@@ -47,9 +43,9 @@ export default class CreateEventRequest extends Component {
   }
 
   GetCalendarEvents(date, view) {
-    let start, end;
-    start = moment(date).startOf('month')._d
-    end = moment(date).endOf('month')._d
+    // let start, end;
+    // start = moment(date).startOf('month')._d
+    // end = moment(date).endOf('month')._d
 
     axios.get('http://localhost:4000/event/find-all')
       .then(res => {
@@ -90,7 +86,6 @@ export default class CreateEventRequest extends Component {
 
   handleCalendarSelect = (event, e) => {
     const { start, end } = event;
-    const data = { title: this.state.name, subject: '', start, end, allDay: false };
 
     this.setState({ startTime: start })
     this.setState({ endTime: end })

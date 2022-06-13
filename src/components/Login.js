@@ -1,11 +1,9 @@
-import React, { useState, Component } from "react"
+import React, { Component } from "react"
 import { Link } from "react-router-dom"
 import axios from "axios"
 
 import Form from 'react-bootstrap/Form'
 import Button from 'react-bootstrap/Button';
-
-const bcrypt = require("bcryptjs")
 
 
 export default class Register extends Component {

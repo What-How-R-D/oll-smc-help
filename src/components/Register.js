@@ -1,11 +1,9 @@
-import React, { useState, Component } from "react"
+import React, { Component } from "react"
 import { Link } from "react-router-dom"
 
 import Form from 'react-bootstrap/Form'
 import Button from 'react-bootstrap/Button';
 import axios from 'axios';
-
-const bcrypt = require("bcryptjs")
 
 
 export default class Register extends Component {
@@ -42,7 +40,7 @@ export default class Register extends Component {
 	async onSubmit(e) {
 		e.preventDefault()
 		try {
-			var res = await axios.post('http://localhost:4000/users/register', this.state)
+			await axios.post('http://localhost:4000/users/register', this.state)
 
 			this.setState({ name: '', email: '', password: '' })
 			this.props.history.push("/login")

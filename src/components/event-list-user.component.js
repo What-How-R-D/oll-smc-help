@@ -2,19 +2,10 @@ import React, { Component } from "react";
 import { Link } from "react-router-dom"
 import axios from 'axios';
 import Table from 'react-bootstrap/Table';
-import Button from 'react-bootstrap/Button'
 import EventUserTableRow from './EventUserTableRow.js'
 
 
 export default class EventList extends Component {
-  // state = {
-  //   user_id: this.props.user._id,
-  //   events: []
-  // }
-  // static getDerivedStateFromProps(props, state) {
-  //   this.setState({ user_id: props.user._id })
-  // }
-
   constructor(props) {
     super(props)
     this.state = {
