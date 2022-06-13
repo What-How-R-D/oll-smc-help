@@ -29,13 +29,14 @@ export default class CreateEventRequest extends Component {
       //
       name: '',
       room: '',
-      attendance: 0,
+      attendance: '',
       startTime: '',
       endTime: '',
       //
       events: [],
       defaultView: "week",
-      defaultDate: ""
+      defaultDate: "",
+      user_id: this.props.user._id,
     }
   }
 
@@ -98,9 +99,6 @@ export default class CreateEventRequest extends Component {
   };
   
   handleChangeView = (view, date) => {
-    console.log("hi from change view")
-    console.log(view)
-    console.log(date)
     this.setState({
         defaultView: view
       })
@@ -144,8 +142,10 @@ export default class CreateEventRequest extends Component {
   }
 
   async onChangeAttendance(e) {
+    console.log("hi from attendance")
     await axios.get('http://localhost:4000/room/find-all')
       .then(res => {
+        console.log(res.data)
         this.setState({
           rooms: res.data.filter(item => item.occupancy > this.state.attendance)
         });
@@ -153,7 +153,10 @@ export default class CreateEventRequest extends Component {
       .catch((error) => {
         console.log(error);
       })
-    
+    console.log("made it here")
+    console.log(e.target.value)
+    console.log(this.state.rooms[0]._id)
+
     this.setState({ attendance: e.target.value })
     this.setState({ room: this.state.rooms[0]._id })
     this.GetCalendarEvents()
@@ -169,7 +172,7 @@ export default class CreateEventRequest extends Component {
 
     const eventRequestObject = {
       name: this.state.name,
-      requestor: this.props.user._id,
+      requestor: this.state.user_id,
       room: this.state.room,
       attendance: this.state.attendance,
       startTime: this.state.startTime,
@@ -193,7 +196,7 @@ export default class CreateEventRequest extends Component {
 
         <Form.Group controlId="Attendance">
           <Form.Label>Attendance</Form.Label>
-          <Form.Control type="text" value={this.state.attendance} onChange={this.onChangeAttendance} />
+          <Form.Control type="text" defaultValue={this.state.attendance} onChange={this.onChangeAttendance} />
         </Form.Group>
 
         <Form.Group controlId="Room">

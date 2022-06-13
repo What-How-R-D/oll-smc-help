@@ -1,7 +1,7 @@
 import React, { Component } from 'react'
-import { Link } from 'react-router-dom'
+// import { Link } from 'react-router-dom'
 import axios from 'axios'
-import Button from 'react-bootstrap/Button'
+// import Button from 'react-bootstrap/Button'
 
 export default class RoomTableRow extends Component {
 
@@ -10,10 +10,9 @@ export default class RoomTableRow extends Component {
       this.state = {
         room_name: ""
       };
-      console.log(this.props.user)
     }
 
-  async componentWillMount() {
+  async componentDidMount() {
     await axios.get('http://localhost:4000/room/find-id/' + this.props.obj.room)
       .then(res => {
         this.setState({
