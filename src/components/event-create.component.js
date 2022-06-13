@@ -38,7 +38,7 @@ export default class CreateEventRequest extends Component {
 
   OptionList() {
     return this.state.rooms.map((option) => {
-      return <option value={option._id}>{option.name}</option>
+      return <option key={option._id} value={option._id}>{option.name}</option>
     })
   }
 
@@ -137,10 +137,8 @@ export default class CreateEventRequest extends Component {
   }
 
   async onChangeAttendance(e) {
-    console.log("hi from attendance")
     await axios.get('http://localhost:4000/room/find-all')
       .then(res => {
-        console.log(res.data)
         this.setState({
           rooms: res.data.filter(item => item.occupancy > this.state.attendance)
         });
@@ -148,9 +146,6 @@ export default class CreateEventRequest extends Component {
       .catch((error) => {
         console.log(error);
       })
-    console.log("made it here")
-    console.log(e.target.value)
-    console.log(this.state.rooms[0]._id)
 
     this.setState({ attendance: e.target.value })
     this.setState({ room: this.state.rooms[0]._id })
