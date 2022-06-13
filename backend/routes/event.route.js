@@ -66,5 +66,17 @@ router.route('/find-id/:id').get((req, res) => {
 	})
   })
   
+router.route('/find-user/:id').get((req, res) => {
+	eventSchema.find((error, data) => {
+		if (error) {
+		  return next(error)
+		} else {
+			userEvent=data.filter(item => item.requestor === req.params.id)
+		  	res.json(userEvent)
+		}
+	  })
+	})
+  
+  
 
 module.exports = router
