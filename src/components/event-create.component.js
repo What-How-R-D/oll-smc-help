@@ -7,7 +7,7 @@ import { Calendar, momentLocalizer } from 'react-big-calendar'
 import moment from 'moment'
 import "react-big-calendar/lib/css/react-big-calendar.css";
 import withDragAndDrop from 'react-big-calendar/lib/addons/dragAndDrop';
-
+import DateTimePicker from 'react-datetime-picker';
 
 import {findUser} from "../api/user"
 
@@ -22,6 +22,8 @@ export default class CreateEventRequest extends Component {
     this.onChangeName = this.onChangeName.bind(this);
     this.onChangeAttendance = this.onChangeAttendance.bind(this);
     this.onChangeRoom = this.onChangeRoom.bind(this);
+    this.onChangeLockStartTime = this.onChangeLockStartTime.bind(this);
+    this.onChangeLockEndTime = this.onChangeLockEndTime.bind(this);
     this.onSubmit = this.onSubmit.bind(this);
 
     // Setting up state
@@ -33,6 +35,8 @@ export default class CreateEventRequest extends Component {
       attendance: '',
       startTime: '',
       endTime: '',
+      lockStartTime: '',
+      lockEndTime: '',
       //
       events: [],
       defaultView: "week",
@@ -41,7 +45,7 @@ export default class CreateEventRequest extends Component {
     }
   }
   async componentDidMount() {
-    var user = findUser()
+    var user = await findUser()
     this.setState({user_id: user._id})
   }
   
@@ -95,9 +99,14 @@ export default class CreateEventRequest extends Component {
 
   handleCalendarSelect = (event, e) => {
     const { start, end } = event;
+    console.log(start)
+    console.log(typeof(start))
 
     this.setState({ startTime: start })
     this.setState({ endTime: end })
+
+    this.setState({ lockStartTime: start })
+    this.setState({ lockEndTime: end })
 
     this.GetCalendarEvents()
   };
@@ -166,6 +175,15 @@ export default class CreateEventRequest extends Component {
     this.GetCalendarEvents()
   }
 
+  onChangeLockStartTime(e) {
+    this.setState({ lockStartTime: e })
+    
+  }
+
+  onChangeLockEndTime(e) {
+    this.setState({ lockEndTime: e })
+  }
+
   async onSubmit(e) {
     e.preventDefault()
 
@@ -175,7 +193,9 @@ export default class CreateEventRequest extends Component {
       room: this.state.room,
       attendance: this.state.attendance,
       startTime: this.state.startTime,
-      endTime: this.state.endTime
+      endTime: this.state.endTime,
+      lockStartTime: this.state.lockStartTime,
+      lockEndTime: this.state.lockEndTime
     };
     await axios.post('http://localhost:4000/event/create', eventRequestObject)
       .then(res => console.log(res.data));
@@ -209,6 +229,22 @@ export default class CreateEventRequest extends Component {
           {this.Scheduler()}
         </div>
         
+        <div>
+          Door Unlock Time: 
+          <DateTimePicker
+            onChange={this.onChangeLockStartTime}
+            value={this.state.lockStartTime}
+          />
+        </div>
+
+        <div>
+          Door Lock Time:
+          <DateTimePicker
+            onChange={this.onChangeLockEndTime}
+            value={this.state.lockEndTime}
+          />
+        </div>
+
         <Button variant="danger" size="lg" block="block" type="submit" className="mt-4">
           Submit Room Request
         </Button>

@@ -9,10 +9,12 @@
     "axios": "^0.24.0",
     "bcryptjs": "^2.4.3",
     "bootstrap": "^5.1.3",
+    "concurrently": "^7.2.1",
     "react": "^17.0.2",
     "react-big-calendar": "^0.40.1",
     "react-bootstrap": "^2.0.3",
     "react-date-picker": "^8.4.0",
+    "react-datetime-picker": "^3.5.0",
     "react-dnd": "^16.0.1",
     "react-dnd-html5-backend": "^16.0.1",
     "react-dom": "^17.0.2",
@@ -22,7 +24,7 @@
     "web-vitals": "^1.1.2"
   },
   "scripts": {
-    "start":  "concurrently \"react-scripts --openssl-legacy-provider start\" \"cd backend && nodemon server\"",
+    "start": "concurrently \"react-scripts --openssl-legacy-provider start\" \"cd backend && nodemon server\"",
     "build": "react-scripts build",
     "test": "react-scripts test",
     "eject": "react-scripts eject"
