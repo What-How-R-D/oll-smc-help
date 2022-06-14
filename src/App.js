@@ -26,6 +26,8 @@ import BMhub from './components/bm-hub.component'
 
 import HVAChub from './components/hvac-hub.component'
 
+import LocksHub from './components/locks-hub.component'
+
 function App() {
   const isLoggedIn = localStorage.getItem("token")
   
@@ -62,6 +64,7 @@ function App() {
                 {isLoggedIn && user && ["Admin"].includes(user.type) && ( <Nav> <Link to={'/room-list'} className="nav-link"> Rooms </Link> </Nav> )}
                 {isLoggedIn && user && user.bm && ( <Nav> <Link to={'/bm-hub'} className="nav-link"> Approve Events </Link> </Nav> )}
                 {isLoggedIn && user && user.hvac && ( <Nav> <Link to={'/hvac-hub'} className="nav-link"> HVAC requests </Link> </Nav> )}
+                {isLoggedIn && user && user.locks && ( <Nav> <Link to={'/locks-hub'} className="nav-link"> Locks requests </Link> </Nav> )}
                 {isLoggedIn && ( <Nav> <Link to={'/logout'} className="nav-link"> Logout </Link> </Nav>)}
               </Nav>
             </Container>
@@ -86,9 +89,9 @@ function App() {
                   <Route exact path="/edit-room/:id" component={(props) => <EditRoom {...props} />} />
 
                   <Route exact path="/bm-hub" component={(props) => <BMhub {...props} />} />
-
                   <Route exact path="/hvac-hub" component={(props) => <HVAChub {...props} />} />
-                
+                  <Route exact path="/locks-hub" component={(props) => <LocksHub {...props} />} />
+
                 </Switch>
               </div>
             </Col>
