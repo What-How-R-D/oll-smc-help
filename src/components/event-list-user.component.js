@@ -53,6 +53,7 @@ export default class EventList extends Component {
     let html
     if (this.state.loggedIn) {
       html = <div className="table-wrapper">
+        <h1> Your upcoming event request </h1>
         <Table striped bordered hover>
           <thead>
             <tr>

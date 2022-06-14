@@ -98,9 +98,33 @@ export default class CreateEventRequest extends Component {
   }
 
   handleCalendarSelect = (event, e) => {
-    const { start, end } = event;
-    console.log(start)
-    console.log(typeof(start))
+    var { start, end } = event;
+    
+    var valid_events = this.state.events.filter(
+        item => new Date(item.end).getTime() > new Date(start).getTime()
+      ).filter(
+        item => new Date(item.start).getTime() < new Date(end).getTime()
+      ).filter(
+        item => item.title == "Reserved"
+      )
+    
+    if (valid_events.length !== 0){
+      var blackout_start = valid_events.sort((a, b) => new Date(a.startTime).getTime() > new Date(b.startTime).getTime() ? -1 : 1 )[0].start
+      var blackout_end = valid_events.sort((a, b) => new Date(a.endTime).getTime() > new Date(b.endTime).getTime() ? 1 : -1 )[0].end
+      
+      var start_ok = false
+      if (new Date(start).getTime() < new Date(blackout_start).getTime()) {
+        start_ok = true
+      } else {
+        start = new Date(blackout_end)
+      }
+
+      if (new Date(end).getTime() > new Date(blackout_end).getTime()) {
+        if (start_ok) { end = new Date(blackout_start) }
+      } else {
+        end = new Date(blackout_start)
+      }
+    } 
 
     this.setState({ startTime: start })
     this.setState({ endTime: end })
@@ -207,6 +231,7 @@ export default class CreateEventRequest extends Component {
   render() {
     let html
     html = <div className="form-wrapper">
+      <h1> Create a new event request </h1>
       <Form onSubmit={this.onSubmit}>
         <Form.Group controlId="Name">
           <Form.Label>Event Name</Form.Label>
