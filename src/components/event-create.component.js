@@ -105,7 +105,7 @@ export default class CreateEventRequest extends Component {
       ).filter(
         item => new Date(item.start).getTime() < new Date(end).getTime()
       ).filter(
-        item => item.title == "Reserved"
+        item => item.title === "Reserved"
       )
     
     if (valid_events.length !== 0){
