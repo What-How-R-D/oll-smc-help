@@ -22,6 +22,7 @@ import RoomList from './components/room-list.component'
 import CreateRoom from './components/room-create.component'
 import EditRoom from './components/room-edit.component'
 
+import BMhub from './components/bm-hub.component'
 
 function App() {
   const isLoggedIn = localStorage.getItem("token")
@@ -57,6 +58,7 @@ function App() {
                 {!isLoggedIn && ( <Nav> <Link to={'/login'} className="nav-link"> Login </Link> </Nav>)}
                 {isLoggedIn && user && ["Admin"].includes(user.type) && ( <Nav> <Link to={'/user-list'} className="nav-link"> Users </Link> </Nav> )}
                 {isLoggedIn && user && ["Admin"].includes(user.type) && ( <Nav> <Link to={'/room-list'} className="nav-link"> Rooms </Link> </Nav> )}
+                {isLoggedIn && user && user.bm && ( <Nav> <Link to={'/bm-hub'} className="nav-link"> Approve Events </Link> </Nav> )}
                 {isLoggedIn && ( <Nav> <Link to={'/logout'} className="nav-link"> Logout </Link> </Nav>)}
               </Nav>
             </Container>
@@ -79,6 +81,8 @@ function App() {
                   <Route exact path="/room-list" component={(props) => <RoomList {...props} />} />
                   <Route exact path="/create-room" component={(props) => <CreateRoom {...props} />} />
                   <Route exact path="/edit-room/:id" component={(props) => <EditRoom {...props} />} />
+
+                  <Route exact path="/bm-hub" component={(props) => <BMhub {...props} />} />
 
                 </Switch>
               </div>

@@ -14,6 +14,7 @@ export default class EditUser extends Component {
     this.onChangeBM = this.onChangeBM.bind(this);
     this.onChangeHVAC = this.onChangeHVAC.bind(this);
     this.onChangeLocks = this.onChangeLocks.bind(this);
+    this.onChangeRooms = this.onChangeRooms.bind(this);
     this.onSubmit = this.onSubmit.bind(this);
 
     // State
@@ -23,11 +24,13 @@ export default class EditUser extends Component {
       bm: false,
       hvac: false,
       locks: false,
+      rooms_available: [],
+      rooms_responsible: [],
     }
   }
 
-  componentDidMount() {
-    axios.get('http://localhost:4000/users/find-id/' + this.props.match.params.id)
+  async componentDidMount() {
+    await axios.get('http://localhost:4000/users/find-id/' + this.props.match.params.id)
       .then(res => {
         this.setState({
           name: res.data.name,
@@ -35,14 +38,63 @@ export default class EditUser extends Component {
           type: res.data.type,
           bm: res.data.bm,
           hvac: res.data.hvac,
-          locks: res.data.locks
+          locks: res.data.locks,
+          rooms_responsible: res.data.rooms,
         });
         console.log(this.state)
       })
       .catch((error) => {
         console.log(error);
       })
+      
+    await axios.get('http://localhost:4000/room/find-all')
+      .then(res => {
+        this.setState({
+          rooms_available: res.data
+        });
+      })
+      .catch((error) => {
+        console.log(error);
+      })
+
   }
+
+  OptionList() {
+    console.log('responsible')
+    console.log(this.state.rooms_responsible)
+    return this.state.rooms_available.map((option) => {
+      return <Form.Check 
+          type="checkbox"
+          key={option._id}
+          id={option._id}
+          label={option.name}
+          checked={this.state.rooms_responsible.includes(option._id)}
+          onChange={this.onChangeRooms}
+        />
+    })
+  }
+
+  ifBM() {
+    if (this.state.bm) {
+      return <Form.Group>
+          <Form.Label>Rooms managed</Form.Label>
+          {this.OptionList()}
+        </Form.Group>
+    }
+  }
+
+  onChangeRooms(e) {
+    if (this.state.rooms_responsible.includes(e.target.id)) {
+      this.setState({ 
+        rooms_responsible: this.state.rooms_responsible.filter(
+          function(room) {return room !== e.target.id}
+          )})
+    } else {
+      this.state.rooms_responsible.push(e.target.id)
+    }
+    this.forceUpdate();
+    }
+
 
   onChangeName(e) { this.setState({ name: e.target.value }) }
   onChangeEmail(e) { this.setState({ email: e.target.value }) }
@@ -70,7 +122,8 @@ export default class EditUser extends Component {
       type: this.state.type,
       bm: this.state.bm,
       hvac: this.state.hvac,
-      locks: this.state.locks
+      locks: this.state.locks,
+      rooms: this.state.rooms_responsible
     };
     
     axios.put('http://localhost:4000/users/update/' + this.props.match.params.id, UserObject)
@@ -106,17 +159,7 @@ export default class EditUser extends Component {
               <option value="Basic">Basic</option>
               <option value="Admin">Admin</option>
           </select>
-
         </Form.Group>
- 
-
-        <Form.Check 
-          type="switch"
-          id="Building Manager"
-          label="Building Manager"
-          checked={this.state.bm}
-          onChange={this.onChangeBM}
-        />
 
         <Form.Check 
           type="switch"
@@ -133,6 +176,16 @@ export default class EditUser extends Component {
           checked={this.state.locks}
           onChange={this.onChangeLocks}
         />
+
+        <Form.Check 
+          type="switch"
+          id="Building Manager"
+          label="Building Manager"
+          checked={this.state.bm}
+          onChange={this.onChangeBM}
+        />
+        
+        {this.ifBM()}
 
         <Button variant="danger" size="lg" block="block" type="submit">
           Update User

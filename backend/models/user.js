@@ -11,6 +11,7 @@ const userSchema = new mongoose.Schema(
 		default: "Basic", 
 		},
 	bm: {type: Boolean, default: false,},
+	rooms: [{type: String}],
 	hvac: {type: Boolean, default: false,},
 	locks: {type: Boolean, default: false,},
 	},
