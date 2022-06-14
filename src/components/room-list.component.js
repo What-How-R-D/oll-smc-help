@@ -4,17 +4,27 @@ import axios from 'axios';
 import Table from 'react-bootstrap/Table';
 import RoomTableRow from './RoomTableRow';
 
+import {findUser} from "../api/user"
 
 export default class RoomList extends Component {
 
   constructor(props) {
     super(props)
     this.state = {
-      users: []
+      users: [],
+      loggedIn: false,
     };
   }
 
-  componentDidMount() {
+  async componentDidMount() {
+    const user = await findUser()
+
+    if (user['error'] === "Unauthorized") {
+      this.setState({ loggedIn: false })
+		} else {
+      this.setState({ loggedIn: true })
+		}
+
     axios.get('http://localhost:4000/room/find-all')
       .then(res => {
         this.setState({
@@ -35,7 +45,7 @@ export default class RoomList extends Component {
 
   render() {
     let html
-    if (localStorage.getItem("token")) {
+    if (this.state.loggedIn) {
       html = <div className="table-wrapper">
         <Table striped bordered hover>
           <thead>

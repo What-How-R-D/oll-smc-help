@@ -4,6 +4,8 @@ import Form from 'react-bootstrap/Form'
 import Button from 'react-bootstrap/Button';
 import axios from 'axios';
 
+import {findUser} from "../api/user"
+
 export default class CreateRoom extends Component {
 
   constructor(props) {
@@ -19,8 +21,19 @@ export default class CreateRoom extends Component {
     this.state = {
       name: '',
       building: '',
-      occupancy: ''
+      occupancy: '',
+      loggedIn: false,
     }
+  }
+
+  async componentDidMount() {
+    const user = await findUser()
+
+    if (user['error'] === "Unauthorized") {
+      this.setState({ loggedIn: false })
+		} else {
+      this.setState({ loggedIn: true })
+		}
   }
 
   onChangeName(e) {
@@ -52,7 +65,7 @@ export default class CreateRoom extends Component {
 
   render() {
     let html
-    if (localStorage.getItem("token")) {
+    if (this.state.loggedIn) {
       html = <div className="form-wrapper">
       <Form onSubmit={this.onSubmit}>
         <Form.Group controlId="Name">

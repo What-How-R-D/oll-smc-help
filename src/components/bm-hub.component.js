@@ -13,12 +13,18 @@ export default class BMhub extends Component {
 	  super(props)
 	  this.state = {
 		events: [],
-		pending_events: []
+		pending_events: [],
+		loggedIn: false,
 	  };
 	}
   
 	async componentDidMount() {
 		var user = await findUser()
+		if (user['error'] === "Unauthorized") {
+				this.setState({ loggedIn: false })
+			} else {
+				this.setState({ loggedIn: true })
+			}
 
 		var all_events = []
 		for (let room in user.rooms) {
@@ -60,7 +66,7 @@ export default class BMhub extends Component {
   
 	render() {
 	  let html
-	  if (localStorage.getItem("token")) {
+	  if (this.state.loggedIn) {
 		html = <div className="table-wrapper">
 			<h1> Pending Requests </h1>
 		  <Table striped bordered hover>

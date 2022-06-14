@@ -3,6 +3,8 @@ import { Link } from "react-router-dom"
 import axios from 'axios';
 import Table from 'react-bootstrap/Table';
 
+import {findUser} from "../api/user"
+
 import EventHVACTableRow from './EventHVACTableRow.js'
 
 export default class HVAChub extends Component {
@@ -10,11 +12,19 @@ export default class HVAChub extends Component {
 	  super(props)
 	  this.state = {
 		events: [],
-		pending_events: []
+		pending_events: [],
+		loggedIn: false,
 	  };
 	}
   
 	async componentDidMount() {
+		const user = await findUser()
+
+		if (user['error'] === "Unauthorized") {
+		  this.setState({ loggedIn: false })
+			} else {
+		  this.setState({ loggedIn: true })
+			}
 
 		var all_events = []
 		await axios.get('http://localhost:4000/event/find-all')
@@ -53,7 +63,7 @@ export default class HVAChub extends Component {
   
 	render() {
 	  let html
-	  if (localStorage.getItem("token")) {
+	  if (this.state.loggedIn) {
 		html = <div className="table-wrapper">
 			<h1> Pending Requests </h1>
 		  <Table striped bordered hover>

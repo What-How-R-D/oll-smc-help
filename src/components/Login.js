@@ -34,12 +34,12 @@ export default class Register extends Component {
 	async onSubmit(e) {
 		e.preventDefault()
 		try {
-		  var res = await axios.post('http://localhost:4000/users/login', this.state)
+		  	var res = await axios.post('http://localhost:4000/users/login', this.state)
 
-      localStorage.setItem("token", res.data.token)
-      this.setState({ email: '', password: '' })
-	  this.props.history.push("/")
-      window.location.reload(true)
+			localStorage.setItem("token", res.data.token)
+			this.setState({ email: '', password: '' })
+			this.props.history.push("/")
+			window.location.reload(true)
 		} catch (err) {
 			console.log(err)
 		}

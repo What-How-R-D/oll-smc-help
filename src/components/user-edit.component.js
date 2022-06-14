@@ -1,8 +1,10 @@
 import React, { Component} from "react";
+import { Link } from "react-router-dom"
 import Form from 'react-bootstrap/Form'
 import Button from 'react-bootstrap/Button';
 import axios from 'axios';
 
+import {findUser} from "../api/user"
 
 export default class EditUser extends Component {
   constructor(props) {
@@ -26,10 +28,19 @@ export default class EditUser extends Component {
       locks: false,
       rooms_available: [],
       rooms_responsible: [],
+      loggedIn: false,
     }
   }
 
   async componentDidMount() {
+    const user = await findUser()
+
+    if (user['error'] === "Unauthorized") {
+      this.setState({ loggedIn: false })
+		} else {
+      this.setState({ loggedIn: true })
+		}
+
     await axios.get('http://localhost:4000/users/find-id/' + this.props.match.params.id)
       .then(res => {
         this.setState({
@@ -41,7 +52,6 @@ export default class EditUser extends Component {
           locks: res.data.locks,
           rooms_responsible: res.data.rooms,
         });
-        console.log(this.state)
       })
       .catch((error) => {
         console.log(error);
@@ -60,8 +70,6 @@ export default class EditUser extends Component {
   }
 
   OptionList() {
-    console.log('responsible')
-    console.log(this.state.rooms_responsible)
     return this.state.rooms_available.map((option) => {
       return <Form.Check 
           type="checkbox"
@@ -138,7 +146,9 @@ export default class EditUser extends Component {
 
 
   render() {
-    return (<div className="form-wrapper">
+    let html
+    if (this.state.loggedIn) {
+      html = <div className="form-wrapper">
       <Form onSubmit={this.onSubmit}>
         <Form.Group controlId="Name">
           <Form.Label>Name</Form.Label>
@@ -191,6 +201,12 @@ export default class EditUser extends Component {
           Update User
         </Button>
       </Form>
-    </div>);
+      </div>
+      } else {
+        html = <div>
+            <Link to="/login">Login for more functionality</Link>
+          </div>
+      }
+      return (html);
   }
 }

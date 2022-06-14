@@ -3,6 +3,8 @@ import { Link } from "react-router-dom"
 import axios from 'axios';
 import Table from 'react-bootstrap/Table';
 
+import {findUser} from "../api/user"
+
 import EventLocksTableRow from './EventLocksTableRow.js'
 
 export default class LocksHub extends Component {
@@ -10,11 +12,20 @@ export default class LocksHub extends Component {
 	  super(props)
 	  this.state = {
 		events: [],
-		pending_events: []
+		pending_events: [],
+		loggedIn: false,
 	  };
 	}
   
 	async componentDidMount() {
+		const user = await findUser()
+
+		if (user['error'] === "Unauthorized") {
+		  this.setState({ loggedIn: false })
+			} else {
+		  this.setState({ loggedIn: true })
+			}
+
 
 		var all_events = []
 		await axios.get('http://localhost:4000/event/find-all')
@@ -53,7 +64,7 @@ export default class LocksHub extends Component {
   
 	render() {
 	  let html
-	  if (localStorage.getItem("token")) {
+	  if (this.state.loggedIn) {
 		html = <div className="table-wrapper">
 			<h1> Pending Requests </h1>
 		  <Table striped bordered hover>
