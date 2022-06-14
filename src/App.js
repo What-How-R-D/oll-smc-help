@@ -73,7 +73,7 @@ function App() {
                   <Route exact path="/login" component={Login} />
                   <Route exact path="/logout" component={Logout} />
                   <Route exact path="/register" component={Register} />
-                  <Route exact path="/" component={(props) => <Home {...props} isLoggedIn={isLoggedIn} user={user} />} />
+                  <Route exact path="/" component={(props) => <Home {...props} isLoggedIn={isLoggedIn} />} />
 
                   <Route exact path="/user-list" component={(props) => <UserList {...props} />} />
                   <Route exact path="/edit-user/:id" component={(props) => <EditUser {...props} />} />
@@ -82,7 +82,7 @@ function App() {
                   <Route exact path="/create-room" component={(props) => <CreateRoom {...props} />} />
                   <Route exact path="/edit-room/:id" component={(props) => <EditRoom {...props} />} />
 
-                  <Route exact path="/bm-hub" component={(props) => <BMhub {...props} user={user} />} />
+                  <Route exact path="/bm-hub" component={(props) => <BMhub {...props} />} />
 
                 </Switch>
               </div>

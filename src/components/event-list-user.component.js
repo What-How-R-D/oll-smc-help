@@ -2,20 +2,24 @@ import React, { Component } from "react";
 import { Link } from "react-router-dom"
 import axios from 'axios';
 import Table from 'react-bootstrap/Table';
+
+import {findUser} from "../api/user"
+
 import EventUserTableRow from './EventUserTableRow.js'
 
 
 export default class EventList extends Component {
   constructor(props) {
-    super(props)
+    super(props)    
     this.state = {
-      user_id: this.props.user._id,
-      events: []
+      events: [],
     };
   }
 
   async componentDidMount() {
-    await axios.get('http://localhost:4000/event/find-user/' + this.state.user_id)
+    const user = await findUser()
+
+    await axios.get('http://localhost:4000/event/find-user/' + user._id)
       .then(res => {
         var valid_events = res.data.filter(item => new Date(item.endTime).getTime() > new Date().getTime())
         valid_events.sort((a, b) => new Date(a.startTime).getTime() > new Date(b.startTime).getTime() ? 1 : -1 )

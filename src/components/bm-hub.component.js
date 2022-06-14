@@ -2,23 +2,27 @@ import React, { Component } from "react";
 import { Link } from "react-router-dom"
 import axios from 'axios';
 import Table from 'react-bootstrap/Table';
+
+import {findUser} from "../api/user"
+
 import EventBMTableRow from './EventBMTableRow.js'
 
 export default class BMhub extends Component {
 	constructor(props) {
+	  
 	  super(props)
 	  this.state = {
 		events: [],
-		pending_events: [],
-		rooms: this.props.user.rooms
+		pending_events: []
 	  };
 	}
   
 	async componentDidMount() {
-		console.log(this.props.user)
+		var user = await findUser()
+
 		var all_events = []
-		for (let room in this.state.rooms) {
-			var room_id = this.state.rooms[room]
+		for (let room in user.rooms) {
+			var room_id = user.rooms[room]
 			await axios.get('http://localhost:4000/event/find-room/' + room_id)
 			.then(res => {
 				var new_events = res.data

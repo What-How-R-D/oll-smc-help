@@ -8,9 +8,14 @@ import moment from 'moment'
 import "react-big-calendar/lib/css/react-big-calendar.css";
 import withDragAndDrop from 'react-big-calendar/lib/addons/dragAndDrop';
 
+
+import {findUser} from "../api/user"
+
 export default class CreateEventRequest extends Component {
 
   constructor(props) {
+  
+
     super(props)
 
     // Setting up functions
@@ -32,10 +37,14 @@ export default class CreateEventRequest extends Component {
       events: [],
       defaultView: "week",
       defaultDate: "",
-      user_id: this.props.user._id,
+      user_id: "",
     }
   }
-
+  async componentDidMount() {
+    var user = findUser()
+    this.setState({user_id: user._id})
+  }
+  
   OptionList() {
     return this.state.rooms.map((option) => {
       return <option key={option._id} value={option._id}>{option.name}</option>
