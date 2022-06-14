@@ -82,7 +82,7 @@ function App() {
                   <Route exact path="/create-room" component={(props) => <CreateRoom {...props} />} />
                   <Route exact path="/edit-room/:id" component={(props) => <EditRoom {...props} />} />
 
-                  <Route exact path="/bm-hub" component={(props) => <BMhub {...props} />} />
+                  <Route exact path="/bm-hub" component={(props) => <BMhub {...props} user={user} />} />
 
                 </Switch>
               </div>

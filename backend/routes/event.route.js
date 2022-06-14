@@ -75,7 +75,17 @@ router.route('/find-user/:id').get((req, res) => {
 		}
 	  })
 	})
-  
+
+router.route('/find-room/:id').get((req, res) => {
+	eventSchema.find((error, data) => {
+		if (error) {
+			return next(error)
+		} else {
+			roomEvent=data.filter(item => item.room === req.params.id)
+			res.json(roomEvent)
+		}
+		})
+	})
   
 
 module.exports = router
