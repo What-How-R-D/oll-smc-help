@@ -34,7 +34,11 @@ export default class BMhub extends Component {
 		}
 
 		var pending_events = all_events.filter(event => event.status === "Pending")
+		pending_events.sort((a, b) => new Date(a.startTime).getTime() > new Date(b.startTime).getTime() ? 1 : -1 )
+		
 		var complete_events = all_events.filter(event => event.status !== "Pending")
+		complete_events.sort((a, b) => new Date(a.startTime).getTime() > new Date(b.startTime).getTime() ? 1 : -1 )
+		
 		this.setState({
 			pending_events: pending_events,
 			events: complete_events

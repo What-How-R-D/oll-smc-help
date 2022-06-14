@@ -37,7 +37,7 @@ export default class UserList extends Component {
     let html
     if (localStorage.getItem("token")) {
       html = <div className="table-wrapper">
-        <Table striped bordered hover>
+        <Table striped bordered>
           <thead>
             <tr>
               <th>Name</th>
