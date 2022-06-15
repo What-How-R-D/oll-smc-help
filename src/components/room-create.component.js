@@ -56,7 +56,8 @@ export default class CreateRoom extends Component {
       building: this.state.building,
       occupancy: this.state.occupancy
     };
-    axios.post('http://localhost:4000/room/create', roomObject)
+    var url = `http://${process.env.REACT_APP_NODE_IP}:4000/room/create`
+    axios.post(url, roomObject)
       .then(res => console.log(res.data));
 
     this.setState({ name: '', building: '', occupancy: '' })

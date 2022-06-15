@@ -2,8 +2,9 @@ import axios from "axios"
 
 export const findUser = async function()  {
 	var user = ""
+	var url = `http://${process.env.REACT_APP_NODE_IP}:4000/users/auth`
 	await axios.get(
-		"http://localhost:4000/users/auth", 
+		url, 
 		{
 			headers: {
 			Authorization: `Bearer ${localStorage.getItem("token")}`,

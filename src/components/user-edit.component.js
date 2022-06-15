@@ -41,7 +41,8 @@ export default class EditUser extends Component {
       this.setState({ loggedIn: true })
 		}
 
-    await axios.get('http://localhost:4000/users/find-id/' + this.props.match.params.id)
+    var url = `http://${process.env.REACT_APP_NODE_IP}:4000/users/find-id/`
+    await axios.get(url + this.props.match.params.id)
       .then(res => {
         this.setState({
           name: res.data.name,
@@ -56,8 +57,9 @@ export default class EditUser extends Component {
       .catch((error) => {
         console.log(error);
       })
-      
-    await axios.get('http://localhost:4000/room/find-all')
+    
+    url = `http://${process.env.REACT_APP_NODE_IP}:4000/room/find-all`
+    await axios.get(url)
       .then(res => {
         this.setState({
           rooms_available: res.data
@@ -134,7 +136,8 @@ export default class EditUser extends Component {
       rooms: this.state.rooms_responsible
     };
     
-    axios.put('http://localhost:4000/users/update/' + this.props.match.params.id, UserObject)
+    var url = `http://${process.env.REACT_APP_NODE_IP}:4000/users/update/`
+    axios.put(url + this.props.match.params.id, UserObject)
       .then((res) => {
         console.log('User successfully updated')
       }).catch((error) => {

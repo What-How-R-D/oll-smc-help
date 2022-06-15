@@ -27,7 +27,8 @@ export default class HVAChub extends Component {
 			}
 
 		var all_events = []
-		await axios.get('http://localhost:4000/event/find-all')
+		var url = `http://${process.env.REACT_APP_NODE_IP}:4000/event/find-all`
+		await axios.get(url)
 			.then(res => {
 				var new_events = res.data
 				all_events.push(...new_events)

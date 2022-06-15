@@ -10,9 +10,10 @@ export default class RoomTableRow extends Component {
   }
 
   deleteRoom() {
+    var url = `http://${process.env.REACT_APP_NODE_IP}:4000/room/delete/`
     axios
       .delete(
-        'http://localhost:4000/room/delete/' + this.props.obj._id,
+        url + this.props.obj._id,
       )
       .then((res) => {
         console.log('Room successfully deleted!')

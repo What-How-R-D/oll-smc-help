@@ -5,7 +5,6 @@ import axios from "axios"
 import Form from 'react-bootstrap/Form'
 import Button from 'react-bootstrap/Button';
 
-
 export default class Register extends Component {
 
 	constructor(props) {
@@ -34,7 +33,8 @@ export default class Register extends Component {
 	async onSubmit(e) {
 		e.preventDefault()
 		try {
-		  	var res = await axios.post('http://localhost:4000/users/login', this.state)
+			var url = `http://${process.env.REACT_APP_NODE_IP}:4000/users/login`
+		  	var res = await axios.post(url, this.state)
 
 			localStorage.setItem("token", res.data.token)
 			this.setState({ email: '', password: '' })

@@ -27,7 +27,8 @@ export default class EventList extends Component {
       this.setState({ loggedIn: true })
 		}
 
-    await axios.get('http://localhost:4000/event/find-user/' + user._id)
+    var url = `http://${process.env.REACT_APP_NODE_IP}:4000/event/find-user/`
+    await axios.get(url + user._id)
       .then(res => {
         var valid_events = res.data.filter(item => new Date(item.endTime).getTime() > new Date().getTime())
         valid_events.sort((a, b) => new Date(a.startTime).getTime() > new Date(b.startTime).getTime() ? 1 : -1 )

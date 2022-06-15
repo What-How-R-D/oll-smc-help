@@ -40,7 +40,8 @@ export default class Register extends Component {
 	async onSubmit(e) {
 		e.preventDefault()
 		try {
-			await axios.post('http://localhost:4000/users/register', this.state)
+			var url = `http://${process.env.REACT_APP_NODE_IP}:4000/users/register`
+			await axios.post(url, this.state)
 
 			this.setState({ name: '', email: '', password: '' })
 			this.props.history.push("/login")

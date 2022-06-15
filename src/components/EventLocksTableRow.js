@@ -15,7 +15,8 @@ export default class EventLocksTableRow extends Component {
     }
 
   async componentDidMount() {
-    await axios.get('http://localhost:4000/room/find-id/' + this.props.obj.room)
+    var url = `http://${process.env.REACT_APP_NODE_IP}:4000/room/find-id/`
+    await axios.get(url + this.props.obj.room)
       .then(res => {
         this.setState({
           room_name: res.data.name
@@ -27,7 +28,8 @@ export default class EventLocksTableRow extends Component {
   }
 
   setLocks() {
-    axios.put('http://localhost:4000/event/update/' + this.props.obj._id, {locksSet: true})
+    var url = `http://${process.env.REACT_APP_NODE_IP}:4000/event/update/`
+    axios.put(url + this.props.obj._id, {locksSet: true})
       .then((res) => {
         console.log('User successfully updated')
       }).catch((error) => {

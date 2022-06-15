@@ -10,9 +10,10 @@ export default class UserTableRow extends Component {
   }
 
   deleteUser() {
+    var url = `http://${process.env.REACT_APP_NODE_IP}:4000/users/delete/`
     axios
       .delete(
-        'http://localhost:4000/users/delete/' + this.props.obj._id,
+        url + this.props.obj._id,
       )
       .then((res) => {
         console.log('User successfully deleted!')

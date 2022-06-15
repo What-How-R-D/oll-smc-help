@@ -6,6 +6,10 @@ import './index.css'
 import App from './App'
 import * as serviceWorker from './serviceWorker'
 
+// require('dotenv').config()
+
+// console.log(process.env.NODE_IP)
+
 ReactDOM.render(
     <BrowserRouter>
       <App />

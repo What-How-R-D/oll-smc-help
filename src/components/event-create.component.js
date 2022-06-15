@@ -59,8 +59,8 @@ export default class CreateEventRequest extends Component {
     // let start, end;
     // start = moment(date).startOf('month')._d
     // end = moment(date).endOf('month')._d
-
-    axios.get('http://localhost:4000/event/find-all')
+    var url = `http://${process.env.REACT_APP_NODE_IP}:4000/event/find-all`
+    axios.get(url)
       .then(res => {
         
         var room_events = res.data.filter(item => item.room === this.state.room)
@@ -179,7 +179,8 @@ export default class CreateEventRequest extends Component {
   }
 
   async onChangeAttendance(e) {
-    await axios.get('http://localhost:4000/room/find-all')
+    var url = `http://${process.env.REACT_APP_NODE_IP}:4000/room/find-all`
+    await axios.get(url)
       .then(res => {
         this.setState({
           rooms: res.data.filter(item => item.occupancy > this.state.attendance)
@@ -221,7 +222,8 @@ export default class CreateEventRequest extends Component {
       lockStartTime: this.state.lockStartTime,
       lockEndTime: this.state.lockEndTime
     };
-    await axios.post('http://localhost:4000/event/create', eventRequestObject)
+    var url = `http://${process.env.REACT_APP_NODE_IP}:4000/event/create`
+    await axios.post(url, eventRequestObject)
       .then(res => console.log(res.data));
 
     window.confirm('Thank you for your event request')

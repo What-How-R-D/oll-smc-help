@@ -28,14 +28,17 @@ import HVAChub from './components/hvac-hub.component'
 
 import LocksHub from './components/locks-hub.component'
 
+require('dotenv').config()
+
 function App() {
   const isLoggedIn = localStorage.getItem("token")
   
   const [user, setUser] = useState(null)
 
   const getUser = async () => {
+    var url = `http://${process.env.REACT_APP_NODE_IP}:4000/users/auth`
     const res = await axios.get(
-      "http://localhost:4000/users/auth", 
+      url, 
       {
       headers: {
         Authorization: `Bearer ${localStorage.getItem("token")}`,
@@ -70,7 +73,7 @@ function App() {
             </Container>
           </Navbar>
         </header>
-
+        
         <Container>
           <Row>
             <Col md={12}>

@@ -25,7 +25,8 @@ export default class RoomList extends Component {
       this.setState({ loggedIn: true })
 		}
 
-    axios.get('http://localhost:4000/room/find-all')
+    var url = `http://${process.env.REACT_APP_NODE_IP}:4000/room/find-all`
+    axios.get(url)
       .then(res => {
         this.setState({
           users: res.data

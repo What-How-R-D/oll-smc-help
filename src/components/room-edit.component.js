@@ -34,7 +34,8 @@ export default class EditRoom extends Component {
       this.setState({ loggedIn: true })
 		}
 
-    axios.get('http://localhost:4000/room/find-id/' + this.props.match.params.id)
+    var url = `http://${process.env.REACT_APP_NODE_IP}:4000/room/find-id/`
+    axios.get(url + this.props.match.params.id)
       .then(res => {
         this.setState({
           name: res.data.name,
@@ -62,7 +63,8 @@ export default class EditRoom extends Component {
     console.log(UserObject)
     console.log('done')
     
-    axios.put('http://localhost:4000/room/update/' + this.props.match.params.id, UserObject)
+    var url = `http://${process.env.REACT_APP_NODE_IP}:4000/room/update/`
+    axios.put(url + this.props.match.params.id, UserObject)
       .then((res) => {
         console.log('User successfully updated')
       }).catch((error) => {

@@ -29,7 +29,8 @@ export default class BMhub extends Component {
 		var all_events = []
 		for (let room in user.rooms) {
 			var room_id = user.rooms[room]
-			await axios.get('http://localhost:4000/event/find-room/' + room_id)
+			var url = `http://${process.env.REACT_APP_NODE_IP}:4000/event/find-room/`
+			await axios.get(url + room_id)
 			.then(res => {
 				var new_events = res.data
 				all_events.push(...new_events)

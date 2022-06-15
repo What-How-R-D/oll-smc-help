@@ -15,7 +15,8 @@ export default class RoomTableRow extends Component {
     }
 
   async componentDidMount() {
-    await axios.get('http://localhost:4000/room/find-id/' + this.props.obj.room)
+    var url = `http://${process.env.REACT_APP_NODE_IP}:4000/room/find-id/`
+    await axios.get(url + this.props.obj.room)
       .then(res => {
         this.setState({
           room_name: res.data.name
