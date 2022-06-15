@@ -30,7 +30,7 @@ export default class HVAChub extends Component {
 		var url = `http://${process.env.REACT_APP_NODE_IP}:4000/event/find-all`
 		await axios.get(url)
 			.then(res => {
-				var new_events = res.data
+				var new_events = res.data.filter(item => ["Approved", "Canceled"].includes(item.status))
 				all_events.push(...new_events)
 			})
 				.catch((error) => {
@@ -66,7 +66,7 @@ export default class HVAChub extends Component {
 	  let html
 	  if (this.state.loggedIn) {
 		html = <div className="table-wrapper">
-			<h1> Pending Requests </h1>
+			<h1> Pending HVAC Requests </h1>
 		  <Table striped bordered hover>
 			<thead>
 			  <tr>
@@ -80,7 +80,7 @@ export default class HVAChub extends Component {
 			  {this.DataTable("pending")}
 			</tbody>
 		  </Table>
-			<h1> Completed Requests </h1>
+			<h1> Completed HVAC Requests </h1>
 		 	<Table striped bordered hover>
 		 	<thead>
 		 		<tr>

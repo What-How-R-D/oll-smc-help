@@ -27,6 +27,7 @@
   },
   "scripts": {
     "start": "concurrently \"react-scripts start\" \"cd backend && nodemon server\"",
+    "start_local": "concurrently \"react-scripts --openssl-legacy-provider start\" \"cd backend && nodemon server\"",
     "front_start": "react-scripts start",
     "build": "react-scripts build",
     "test": "react-scripts test",
