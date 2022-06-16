@@ -38,13 +38,28 @@ export default class HVACTableRow extends Component {
     window.location.reload(true);
   }
 
+  removeHVAC() {
+    var url = `http://${process.env.REACT_APP_NODE_IP}:4000/event/update/`
+    axios.put(url + this.props.obj._id, {hvacSet: false})
+      .then((res) => {
+        console.log('User successfully updated')
+      }).catch((error) => {
+        console.log(error)
+      })
+    window.location.reload(true);
+  }
 
   buttons() {
-    if (!this.props.obj.hvacSet) {
-      return  <td>
-        <Button type="submit" size="sm" onClick={() => { if (window.confirm('Thank you for setting up HVAC')) this.setHVAC() } }> Completed </Button>
-      </td>
-    }
+    if (this.props.obj.status === "Canceled" && this.props.obj.hvacSet) {
+      return <td>
+        <Button type="submit" size="sm" onClick={() => { if (window.confirm('Thank you for setting up HVAC')) this.removeHVAC() } }> Canceled </Button>
+        </td>
+    } else if (this.props.obj.status === "Approved" && !this.props.obj.hvacSet) {
+      return <td>
+        <Button type="submit" size="sm" onClick={() => { if (window.confirm('Thank you for setting up HVAC')) this.setHVAC() } }> Scheduled </Button>
+        </td>
+    } 
+    
   }
 
   render() {
@@ -54,7 +69,7 @@ export default class HVACTableRow extends Component {
         <td>{this.state.room_name}</td>
         <td>{format(new Date(this.props.obj.startTime), "M/d/yyyy H:mm a")}</td>
         <td>{format(new Date(this.props.obj.endTime), "M/d/yyyy H:mm a")}</td>
-          {this.buttons()}
+        {this.buttons()}
       </tr>
     )
   }

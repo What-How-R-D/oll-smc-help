@@ -38,11 +38,25 @@ export default class EventLocksTableRow extends Component {
     window.location.reload(true);
   }
 
+  removeLocks() {
+    var url = `http://${process.env.REACT_APP_NODE_IP}:4000/event/update/`
+    axios.put(url + this.props.obj._id, {locksSet: false})
+      .then((res) => {
+        console.log('User successfully updated')
+      }).catch((error) => {
+        console.log(error)
+      })
+    window.location.reload(true);
+  }
 
   buttons() {
-    if (!this.props.obj.locksSet) {
+    if (this.props.obj.status === "Canceled" && this.props.obj.locksSet) {
       return  <td>
-        <Button type="submit" size="sm" onClick={() => { if (window.confirm('Thank you for setting locks')) this.setLocks() } }> Completed </Button>
+        <Button type="submit" size="sm" onClick={() => { if (window.confirm('Thank you for setting locks')) this.removeLocks() } }> Canceled </Button>
+      </td>
+    } else if (this.props.obj.status === "Approved" && !this.props.obj.locksSet) {
+      return  <td>
+        <Button type="submit" size="sm" onClick={() => { if (window.confirm('Thank you for setting locks')) this.setLocks() } }> Scheduled </Button>
       </td>
     }
   }

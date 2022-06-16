@@ -19,7 +19,6 @@ const eventSchema = new mongoose.Schema(
 			enum: ["Pending", "Approved", "Rejected", "Canceled"],
 			default: "Pending", 
 			},
-		canceled: {type:Boolean, default:false},
 		paid: {type:Boolean, default:false},
 		locksSet: {type:Boolean, default:false},
 		hvacSet: {type:Boolean, default:false},

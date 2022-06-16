@@ -63,7 +63,7 @@ export default class CreateEventRequest extends Component {
     axios.get(url)
       .then(res => {
         
-        var room_events = res.data.filter(item => item.room === this.state.room)
+        var room_events = res.data.filter(item => item.status !== "Canceled").filter(item => item.room === this.state.room)
 
         var events = room_events.map((
           { startTime, endTime, name} ) => ({
