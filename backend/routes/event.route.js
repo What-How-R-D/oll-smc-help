@@ -4,6 +4,7 @@ let mongoose = require('mongoose'),
 
 let eventSchema = require('../models/event')
 
+const sendNotification = require("../middleware/mailer")
 
 router.route('/create').post((req, res, next) => {
 	eventSchema.create(req.body, (error, data) => {
@@ -33,7 +34,50 @@ router.route('/update/:id').put((req, res, next) => {
 	)
   })
 
-router.route('/delete/:id').delete((req, res, next) => {
+  router.route('/approve/:id').put((req, res, next) => {
+	eventSchema.findByIdAndUpdate(
+		req.params.id,
+		{
+		  $set: req.body,
+		},
+		(error, data) => {
+		  if (error) {
+			return next(error)
+			console.log(error)
+		  } else {
+			console.log(data)
+			var subject=`${data.name} building request has been approved`
+			var body=`Your event ${data.name} building request has been approved.  It is scheduled from ${data.startTime} to ${data.endTime}.  The doors will unlock at ${data.lockStartTime} and the doors will lock at ${data.lockEndTime}.`
+			sendNotification(data.email, subject, body)
+			res.json(data)
+		  }
+		},
+	  )
+	})
+
+router.route('/reject/:id').put((req, res, next) => {
+		eventSchema.findByIdAndUpdate(
+			req.params.id,
+			{
+			  $set: req.body,
+			},
+			(error, data) => {
+
+			  if (error) {
+				return next(error)
+				console.log(error)
+			  } else {
+				console.log(data)
+				var subject=`${data.name} building request has been rejected`
+				var body=`Your event ${data.name} building request has been reject.  For more information please contact the parish office.`
+				sendNotification(data.email, subject, body)
+				res.json(data)
+			  }
+			},
+		  )
+		})
+
+router.route('/delete/:id').delete((req, res) => {
 	eventSchema.findByIdAndRemove(req.params.id, (error, data) => {
 	  if (error) {
 		return next(error)

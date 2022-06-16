@@ -28,7 +28,7 @@ export default class RoomTableRow extends Component {
   }
 
   approveRequest() {
-    var url = `http://${process.env.REACT_APP_NODE_IP}:4000/event/update/`
+    var url = `http://${process.env.REACT_APP_NODE_IP}:4000/event/approve/`
     axios.put(url + this.props.obj._id, {status: "Approved"})
       .then((res) => {
         console.log('User successfully updated')
@@ -39,7 +39,7 @@ export default class RoomTableRow extends Component {
   }
 
   rejectRequest() {
-    var url = `http://${process.env.REACT_APP_NODE_IP}:4000/event/update/`
+    var url = `http://${process.env.REACT_APP_NODE_IP}:4000/event/reject/`
     axios.put(url + this.props.obj._id, {status: "Rejected"})
     .then((res) => {
       console.log('User successfully updated')

@@ -42,11 +42,12 @@ export default class CreateEventRequest extends Component {
       defaultView: "week",
       defaultDate: "",
       user_id: "",
+      user_email: "",
     }
   }
   async componentDidMount() {
     var user = await findUser()
-    this.setState({user_id: user._id})
+    this.setState({user_id: user._id, user_email: user.email})
   }
   
   OptionList() {
@@ -220,7 +221,8 @@ export default class CreateEventRequest extends Component {
       startTime: this.state.startTime,
       endTime: this.state.endTime,
       lockStartTime: this.state.lockStartTime,
-      lockEndTime: this.state.lockEndTime
+      lockEndTime: this.state.lockEndTime,
+      email: this.state.user_email,
     };
     var url = `http://${process.env.REACT_APP_NODE_IP}:4000/event/create`
     await axios.post(url, eventRequestObject)
