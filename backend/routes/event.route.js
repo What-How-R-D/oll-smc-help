@@ -62,7 +62,6 @@ router.route('/reject/:id').put((req, res, next) => {
 			  $set: req.body,
 			},
 			(error, data) => {
-
 			  if (error) {
 				return next(error)
 				console.log(error)
