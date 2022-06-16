@@ -14,6 +14,7 @@ export default class EditRoom extends Component {
     this.onChangeName = this.onChangeName.bind(this);
     this.onChangeBuilding = this.onChangeBuilding.bind(this);
     this.onChangeOccupancy = this.onChangeOccupancy.bind(this);
+    this.onChangeCalendarID = this.onChangeCalendarID.bind(this);
     this.onSubmit = this.onSubmit.bind(this);
 
     // State
@@ -21,6 +22,7 @@ export default class EditRoom extends Component {
       name: '',
       building: '',
       occupancy: '',
+      calendar_id: '',
       loggedIn: false,
     }
   }
@@ -51,22 +53,22 @@ export default class EditRoom extends Component {
   onChangeName(e) { this.setState({ name: e.target.value }) }
   onChangeBuilding(e) { this.setState({ building: e.target.value }) }
   onChangeOccupancy(e) { this.setState({ occupancy: e.target.value }) }
+  onChangeCalendarID(e) { this.setState({ calendar_id: e.target.value }) }
 
   onSubmit(e) {
     e.preventDefault()
     
-    const UserObject = {
+    const RoomObject = {
       name: this.state.name,
       building: this.state.building,
       occupancy: this.state.occupancy,
+      calendar_id: this.state.calendar_id,
     };
-    console.log(UserObject)
-    console.log('done')
     
     var url = `http://${process.env.REACT_APP_NODE_IP}:4000/room/update/`
-    axios.put(url + this.props.match.params.id, UserObject)
+    axios.put(url + this.props.match.params.id, RoomObject)
       .then((res) => {
-        console.log('User successfully updated')
+        console.log('Room successfully updated')
       }).catch((error) => {
         console.log(error)
       })
@@ -95,6 +97,10 @@ export default class EditRoom extends Component {
             <Form.Control type="text" value={this.state.occupancy} onChange={this.onChangeOccupancy} />
           </Form.Group>
 
+          <Form.Group controlId="CalendarID">
+            <Form.Label>Google Calendar ID</Form.Label>
+            <Form.Control type="text" value={this.state.calendar_id} onChange={this.onChangeCalendarID} />
+          </Form.Group>
 
           <Button variant="danger" size="lg" block="block" type="submit">
             Update Room
