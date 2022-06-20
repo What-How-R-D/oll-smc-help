@@ -5,6 +5,7 @@ const roomSchema = new mongoose.Schema(
     name: { type: String },
 	building: { type: String },
 	occupancy: { type: Number },
+	calendar_id: { type: String },
 	},
  	{ timestamps: true }
 )
