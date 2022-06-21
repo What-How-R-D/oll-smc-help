@@ -39,8 +39,8 @@ export default class RoomTableRow extends Component {
   }
 
   buttons() {
-      if (this.props.obj.status !== "Canceled") {
-      return <Button type="submit" size="sm" variant="danger" onClick={() => { if (window.confirm('Are you sure you want to cancel this event?')) this.cancelEvent() } }> Request Cancelation </Button>
+      if ( !["Canceled", "Rejected"].includes(this.props.obj.status) ) {
+      return <td> <Button type="submit" size="sm" variant="danger" onClick={() => { if (window.confirm('Are you sure you want to cancel this event?')) this.cancelEvent() } }> Request Cancelation </Button> </td>
     }
   }
 
@@ -52,7 +52,7 @@ export default class RoomTableRow extends Component {
         <td>{format(new Date(this.props.obj.startTime), "M/d/yyyy H:mm a")}</td>
         <td>{format(new Date(this.props.obj.endTime), "M/d/yyyy H:mm a")}</td>
         <td>{this.props.obj.status}</td>
-        <td>{this.buttons()}</td>
+        {this.buttons()}
       </tr>
     )
   }
