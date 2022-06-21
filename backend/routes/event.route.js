@@ -39,18 +39,22 @@ router.route('/create').post(async (req, res, next) => {
 	  if (error) {
 		return next(error)
 	  } else {
-		console.log(data)
 		res.json(data)
 	  }
 	})
   })
 
-router.route('/update/:id').put((req, res, next) => {
+router.route('/update/:id').put(async (req, res, next) => {
+	if (req.body.status === "Approved") {
+
+	
+	} else if (req.body.status === "Canceled") {
+		console.log("event canceled")
+	}
+	
 	eventSchema.findByIdAndUpdate(
 	  req.params.id,
-	  {
-		$set: req.body,
-	  },
+	  { $set: req.body, },
 	  (error, data) => {
 		if (error) {
 		  return next(error)
@@ -63,53 +67,49 @@ router.route('/update/:id').put((req, res, next) => {
   })
 
 router.route('/approve/:id').put(async (req, res, next) => {
-	const room_data = await findRoomData(req.body.room)
-	
-	var event = {
-		'summary': `${room_data.name}: ${req.body.name}`,
-		'start': {
-		  'dateTime': req.body.startTime,
-		  'timeZone': 'America/Chicago',
-		},
-		'end': {
-		  'dateTime': req.body.endTime,
-		  'timeZone': 'America/Chicago',
-		},
-	  };
-	
-	calendar.events.update({
-		auth: calendarJWT(),
-		calendarId: room_data.calendar_id,
-		eventId: req.body.event_gcal_id,
-		resource: event,
-	  }, function(err, event) {
-		if (err) {
-		  console.log('There was an error contacting the Calendar service: ' + err);
-		  return;
-		}
-		console.log('Event created: %s', event.data.id);
-		req.body.calendar_id = event.data.id
-	  });
+	console.log(req.params)
 
-
-	eventSchema.findByIdAndUpdate(
+	const event_data = await eventSchema.findByIdAndUpdate(
 		req.params.id,
-		{
-		  $set: req.body,
-		},
+		{ $set: req.body, },
 		(error, data) => {
 		  if (error) {
 			return next(error)
 			console.log(error)
 		  } else {
-			console.log(data)
-			var subject=`${data.name} building request has been approved`
-			var body=`Your event ${data.name} building request has been approved.  It is scheduled from ${data.startTime} to ${data.endTime}.  The doors will unlock at ${data.lockStartTime} and the doors will lock at ${data.lockEndTime}.`
-			sendNotification(data.email, subject, body)
 			res.json(data)
+			return data
 		  }
 		},
-	  )
+	  ).clone()
+	console.log('res')
+	console.log(event_data)
+
+	var subject=`${event_data.name} building request has been approved`
+	var body=`Your event ${event_data.name} building request has been approved.  It is scheduled from ${event_data.startTime} to ${event_data.endTime}.  The doors will unlock at ${event_data.lockStartTime} and the doors will lock at ${event_data.lockEndTime}.`
+	sendNotification(event_data.email, subject, body)
+
+	const room_data = await findRoomData(event_data.room)
+	var event = {
+		'summary': `${room_data.name}: ${event_data.name}`,
+		'start': {
+			'dateTime': event_data.startTime,
+			'timeZone': 'America/Chicago',
+		},
+		'end': {
+			'dateTime': event_data.endTime,
+			'timeZone': 'America/Chicago',
+		},
+		};
+
+	await calendar.events.update({
+		auth: calendarJWT(),
+		calendarId: room_data.calendar_id,
+		eventId: event_data.event_gcal_id,
+		resource: event,
+		}
+	).then((event) => {console.log("Event approved")})
+	.catch((err) => { console.log("Error Creating Calender Event:", err); });
 	})
 
 router.route('/reject/:id').put((req, res, next) => {
