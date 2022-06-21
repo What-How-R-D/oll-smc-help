@@ -73,7 +73,7 @@ export default class Register extends Component {
   
 		  <Form.Group controlId="Password">
 			<Form.Label>Password</Form.Label>
-			<Form.Control type="text" value={this.state.password} onChange={this.onChangePassword} />
+			<Form.Control type="password" value={this.state.password} onChange={this.onChangePassword} />
 		  </Form.Group>
   
 		  <Button variant="danger" size="lg" block="block" type="submit" className="mt-4">
