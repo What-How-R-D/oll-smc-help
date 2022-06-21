@@ -43,6 +43,7 @@ export default class EditRoom extends Component {
           name: res.data.name,
           building: res.data.building,
           occupancy: res.data.occupancy,
+          calendar_id: res.data.calendar_id,
         });
       })
       .catch((error) => {
