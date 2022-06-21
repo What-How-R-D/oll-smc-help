@@ -45,25 +45,31 @@ router.route('/create').post(async (req, res, next) => {
   })
 
 router.route('/update/:id').put(async (req, res, next) => {
-	if (req.body.status === "Approved") {
-
-	
-	} else if (req.body.status === "Canceled") {
-		console.log("event canceled")
-	}
-	
-	eventSchema.findByIdAndUpdate(
+	const event_data = await eventSchema.findByIdAndUpdate(
 	  req.params.id,
 	  { $set: req.body, },
 	  (error, data) => {
 		if (error) {
 		  return next(error)
-		  console.log(error)
 		} else {
 		  res.json(data)
+		  return data
 		}
 	  },
-	)
+	).clone()
+
+	if (req.body.status === "Canceled") {
+		const room_data = await findRoomData(event_data.room)
+
+		await calendar.events.delete({
+			auth: calendarJWT(),
+			calendarId: room_data.calendar_id,
+			eventId: event_data.event_gcal_id,
+		  }
+		).then((event) => { console.log("Deleted from Google calendar") })
+		.catch((err) => { console.log("Error Creating Calender Event:", err); });
+	}
+
   })
 
 router.route('/approve/:id').put(async (req, res, next) => {
@@ -112,26 +118,31 @@ router.route('/approve/:id').put(async (req, res, next) => {
 	.catch((err) => { console.log("Error Creating Calender Event:", err); });
 	})
 
-router.route('/reject/:id').put((req, res, next) => {
-		eventSchema.findByIdAndUpdate(
+router.route('/reject/:id').put(async (req, res, next) => {
+		const event_data = await eventSchema.findByIdAndUpdate(
 			req.params.id,
-			{
-			  $set: req.body,
-			},
+			{ $set: req.body, },
 			(error, data) => {
-			  if (error) {
-				return next(error)
-				console.log(error)
-			  } else {
-				console.log(data)
-				var subject=`${data.name} building request has been rejected`
-				var body=`Your event ${data.name} building request has been reject.  For more information please contact the parish office.`
-				sendNotification(data.email, subject, body)
-				res.json(data)
-			  }
+			  if (error) { return next(error)
+			  } else { res.json(data) }
 			},
-		  )
-		})
+		  ).clone()
+
+		var subject=`${event_data.name} building request has been rejected`
+		var body=`Your event ${event_data.name} building request has been reject.  For more information please contact the parish office.`
+		sendNotification(event_data.email, subject, body)
+
+		const room_data = await findRoomData(event_data.room)
+
+		await calendar.events.delete({
+			auth: calendarJWT(),
+			calendarId: room_data.calendar_id,
+			eventId: event_data.event_gcal_id,
+			}
+		).then((event) => { console.log("Deleted from Google calendar") })
+		.catch((err) => { console.log("Error Creating Calender Event:", err); });
+
+	})
 
 router.route('/delete/:id').delete((req, res) => {
 	eventSchema.findByIdAndRemove(req.params.id, (error, data) => {
