@@ -318,6 +318,9 @@ export default class CreateEventRequest extends Component {
           <DateTimePicker
             onChange={this.onChangeLockStartTime}
             value={this.state.lockStartTime}
+            disableClock={true}
+            calendarIcon={null}
+            clearIcon={null}
           />
         </div>
 
@@ -326,6 +329,9 @@ export default class CreateEventRequest extends Component {
           <DateTimePicker
             onChange={this.onChangeLockEndTime}
             value={this.state.lockEndTime}
+            disableClock={true}
+            calendarIcon={null}
+            clearIcon={null}
           />
         </div>
 
