@@ -11,7 +11,6 @@ const sendNotification = require("../middleware/mailer")
 const calendarJWT = require("../middleware/calendar")
 const findRoomData = require("../middleware/find_room")
 
-
 router.route('/create').post(async (req, res, next) => {
 	const room_data = await findRoomData(req.body.room)
 	
@@ -26,20 +25,15 @@ router.route('/create').post(async (req, res, next) => {
 		  'timeZone': 'America/Chicago',
 		},
 	  };
-	
-	calendar.events.insert({
+
+	const gcal_id = await calendar.events.insert({
 		auth: calendarJWT(),
 		calendarId: room_data.calendar_id,
 		resource: event,
-	  }, function(err, event) {
-		if (err) {
-		  console.log('There was an error contacting the Calendar service: ' + err);
-		  return;
-		}
-		console.log('Event created: %s', event.data.id);
-		req.body.calendar_id = event.data.id
-	  });
-	
+	  }
+	).then((event) => {return event.data.id})
+	.catch((err) => { console.log("Error Creating Calender Event:", err); });
+	req.body.event_gcal_id = gcal_id
 	
 	eventSchema.create(req.body, (error, data) => {
 	  if (error) {
@@ -68,7 +62,36 @@ router.route('/update/:id').put((req, res, next) => {
 	)
   })
 
-  router.route('/approve/:id').put((req, res, next) => {
+router.route('/approve/:id').put(async (req, res, next) => {
+	const room_data = await findRoomData(req.body.room)
+	
+	var event = {
+		'summary': `${room_data.name}: ${req.body.name}`,
+		'start': {
+		  'dateTime': req.body.startTime,
+		  'timeZone': 'America/Chicago',
+		},
+		'end': {
+		  'dateTime': req.body.endTime,
+		  'timeZone': 'America/Chicago',
+		},
+	  };
+	
+	calendar.events.update({
+		auth: calendarJWT(),
+		calendarId: room_data.calendar_id,
+		eventId: req.body.event_gcal_id,
+		resource: event,
+	  }, function(err, event) {
+		if (err) {
+		  console.log('There was an error contacting the Calendar service: ' + err);
+		  return;
+		}
+		console.log('Event created: %s', event.data.id);
+		req.body.calendar_id = event.data.id
+	  });
+
+
 	eventSchema.findByIdAndUpdate(
 		req.params.id,
 		{
