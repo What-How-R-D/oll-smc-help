@@ -12,6 +12,7 @@ const sendNotification = require("../backend/middleware/mailer")
 const userRoute = require('../backend/routes/user.route')
 const roomRoute = require('../backend/routes/room.route')
 const eventRoute = require('../backend/routes/event.route')
+const blackoutRoute = require('../backend/routes/blackout.route')
 
 // Connecting mongoDB Database
 mongoose
@@ -34,6 +35,7 @@ app.use(cors());
 app.use('/users', userRoute)
 app.use('/room', roomRoute)
 app.use('/event', eventRoute)
+app.use('/blackout', blackoutRoute)
 
 // PORT
 const port = process.env.PORT || 4000;

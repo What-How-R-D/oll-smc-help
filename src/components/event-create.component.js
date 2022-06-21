@@ -240,7 +240,6 @@ export default class CreateEventRequest extends Component {
 
   onChangeLockStartTime(e) {
     this.setState({ lockStartTime: e })
-    
   }
 
   onChangeLockEndTime(e) {
