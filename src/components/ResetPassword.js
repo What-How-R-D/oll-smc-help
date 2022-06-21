@@ -32,45 +32,34 @@ export default class Register extends Component {
 
 	async onSubmit(e) {
 		e.preventDefault()
+		try {
+			var url = `http://${process.env.REACT_APP_NODE_IP}:4000/users/resetpwd/`
+		  	await axios.get(url + this.state.email)
 
-		var url = `http://${process.env.REACT_APP_NODE_IP}:4000/users/login`
-		// var res = await axios.post(url, this.state)
-		axios.post(url, this.state)
-			.then((res) => {
-				localStorage.setItem("token", res.data.token)
-				this.props.history.push("/")
-				window.location.reload(true)
-			})
-			.catch((err) => {
-				window.confirm('Error logging in password. Please try again or reset password.')
-				this.setState({ email: '', password: '' })
-				this.props.history.push("/login")
-				window.location.reload(true)
-			})
-
+			window.confirm('Thank you for requesting a password reset.  An email will be sent shortly to reset your password')
+			this.props.history.push("/")
+			window.location.reload(true)
+		} catch (err) {
+			console.log(err)
+		}
 	}
 
 	render() {
 	  return (
 	  <div className="form-wrapper">
-    <h4>Log into your account</h4>
+    <h4>Request password reset</h4>
 		<Form onSubmit={this.onSubmit}>
 		  <Form.Group controlId="Email">
 			<Form.Label>Email</Form.Label>
 			<Form.Control type="email" value={this.state.email} onChange={this.onChangeEmail} required />
 		  </Form.Group>
   
-		  <Form.Group controlId="Password">
-			<Form.Label>Password</Form.Label>
-			<Form.Control type="text" value={this.state.password} onChange={this.onChangePassword} required />
-		  </Form.Group>
-  
 		  <Button variant="danger" size="lg" block="block" type="submit" className="mt-4">
-			Log in
+			Reset Password
 		  </Button>
 		  </Form>
 		<p>
-		Forgot password? <Link to="/resetpwd">Reset Password</Link>
+		Login <Link to="/login">Login</Link>
 		</p>
 		<p>
 		Not a user? <Link to="/register">Register</Link>

@@ -11,6 +11,8 @@ import axios from "axios"
 import { BrowserRouter as Router, Switch, Route, Link } from 'react-router-dom'
 
 import Register from "./components/Register"
+import ResetPassword from "./components/ResetPassword"
+import NewPassword from "./components/NewPassword"
 import Login from "./components/Login"
 import Logout from "./components/Logout"
 import Home from "./components/Home"
@@ -82,6 +84,8 @@ function App() {
                   <Route exact path="/login" component={Login} />
                   <Route exact path="/logout" component={Logout} />
                   <Route exact path="/register" component={Register} />
+                  <Route exact path="/resetpwd" component={ResetPassword} />
+                  <Route exact path="/newpassword/:id/:token" component={NewPassword} />
                   <Route exact path="/" component={(props) => <Home {...props} isLoggedIn={isLoggedIn} />} />
 
                   <Route exact path="/user-list" component={(props) => <UserList {...props} />} />

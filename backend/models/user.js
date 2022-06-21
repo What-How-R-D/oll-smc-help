@@ -14,6 +14,7 @@ const userSchema = new mongoose.Schema(
 	rooms: [{type: String}],
 	hvac: {type: Boolean, default: false,},
 	locks: {type: Boolean, default: false,},
+	reset_token: { type: String }
 	},
  	{ timestamps: true }
 )

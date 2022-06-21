@@ -44,8 +44,8 @@ export default class Register extends Component {
 			await axios.post(url, this.state)
 
 			this.setState({ name: '', email: '', password: '' })
+			window.confirm('Thank you please login to your account')
 			this.props.history.push("/login")
-
 		} catch (err) {
 			console.log(err)
 		}
