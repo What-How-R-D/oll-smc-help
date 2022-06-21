@@ -192,17 +192,17 @@ export default class CreateEventRequest extends Component {
       return <div>
         <Form.Group controlId="Name">
           <Form.Label>Requestor Name</Form.Label>
-          <Form.Control type="text" value={this.state.requestorName} onChange={this.onChangeRequestorName} />
+          <Form.Control type="text" value={this.state.requestorName} onChange={this.onChangeRequestorName} required />
         </Form.Group>
 
         <Form.Group controlId="Attendance">
           <Form.Label>Requestor Email</Form.Label>
-          <Form.Control type="text" defaultValue={this.state.requestorEmail} onChange={this.onChangeRequestorEmail} />
+          <Form.Control type="text" defaultValue={this.state.requestorEmail} onChange={this.onChangeRequestorEmail} required />
         </Form.Group>
 
         <Form.Group controlId="Attendance">
           <Form.Label>Requestor Phone Number</Form.Label>
-          <Form.Control type="text" defaultValue={this.state.requestorPhone} onChange={this.onChangeRequestorPhone} />
+          <Form.Control type="text" defaultValue={this.state.requestorPhone} onChange={this.onChangeRequestorPhone} required />
         </Form.Group>
       </div>
     }
@@ -294,12 +294,12 @@ export default class CreateEventRequest extends Component {
 
         <Form.Group controlId="Name">
           <Form.Label>Event Name</Form.Label>
-          <Form.Control type="text" value={this.state.name} onChange={this.onChangeName} />
+          <Form.Control type="text" value={this.state.name} onChange={this.onChangeName} required />
         </Form.Group>
 
         <Form.Group controlId="Attendance">
           <Form.Label>Attendance</Form.Label>
-          <Form.Control type="text" defaultValue={this.state.attendance} onChange={this.onChangeAttendance} />
+          <Form.Control type="text" defaultValue={this.state.attendance} onChange={this.onChangeAttendance} required />
         </Form.Group>
 
         <Form.Group controlId="Room">
