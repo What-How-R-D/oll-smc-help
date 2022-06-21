@@ -68,45 +68,62 @@ export default class CreateEventRequest extends Component {
     })
   }
 
-  GetCalendarEvents(date, view) {
+  async GetCalendarEvents(date, view) {
     // let start, end;
     // start = moment(date).startOf('month')._d
     // end = moment(date).endOf('month')._d
+    
     var url = `http://${process.env.REACT_APP_NODE_IP}:4000/event/find-all`
-    axios.get(url)
+    var events = await axios.get(url)
       .then(res => {
-        
         var room_events = res.data.filter(item => item.status !== "Canceled").filter(item => item.room === this.state.room)
 
-        var events = room_events.map((
-          { startTime, endTime, name} ) => ({
+        return room_events.map(
+          ({ startTime, endTime, name}) => ({
             start: new Date(startTime),
             end: new Date(endTime),
             title: "Reserved",
             description: '',
             allDay: false,
-          }))
-
-        if (this.state.startTime) {
-          events.push({
-            id: 1,
-            start: this.state.startTime,
-            end: this.state.endTime,
-            title: this.state.name,
-            description: '',
-            allDay: false,
-            color: '#009788'
-          })
-        }
-        
-        this.setState({
-          events: events
-        });
+          })) 
       })
       .catch((error) => {
         console.log(error);
-      })
+      });
 
+    url = `http://${process.env.REACT_APP_NODE_IP}:4000/blackout/find-all`
+    var blackouts = await axios.get(url)
+        .then(res => {
+          var room_blackouts = res.data.filter(item => item.rooms.includes(this.state.room))
+          
+          return room_blackouts.map(
+            ({ startTime, endTime, name}) => ({
+              start: new Date(startTime),
+              end: new Date(endTime),
+              title: "Reserved",
+              description: '',
+              allDay: false,
+            })) 
+        })
+        .catch((error) => {
+          console.log(error);
+        });
+
+    if (this.state.startTime) {
+      events.push({
+        id: 1,
+        start: this.state.startTime,
+        end: this.state.endTime,
+        title: this.state.name,
+        description: '',
+        allDay: false,
+        color: '#009788'
+      })
+    }
+
+    this.setState({
+      events: [...events, ...blackouts]
+    });
 
   }
 
@@ -163,7 +180,7 @@ export default class CreateEventRequest extends Component {
   }
 
   Scheduler() {
-    const localizer = momentLocalizer(moment)
+    const localizer = momentLocalizer(moment);
     const DnDCalendar = withDragAndDrop(Calendar);
 
     return <DnDCalendar
