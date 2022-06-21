@@ -24,6 +24,9 @@ export default class CreateEventRequest extends Component {
     this.onChangeRoom = this.onChangeRoom.bind(this);
     this.onChangeLockStartTime = this.onChangeLockStartTime.bind(this);
     this.onChangeLockEndTime = this.onChangeLockEndTime.bind(this);
+    this.onChangeRequestorName = this.onChangeRequestorName.bind(this);
+    this.onChangeRequestorEmail = this.onChangeRequestorEmail.bind(this);
+    this.onChangeRequestorPhone = this.onChangeRequestorPhone.bind(this);
     this.onSubmit = this.onSubmit.bind(this);
 
     // Setting up state
@@ -37,17 +40,26 @@ export default class CreateEventRequest extends Component {
       endTime: '',
       lockStartTime: '',
       lockEndTime: '',
+      requestorName: '',
+      requestorEmail: '',
+      requestorPhone: '',
       //
       events: [],
       defaultView: "week",
       defaultDate: "",
       user_id: "",
       user_email: "",
+      loggedIn: false,
     }
   }
   async componentDidMount() {
     var user = await findUser()
-    this.setState({user_id: user._id, user_email: user.email})
+    
+    if (user['error'] === "Unauthorized") {
+      this.setState({ loggedIn: false })
+		} else {
+      this.setState({ loggedIn: true, user_id: user._id, user_email: user.email})
+		}
   }
   
   OptionList() {
@@ -175,6 +187,31 @@ export default class CreateEventRequest extends Component {
           />
   }
 
+  guest(){
+    if (!this.state.loggedIn) {
+      return <div>
+        <Form.Group controlId="Name">
+          <Form.Label>Requestor Name</Form.Label>
+          <Form.Control type="text" value={this.state.requestorName} onChange={this.onChangeRequestorName} />
+        </Form.Group>
+
+        <Form.Group controlId="Attendance">
+          <Form.Label>Requestor Email</Form.Label>
+          <Form.Control type="text" defaultValue={this.state.requestorEmail} onChange={this.onChangeRequestorEmail} />
+        </Form.Group>
+
+        <Form.Group controlId="Attendance">
+          <Form.Label>Requestor Phone Number</Form.Label>
+          <Form.Control type="text" defaultValue={this.state.requestorPhone} onChange={this.onChangeRequestorPhone} />
+        </Form.Group>
+      </div>
+    }
+  }
+
+  onChangeRequestorName(e) { this.setState({ requestorName: e.target.value }) }
+  onChangeRequestorEmail(e) { this.setState({ requestorEmail: e.target.value }) }
+  onChangeRequestorPhone(e) { this.setState({ requestorPhone: e.target.value }) }
+
   onChangeName(e) {
     this.setState({ name: e.target.value })
   }
@@ -212,18 +249,34 @@ export default class CreateEventRequest extends Component {
 
   async onSubmit(e) {
     e.preventDefault()
-
-    const eventRequestObject = {
-      name: this.state.name,
-      requestor: this.state.user_id,
-      room: this.state.room,
-      attendance: this.state.attendance,
-      startTime: this.state.startTime,
-      endTime: this.state.endTime,
-      lockStartTime: this.state.lockStartTime,
-      lockEndTime: this.state.lockEndTime,
-      email: this.state.user_email,
+    var eventRequestObject = {}
+    if (this.state.loggedIn) {
+      eventRequestObject = {
+        name: this.state.name,
+        requestor: this.state.user_id,
+        email: this.state.user_email,
+        room: this.state.room,
+        attendance: this.state.attendance,
+        startTime: this.state.startTime,
+        endTime: this.state.endTime,
+        lockStartTime: this.state.lockStartTime,
+        lockEndTime: this.state.lockEndTime,
+      };
+    } else {
+      eventRequestObject = {
+        name: this.state.name,
+        room: this.state.room,
+        contact: this.state.requestorName,
+        email: this.state.requestorEmail,
+        phone: this.state.requestorPhone,
+        attendance: this.state.attendance,
+        startTime: this.state.startTime,
+        endTime: this.state.endTime,
+        lockStartTime: this.state.lockStartTime,
+        lockEndTime: this.state.lockEndTime,
+      };
     };
+
     var url = `http://${process.env.REACT_APP_NODE_IP}:4000/event/create`
     await axios.post(url, eventRequestObject)
       .then(res => console.log(res.data));
@@ -237,6 +290,8 @@ export default class CreateEventRequest extends Component {
     html = <div className="form-wrapper">
       <h1> Create a new event request </h1>
       <Form onSubmit={this.onSubmit}>
+        {this.guest()}
+
         <Form.Group controlId="Name">
           <Form.Label>Event Name</Form.Label>
           <Form.Control type="text" value={this.state.name} onChange={this.onChangeName} />
