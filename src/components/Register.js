@@ -42,10 +42,15 @@ export default class Register extends Component {
 		try {
 			var url = `http://${process.env.REACT_APP_NODE_IP}:4000/users/register`
 			await axios.post(url, this.state)
+			.then((res) => {
+				window.confirm('Thank you please login to your account')
+				this.props.history.push("/login")
+			})
+			.catch( (err) => {
+				window.confirm('Email already exists.  Reset password if necessary.')
+				this.props.history.push("/login")
+			})
 
-			this.setState({ name: '', email: '', password: '' })
-			window.confirm('Thank you please login to your account')
-			this.props.history.push("/login")
 		} catch (err) {
 			console.log(err)
 		}

@@ -44,7 +44,7 @@ router.route('/register').post(async (req, res, next) => {
 	const email = req.body.email
 	let user = await userSchema.findOne({ email })
 	if (user) {
-		return res.json({ error: "User already exists" })
+		return res.status(401).json({ error: "User already exists" })
 	  }
 
 	const name = req.body.name
