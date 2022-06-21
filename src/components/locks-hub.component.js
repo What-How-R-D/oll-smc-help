@@ -48,7 +48,7 @@ export default class LocksHub extends Component {
 		var canceled_done = canceled_events.filter(event => !event.locksSet)		
 
 		var completed_events = [...approved_done, ...canceled_done].sort((a, b) => new Date(a.startTime).getTime() > new Date(b.startTime).getTime() ? 1 : -1 )
-		
+
 		this.setState({
 			approved_events: approved_needs_work,
 			canceled_events: canceled_needs_work,
@@ -88,7 +88,7 @@ export default class LocksHub extends Component {
 			  </tr>
 			</thead>
 			<tbody>
-			  {this.DataTable("pending")}
+			  {this.DataTable("approved")}
 			</tbody>
 		  </Table>
 		<h1> Canceled Locks Requests </h1>
