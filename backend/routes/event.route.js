@@ -1,12 +1,46 @@
+const {google} = require('googleapis');
 let mongoose = require('mongoose'),
   express = require('express'),
   router = express.Router()
+let calendar = google.calendar('v3')
 
 let eventSchema = require('../models/event')
+let roomSchema = require('../models/room')
 
 const sendNotification = require("../middleware/mailer")
+const calendarJWT = require("../middleware/calendar")
+const findRoomData = require("../middleware/find_room")
 
-router.route('/create').post((req, res, next) => {
+
+router.route('/create').post(async (req, res, next) => {
+	const room_data = await findRoomData(req.body.room)
+	
+	var event = {
+		'summary': `${room_data.name}: ${req.body.name} - PENDING`,
+		'start': {
+		  'dateTime': req.body.startTime,
+		  'timeZone': 'America/Chicago',
+		},
+		'end': {
+		  'dateTime': req.body.endTime,
+		  'timeZone': 'America/Chicago',
+		},
+	  };
+	
+	calendar.events.insert({
+		auth: calendarJWT(),
+		calendarId: room_data.calendar_id,
+		resource: event,
+	  }, function(err, event) {
+		if (err) {
+		  console.log('There was an error contacting the Calendar service: ' + err);
+		  return;
+		}
+		console.log('Event created: %s', event.data.id);
+		req.body.calendar_id = event.data.id
+	  });
+	
+	
 	eventSchema.create(req.body, (error, data) => {
 	  if (error) {
 		return next(error)
