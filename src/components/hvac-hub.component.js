@@ -3,7 +3,7 @@ import { Link } from "react-router-dom"
 import axios from 'axios';
 import Table from 'react-bootstrap/Table';
 
-import {findUser} from "../api/user"
+import {checkLogin} from "../api/user"
 
 import EventHVACTableRow from './EventHVACTableRow.js'
 
@@ -19,13 +19,11 @@ export default class HVAChub extends Component {
 	}
   
 	async componentDidMount() {
-		const user = await findUser()
-
-		if (user['error'] === "Unauthorized") {
-		  this.setState({ loggedIn: false })
-			} else {
-		  this.setState({ loggedIn: true })
-			}
+		if (await checkLogin()){
+			this.setState({ loggedIn: true })
+		  } else {
+			this.setState({ loggedIn: false })
+		  }
 
 		var all_events = []
 		var url = `http://${process.env.REACT_APP_NODE_IP}:4000/event/find-all`

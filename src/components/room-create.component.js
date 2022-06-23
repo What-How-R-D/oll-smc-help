@@ -4,7 +4,7 @@ import Form from 'react-bootstrap/Form'
 import Button from 'react-bootstrap/Button';
 import axios from 'axios';
 
-import {findUser} from "../api/user"
+import {checkLogin} from "../api/user"
 
 export default class CreateRoom extends Component {
 
@@ -29,13 +29,11 @@ export default class CreateRoom extends Component {
   }
 
   async componentDidMount() {
-    const user = await findUser()
-
-    if (user['error'] === "Unauthorized") {
-      this.setState({ loggedIn: false })
-		} else {
+    if (await checkLogin()){
       this.setState({ loggedIn: true })
-		}
+    } else {
+      this.setState({ loggedIn: false })
+    }
   }
 
   onChangeName(e) {

@@ -6,7 +6,7 @@ import axios from 'axios';
 
 import DateTimePicker from 'react-datetime-picker';
 
-import {findUser} from "../api/user"
+import {findUser, checkLogin} from "../api/user"
 
 export default class CreateRoom extends Component {
 
@@ -36,13 +36,13 @@ export default class CreateRoom extends Component {
   }
 
   async componentDidMount() {
-    const user = await findUser()
-
-    if (user['error'] === "Unauthorized") {
-      this.setState({ loggedIn: false })
-		} else {
+    if (await checkLogin()){
       this.setState({ loggedIn: true })
-		}
+    } else {
+      this.setState({ loggedIn: false })
+    }
+
+    const user = await findUser()
 
   var url = `http://${process.env.REACT_APP_NODE_IP}:4000/users/find-id/`
   await axios.get(url + user._id)

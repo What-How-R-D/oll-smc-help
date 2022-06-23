@@ -3,7 +3,7 @@ import { Link } from "react-router-dom"
 import axios from 'axios';
 import Table from 'react-bootstrap/Table';
 
-import {findUser} from "../api/user"
+import {findUser, checkLogin} from "../api/user"
 
 import EventBMTableRow from './EventBMTableRow.js'
 
@@ -19,12 +19,13 @@ export default class BMhub extends Component {
 	}
   
 	async componentDidMount() {
+		if (await checkLogin()){
+			this.setState({ loggedIn: true })
+		  } else {
+			this.setState({ loggedIn: false })
+		  }
+
 		var user = await findUser()
-		if (user['error'] === "Unauthorized") {
-				this.setState({ loggedIn: false })
-			} else {
-				this.setState({ loggedIn: true })
-			}
 
 		var all_events = []
 		for (let room in user.rooms) {

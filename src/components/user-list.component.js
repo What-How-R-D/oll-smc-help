@@ -4,7 +4,7 @@ import axios from 'axios';
 import Table from 'react-bootstrap/Table';
 import UserTableRow from './UserTableRow';
 
-import {findUser} from "../api/user"
+import {findUser, checkLogin} from "../api/user"
 
 export default class UserList extends Component {
 
@@ -17,6 +17,12 @@ export default class UserList extends Component {
   }
 
   async componentDidMount() {
+    if (await checkLogin()){
+      this.setState({ loggedIn: true })
+    } else {
+      this.setState({ loggedIn: false })
+    }
+
     const user = await findUser()
 
     if (user['error'] === "Unauthorized") {

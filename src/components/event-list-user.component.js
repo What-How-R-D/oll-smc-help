@@ -3,7 +3,7 @@ import { Link } from "react-router-dom"
 import axios from 'axios';
 import Table from 'react-bootstrap/Table';
 
-import {findUser} from "../api/user"
+import {findUser, checkLogin} from "../api/user"
 
 import EventUserTableRow from './EventUserTableRow.js'
 
@@ -13,19 +13,21 @@ export default class EventList extends Component {
     super(props)    
     this.state = {
       events: [],
-      loggedIn: false,
+      loggedIn: checkLogin(),
     };
-
   }
+
+  // componentWillMount() {
+  //   const isLoggedIn = checkLogin()
+  //   if (isLoggedIn){
+  //     this.setState({ loggedIn: true })
+  //   } else {
+  //     this.setState({ loggedIn: false })
+  //   }
+  // }
 
   async componentDidMount() {
     const user = await findUser()
-
-    if (user['error'] === "Unauthorized") {
-      this.setState({ loggedIn: false })
-		} else {
-      this.setState({ loggedIn: true })
-		}
 
     var url = `http://${process.env.REACT_APP_NODE_IP}:4000/event/find-user/`
     await axios.get(url + user._id)
@@ -52,7 +54,7 @@ export default class EventList extends Component {
 
   render() {
     let html
-    if (this.state.loggedIn) {
+    if (localStorage.getItem("token")) {
       html = <div className="table-wrapper">
         <h1> Your upcoming event request </h1>
         <Table striped bordered hover>

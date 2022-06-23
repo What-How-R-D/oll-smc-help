@@ -9,7 +9,7 @@ import "react-big-calendar/lib/css/react-big-calendar.css";
 import withDragAndDrop from 'react-big-calendar/lib/addons/dragAndDrop';
 import DateTimePicker from 'react-datetime-picker';
 
-import {findUser} from "../api/user"
+import {findUser, checkLogin} from "../api/user"
 
 export default class CreateEventRequest extends Component {
 
@@ -53,11 +53,16 @@ export default class CreateEventRequest extends Component {
     }
   }
   async componentDidMount() {
+    
+    if (await checkLogin()){
+      this.setState({ loggedIn: true })
+    } else {
+      this.setState({ loggedIn: false })
+    }
+    
     var user = await findUser()
     
-    if (user['error'] === "Unauthorized") {
-      this.setState({ loggedIn: false })
-		} else {
+    if (user['error'] !== "Unauthorized") {
       this.setState({ loggedIn: true, user_id: user._id, user_email: user.email})
 		}
   }

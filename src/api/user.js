@@ -1,4 +1,5 @@
 import axios from "axios"
+const jwt = require("jsonwebtoken")
 
 export const findUser = async function()  {
 	var user = ""
@@ -11,10 +12,25 @@ export const findUser = async function()  {
 		},
 	}).then(res => {
 		user = res.data
-	})
-		.catch((error) => {
+	}).catch((error) => {
 		console.log(error);
 	})
 	
 	return user
+}
+
+
+export const checkLogin = async function()  {
+	
+	var decodedToken=jwt.decode(localStorage.getItem("token"), {complete: true});
+	
+	var now = new Date()
+
+	if( decodedToken.payload.exp*1000 > now.getTime() ) {
+		console.log("logged in")
+		return true
+	} else {
+		console.log('logged out')
+		return false
+	}
 }
