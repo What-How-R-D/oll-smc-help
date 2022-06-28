@@ -99,17 +99,20 @@ router.route('/resetpwd/:email').get(async (req, res) => {
 	  )
 
 	var subject=`OLL-SMC help password reset`
-	var body=`To reset your password follow this link http://45.33.18.72:3000//newpassword/${user_data._id}/${token}`
+	var body=`To reset your password follow this link http://45.33.18.72:3000/newpassword/${user_data._id}/${token}`
 	sendNotification(user_data.email, subject, body)
 
   })
 
 router.route('/newpassword').post(async (req, res) => {
-	console.log(req.body.user_id)
+	console.log(req.body)
 
 	try {
 		const user_pwd = await userSchema.findById(req.body.user_id).select("password")
 		jwt.verify(req.body.token, user_pwd.password)
+		
+		console.log("verify")
+		console.log(jwt.verify(req.body.token, user_pwd.password))
 
 		const hashedPassword = await bcrypt.hash(req.body.password, 10);
 		userSchema.findByIdAndUpdate(
