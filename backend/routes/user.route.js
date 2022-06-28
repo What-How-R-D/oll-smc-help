@@ -48,13 +48,15 @@ router.route('/register').post(async (req, res, next) => {
 	  }
 
 	const name = req.body.name
-	const password = req.body.password 
+	const password = req.body.password
+	const phone = req.body.phone
 	const hashedPassword = await bcrypt.hash(password, 10);
 	
 	const userObject = {
 		name: name,
 		email: email,
-		password: hashedPassword
+		password: hashedPassword,
+		phone: phone,
 	};
 
 	userSchema.create(userObject, (error, data) => {

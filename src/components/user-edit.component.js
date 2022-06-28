@@ -17,6 +17,7 @@ export default class EditUser extends Component {
     this.onChangeHVAC = this.onChangeHVAC.bind(this);
     this.onChangeLocks = this.onChangeLocks.bind(this);
     this.onChangeRooms = this.onChangeRooms.bind(this);
+    this.onChangePhone = this.onChangePhone.bind(this);
     this.onSubmit = this.onSubmit.bind(this);
 
     // State
@@ -29,6 +30,7 @@ export default class EditUser extends Component {
       rooms_available: [],
       rooms_responsible: [],
       loggedIn: false,
+      phone: '',
     }
   }
 
@@ -46,6 +48,7 @@ export default class EditUser extends Component {
           name: res.data.name,
           email: res.data.email,
           type: res.data.type,
+          phone: res.data.phone,
           bm: res.data.bm,
           hvac: res.data.hvac,
           locks: res.data.locks,
@@ -107,26 +110,18 @@ export default class EditUser extends Component {
   onChangeName(e) { this.setState({ name: e.target.value }) }
   onChangeEmail(e) { this.setState({ email: e.target.value }) }
   onChangeType(e) { this.setState({ type: e.target.value }) }
-
-
-  onChangeBM(e) {
-    this.setState(({ bm }) => ({ bm: !bm }));
-    }
-  
-  onChangeHVAC(e) {
-    this.setState(({ hvac }) => ({ hvac: !hvac }));
-    }
-  onChangeLocks(e) {
-    this.setState(({ locks }) => ({ locks: !locks }));
-    }
+  onChangePhone(e) { this.setState({ phone: e.target.value }) }
+  onChangeBM(e) { this.setState(({ bm }) => ({ bm: !bm })) }
+  onChangeHVAC(e) { this.setState(({ hvac }) => ({ hvac: !hvac })) }
+  onChangeLocks(e) { this.setState(({ locks }) => ({ locks: !locks })) }
 
   onSubmit(e) {
     e.preventDefault()
-    console.log("wat")
-    console.log(this.state)
+    
     const UserObject = {
       name: this.state.name,
       email: this.state.email,
+      phone: this.state.phone,
       type: this.state.type,
       bm: this.state.bm,
       hvac: this.state.hvac,
@@ -161,6 +156,11 @@ export default class EditUser extends Component {
           <Form.Control type="email" value={this.state.email} onChange={this.onChangeEmail} />
         </Form.Group>
  
+        <Form.Group controlId="phone">
+          <Form.Label>Phone Number</Form.Label>
+          <Form.Control type="text" value={this.state.phone} onChange={this.onChangePhone} />
+        </Form.Group>
+
         <Form.Group controlId="Account type">
           <Form.Label>Account type</Form.Label>
           <select 

@@ -17,6 +17,7 @@ export default class UserTableRow extends Component {
       )
       .then((res) => {
         console.log('User successfully deleted!')
+        window.location.reload(true);
       })
       .catch((error) => {
         console.log(error)

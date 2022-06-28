@@ -15,27 +15,22 @@ export default class Register extends Component {
 	  this.onChangeName = this.onChangeName.bind(this);
 	  this.onChangeEmail = this.onChangeEmail.bind(this);
 	  this.onChangePassword = this.onChangePassword.bind(this);
+	  this.onChangePhone = this.onChangePhone.bind(this);
 	  this.onSubmit = this.onSubmit.bind(this);
   
 	  // Setting up state
 	  this.state = {
 		name: '',
 		email: '',
-		password: ''
+		password: '',
+		phone: "",
 	  }
 	}
   
-	onChangeName(e) {
-	  this.setState({ name: e.target.value })
-	}
-  
-	onChangeEmail(e) {
-	  this.setState({ email: e.target.value })
-	}
-  
-	onChangePassword(e) {
-	  this.setState({ password: e.target.value })
-	}
+	onChangeName(e) { this.setState({ name: e.target.value }) }
+	onChangeEmail(e) { this.setState({ email: e.target.value }) }
+	onChangePassword(e) { this.setState({ password: e.target.value }) }
+	onChangePhone(e) { this.setState({ phone: e.target.value }) }
   
 	async onSubmit(e) {
 		e.preventDefault()
@@ -63,19 +58,24 @@ export default class Register extends Component {
 		<Form onSubmit={this.onSubmit}>
 		  <Form.Group controlId="Name">
 			<Form.Label>Name</Form.Label>
-			<Form.Control type="text" value={this.state.name} onChange={this.onChangeName} />
+			<Form.Control type="text" value={this.state.name} onChange={this.onChangeName} required />
 		  </Form.Group>
   
 		  <Form.Group controlId="Email">
 			<Form.Label>Email</Form.Label>
-			<Form.Control type="email" value={this.state.email} onChange={this.onChangeEmail} />
+			<Form.Control type="email" value={this.state.email} onChange={this.onChangeEmail} required />
 		  </Form.Group>
   
 		  <Form.Group controlId="Password">
 			<Form.Label>Password</Form.Label>
-			<Form.Control type="password" value={this.state.password} onChange={this.onChangePassword} />
+			<Form.Control type="password" value={this.state.password} onChange={this.onChangePassword} required />
 		  </Form.Group>
-  
+
+ 		  <Form.Group controlId="phone">
+			<Form.Label>Phone Number</Form.Label>
+			<Form.Control type="text" value={this.state.phone} onChange={this.onChangePhone} required />
+		  </Form.Group>
+
 		  <Button variant="danger" size="lg" block="block" type="submit" className="mt-4">
 			Register
 		  </Button>

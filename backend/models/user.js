@@ -12,6 +12,7 @@ const userSchema = new mongoose.Schema(
 		},
 	bm: {type: Boolean, default: false,},
 	rooms: [{type: String}],
+	phone: { type: String },
 	hvac: {type: Boolean, default: false,},
 	locks: {type: Boolean, default: false,},
 	reset_token: { type: String }
