@@ -18,6 +18,7 @@ export default class EditUser extends Component {
     this.onChangeLocks = this.onChangeLocks.bind(this);
     this.onChangeRooms = this.onChangeRooms.bind(this);
     this.onChangePhone = this.onChangePhone.bind(this);
+    this.onChangeEmpMin = this.onChangeEmpMin.bind(this);
     this.onSubmit = this.onSubmit.bind(this);
 
     // State
@@ -31,6 +32,7 @@ export default class EditUser extends Component {
       rooms_responsible: [],
       loggedIn: false,
       phone: '',
+      emp_min: false,
     }
   }
 
@@ -53,6 +55,7 @@ export default class EditUser extends Component {
           hvac: res.data.hvac,
           locks: res.data.locks,
           rooms_responsible: res.data.rooms,
+          emp_min: res.data.emp_min,
         });
       })
       .catch((error) => {
@@ -114,6 +117,7 @@ export default class EditUser extends Component {
   onChangeBM(e) { this.setState(({ bm }) => ({ bm: !bm })) }
   onChangeHVAC(e) { this.setState(({ hvac }) => ({ hvac: !hvac })) }
   onChangeLocks(e) { this.setState(({ locks }) => ({ locks: !locks })) }
+  onChangeEmpMin(e) { this.setState(({ emp_min }) => ({ emp_min: !emp_min })) }
 
   onSubmit(e) {
     e.preventDefault()
@@ -126,7 +130,8 @@ export default class EditUser extends Component {
       bm: this.state.bm,
       hvac: this.state.hvac,
       locks: this.state.locks,
-      rooms: this.state.rooms_responsible
+      rooms: this.state.rooms_responsible,
+      emp_min: this.state.emp_min,
     };
     
     var url = `http://${process.env.REACT_APP_NODE_IP}:4000/users/update/`
@@ -186,6 +191,14 @@ export default class EditUser extends Component {
           label="Locks"
           checked={this.state.locks}
           onChange={this.onChangeLocks}
+        />
+
+        <Form.Check 
+          type="switch"
+          id="HVAC"
+          label="Employee/Ministry Lead"
+          checked={this.state.emp_min}
+          onChange={this.onChangeEmpMin}
         />
 
         <Form.Check 
