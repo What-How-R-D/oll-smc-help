@@ -11,6 +11,11 @@ import DateTimePicker from 'react-datetime-picker';
 
 import {findUser, checkLogin} from "../api/user"
 
+Date.prototype.addHours= function(h){
+  this.setHours(this.getHours()+h);
+  return this;
+}
+
 export default class CreateEventRequest extends Component {
 
   constructor(props) {
@@ -28,6 +33,8 @@ export default class CreateEventRequest extends Component {
     this.onChangeRequestorEmail = this.onChangeRequestorEmail.bind(this);
     this.onChangeRequestorPhone = this.onChangeRequestorPhone.bind(this);
     this.onSubmit = this.onSubmit.bind(this);
+
+
 
     // Setting up state
     this.state = {
@@ -91,8 +98,8 @@ export default class CreateEventRequest extends Component {
 
         return room_events.map(
           ({ startTime, endTime, name}) => ({
-            start: new Date(startTime),
-            end: new Date(endTime),
+            start: new Date(startTime).addHours(-2),
+            end: new Date(endTime).addHours(2),
             title: "Reserved",
             description: '',
             allDay: false,
