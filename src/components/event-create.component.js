@@ -49,6 +49,7 @@ export default class CreateEventRequest extends Component {
       defaultDate: "",
       user_id: "",
       user_email: "",
+      user_emp_min: false,
       loggedIn: false,
     }
   }
@@ -63,7 +64,12 @@ export default class CreateEventRequest extends Component {
     var user = await findUser()
     
     if (user['error'] !== "Unauthorized") {
-      this.setState({ loggedIn: true, user_id: user._id, user_email: user.email})
+      this.setState({ 
+        loggedIn: true, 
+        user_id: user._id, 
+        user_email: user.email,
+        user_emp_min: user.emp_min,
+      })
 		}
   }
   
@@ -239,7 +245,7 @@ export default class CreateEventRequest extends Component {
   }
 
   async onChangeAttendance(e) {
-    var url = `http://${process.env.REACT_APP_NODE_IP}:4000/room/find-all`
+    var url = `http://${process.env.REACT_APP_NODE_IP}:4000/room/find-all/${this.state.user_emp_min}/`
     await axios.get(url)
       .then(res => {
         this.setState({

@@ -15,12 +15,18 @@ router.route('/create').post((req, res, next) => {
 	})
   })
 
-router.route('/find-all').get((req, res) => {
+router.route('/find-all/:emp_min').get((req, res) => {
+	console.log(req.params.emp_min)
 	roomSchema.find((error, data) => {
 	  if (error) {
 		return next(error)
 	  } else {
-		res.json(data)
+		if ( req.params.emp_min === "true" ) {
+			res.json(data)
+		} else {
+			var emp_min = data.filter(item => !item.emp_min)
+			res.json( emp_min )
+		}
 	  }
 	})
   })
