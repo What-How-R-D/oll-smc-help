@@ -27,7 +27,7 @@ export default class BlackoutTableRow extends Component {
       this.setState({ loggedIn: true })
 		}
 
-  var url = `http://${process.env.REACT_APP_NODE_IP}:4000/room/find-all`
+  var url = `http://${process.env.REACT_APP_NODE_IP}:4000/room/find-all/true`
     await axios.get(url)
       .then(res => {
         this.setState({
