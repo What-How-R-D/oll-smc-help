@@ -6,6 +6,7 @@ const roomSchema = new mongoose.Schema(
 	building: { type: String },
 	occupancy: { type: Number },
 	calendar_id: { type: String },
+	emp_min: { type: Boolean, default: false }
 	},
  	{ timestamps: true }
 )

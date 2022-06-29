@@ -29,6 +29,7 @@ export default class RoomTableRow extends Component {
         <td>{this.props.obj.name}</td>
         <td>{this.props.obj.building}</td>
         <td>{this.props.obj.occupancy}</td>
+        <td>{this.props.obj.emp_min.toString()}</td>
         <td>
           <Link
             className="edit-link" path={"room/:id"}

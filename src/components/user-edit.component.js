@@ -195,7 +195,7 @@ export default class EditUser extends Component {
 
         <Form.Check 
           type="switch"
-          id="HVAC"
+          id="Emp_Min"
           label="Employee/Ministry Lead"
           checked={this.state.emp_min}
           onChange={this.onChangeEmpMin}

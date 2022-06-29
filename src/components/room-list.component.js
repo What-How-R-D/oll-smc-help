@@ -11,7 +11,7 @@ export default class RoomList extends Component {
   constructor(props) {
     super(props)
     this.state = {
-      users: [],
+      rooms: [],
       loggedIn: false,
     };
   }
@@ -27,7 +27,7 @@ export default class RoomList extends Component {
     axios.get(url)
       .then(res => {
         this.setState({
-          users: res.data
+          rooms: res.data
         });
       })
       .catch((error) => {
@@ -36,7 +36,8 @@ export default class RoomList extends Component {
   }
 
   DataTable() {
-    return this.state.users.map((res, i) => {
+    return this.state.rooms.map((res, i) => {
+      console.log(res)
       return <RoomTableRow obj={res} key={i} />;
     });
   }
@@ -52,6 +53,7 @@ export default class RoomList extends Component {
               <th>Name</th>
               <th>Building</th>
               <th>Occupancy</th>
+              <th>Emp/Min Only</th>
             </tr>
           </thead>
           <tbody>

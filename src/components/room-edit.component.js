@@ -15,6 +15,7 @@ export default class EditRoom extends Component {
     this.onChangeBuilding = this.onChangeBuilding.bind(this);
     this.onChangeOccupancy = this.onChangeOccupancy.bind(this);
     this.onChangeCalendarID = this.onChangeCalendarID.bind(this);
+    this.onChangeEmpMin = this.onChangeEmpMin.bind(this);
     this.onSubmit = this.onSubmit.bind(this);
 
     // State
@@ -24,6 +25,7 @@ export default class EditRoom extends Component {
       occupancy: '',
       calendar_id: '',
       loggedIn: false,
+      emp_min: false,
     }
   }
 
@@ -42,6 +44,7 @@ export default class EditRoom extends Component {
           building: res.data.building,
           occupancy: res.data.occupancy,
           calendar_id: res.data.calendar_id,
+          emp_min: res.data.emp_min,
         });
       })
       .catch((error) => {
@@ -53,6 +56,7 @@ export default class EditRoom extends Component {
   onChangeBuilding(e) { this.setState({ building: e.target.value }) }
   onChangeOccupancy(e) { this.setState({ occupancy: e.target.value }) }
   onChangeCalendarID(e) { this.setState({ calendar_id: e.target.value }) }
+  onChangeEmpMin(e) { this.setState(({ emp_min }) => ({ emp_min: !emp_min })) }
 
   onSubmit(e) {
     e.preventDefault()
@@ -62,6 +66,7 @@ export default class EditRoom extends Component {
       building: this.state.building,
       occupancy: this.state.occupancy,
       calendar_id: this.state.calendar_id,
+      emp_min: this.state.emp_min,
     };
     
     var url = `http://${process.env.REACT_APP_NODE_IP}:4000/room/update/`
@@ -95,6 +100,14 @@ export default class EditRoom extends Component {
             <Form.Label>Occupancy</Form.Label>
             <Form.Control type="text" value={this.state.occupancy} onChange={this.onChangeOccupancy} />
           </Form.Group>
+
+          <Form.Check 
+            type="switch"
+            id="Emp_Min"
+            label="Employee/Ministry Use only"
+            checked={this.state.emp_min}
+            onChange={this.onChangeEmpMin}
+          />
 
           <Form.Group controlId="CalendarID">
             <Form.Label>Google Calendar ID</Form.Label>
