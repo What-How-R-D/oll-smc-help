@@ -23,7 +23,7 @@ export default class RoomList extends Component {
       this.setState({ loggedIn: false })
     }
 
-    var url = `http://${process.env.REACT_APP_NODE_IP}:4000/room/find-all`
+    var url = `http://${process.env.REACT_APP_NODE_IP}:4000/room/find-all/true`
     axios.get(url)
       .then(res => {
         this.setState({
@@ -37,7 +37,6 @@ export default class RoomList extends Component {
 
   DataTable() {
     return this.state.rooms.map((res, i) => {
-      console.log(res)
       return <RoomTableRow obj={res} key={i} />;
     });
   }
