@@ -47,7 +47,7 @@ export default class UserTableRow extends Component {
         <td>{this.props.obj.hvac.toString()}</td>
         <td>{this.props.obj.locks.toString()}</td>
         <td>
-          <Link className="edit-link" path={"product/:id"} to={'/edit-user/' + this.props.obj._id} > Edit </Link>
+          <Link className="edit-link" path={"edit-user/:id"} to={'/edit-user/' + this.props.obj._id} > Edit </Link>
         </td>
         <td>
           <Button type="submit" size="sm" onClick={() => { if (window.confirm('Thank you for sending a password reset ?')) this.sendPwdUpdate() } }> Send Password Update </Button>

@@ -1,5 +1,5 @@
 import React, { Component } from 'react'
-// import { Link } from 'react-router-dom'
+import { Link } from 'react-router-dom'
 import axios from 'axios'
 import Button from 'react-bootstrap/Button'
 import { format } from "date-fns";
@@ -65,8 +65,8 @@ export default class RoomTableRow extends Component {
     if (this.props.obj.status === "Pending") {
       return  <td>
         <Button type="submit" size="sm" onClick={() => { if (window.confirm('Are you sure you want to approve this request ?')) this.approveRequest() } }> Approve </Button>
-       <Button type="submit" size="sm" variant="danger" onClick={() => { if (window.confirm('Are you sure you want to reject this request ?')) this.rejectRequest() } }> Reject </Button>
-      </td>
+        <Link  className="edit-link" path={"reject-event/:id"} to={'/reject-event/' + this.props.obj._id} > Reject </Link>
+        </td>
     }
   }
 

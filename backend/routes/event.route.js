@@ -129,7 +129,7 @@ router.route('/reject/:id').put(async (req, res, next) => {
 		  ).clone()
 
 		var subject=`${event_data.name} building request has been rejected`
-		var body=`Your event ${event_data.name} building request has been reject.  For more information please contact the parish office.`
+		var body=`Your event ${event_data.name} building request has been reject for the following reason: ${req.body.reason}. \nFor more information please contact the parish office.`
 		sendNotification(event_data.email, subject, body)
 
 		const room_data = await findRoomData(event_data.room)
@@ -141,7 +141,6 @@ router.route('/reject/:id').put(async (req, res, next) => {
 			}
 		).then((event) => { console.log("Deleted from Google calendar") })
 		.catch((err) => { console.log("Error Creating Calender Event:", err); });
-
 	})
 
 router.route('/delete/:id').delete((req, res) => {
