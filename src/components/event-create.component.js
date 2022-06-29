@@ -37,9 +37,8 @@ export default class CreateEventRequest extends Component {
     this.onChangeRequestorName = this.onChangeRequestorName.bind(this);
     this.onChangeRequestorEmail = this.onChangeRequestorEmail.bind(this);
     this.onChangeRequestorPhone = this.onChangeRequestorPhone.bind(this);
+    this.onChangeWillBePresent = this.onChangeWillBePresent.bind(this);
     this.onSubmit = this.onSubmit.bind(this);
-
-
 
     // Setting up state
     this.state = {
@@ -63,6 +62,7 @@ export default class CreateEventRequest extends Component {
       user_email: "",
       user_emp_min: false,
       loggedIn: false,
+      willBePresent: false,
     }
   }
   async componentDidMount() {
@@ -251,6 +251,7 @@ export default class CreateEventRequest extends Component {
   onChangeRequestorName(e) { this.setState({ requestorName: e.target.value }) }
   onChangeRequestorEmail(e) { this.setState({ requestorEmail: e.target.value }) }
   onChangeRequestorPhone(e) { this.setState({ requestorPhone: e.target.value }) }
+  onChangeWillBePresent(e) { this.setState(({ willBePresent }) => ({ willBePresent: !willBePresent })) }
 
   onChangeName(e) {
     this.setState({ name: e.target.value })
@@ -374,7 +375,15 @@ export default class CreateEventRequest extends Component {
           />
         </div>
 
-        <Button variant="danger" size="lg" block="block" type="submit" className="mt-4">
+        <Form.Check 
+          type="switch"
+          id="willBePresent"
+          label="Buy checking this box I verify that someone will be present at all time when the doors are unlocked."
+          checked={this.state.willBePresent}
+          onChange={this.onChangeWillBePresent}
+        />
+
+        <Button disabled={!this.state.willBePresent} variant="danger" size="lg" block="block" type="submit" className="mt-4">
           Submit Room Request
         </Button>
       </Form>
