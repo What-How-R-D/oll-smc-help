@@ -42,7 +42,7 @@ export default class Register extends Component {
 				window.location.reload(true)
 			})
 			.catch((err) => {
-				window.confirm('Error logging in password. Please try again or reset password.')
+				window.confirm('Error logging in. Please try again, validate email, or reset password.')
 				this.setState({ email: '', password: '' })
 				this.props.history.push("/login")
 				window.location.reload(true)

@@ -40,7 +40,9 @@ export default class Register extends Component {
 			this.props.history.push("/")
 			window.location.reload(true)
 		} catch (err) {
-			console.log(err)
+			window.confirm('Email does not exist.  Please register.')
+			this.props.history.push("/register")
+			window.location.reload(true)
 		}
 	}
 

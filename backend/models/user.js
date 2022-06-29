@@ -4,6 +4,7 @@ const userSchema = new mongoose.Schema(
 	{
     name: { type: String },
     email: { type: String },
+	valid_email: {type: Boolean, default: false,},
     password: { type: String },
 	type: {    
 		type: String,
@@ -16,7 +17,6 @@ const userSchema = new mongoose.Schema(
 	hvac: {type: Boolean, default: false,},
 	locks: {type: Boolean, default: false,},
 	emp_min: {type: Boolean, default: false,},
-	reset_token: { type: String }
 	},
  	{ timestamps: true }
 )
