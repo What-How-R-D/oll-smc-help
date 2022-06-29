@@ -41,6 +41,7 @@ export default class UserTableRow extends Component {
       <tr>
         <td>{this.props.obj.name}</td>
         <td>{this.props.obj.email}</td>
+        <td>{this.props.obj.emp_min.toString()}</td>
         <td>{this.props.obj.type}</td>
         <td>{this.props.obj.bm.toString()}</td>
         <td>{this.props.obj.hvac.toString()}</td>

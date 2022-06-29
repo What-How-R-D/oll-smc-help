@@ -59,6 +59,7 @@ export default class UserList extends Component {
             <tr>
               <th>Name</th>
               <th>Email</th>
+              <th>Emp/Min</th>
               <th>Account Type</th>
               <th>Building Manager</th>
               <th>HVAC</th>
