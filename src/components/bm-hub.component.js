@@ -74,12 +74,16 @@ export default class BMhub extends Component {
 		  <Table striped bordered hover>
 			<thead>
 			  <tr>
-				<th>Name</th>
+				<th>Event Name</th>
+				<th>Requestor</th>
+				<th>Email</th>
+				<th>Phone</th>
 				<th>Room</th>
 				<th>Start Time</th>
 				<th>End Time</th>
 				<th>Attendance</th>
 				<th>Status</th>
+				<th>Notes</th>
 			  </tr>
 			</thead>
 			<tbody>
@@ -90,12 +94,16 @@ export default class BMhub extends Component {
 		 	<Table striped bordered hover>
 		 	<thead>
 		 		<tr>
-		 		<th>Name</th>
-		 		<th>Room</th>
-		 		<th>Start Time</th>
-		 		<th>End Time</th>
-		 		<th>Attendance</th>
-		 		<th>Status</th>
+				<th>Event Name</th>
+				<th>Requestor</th>
+				<th>Email</th>
+				<th>Phone</th>
+				<th>Room</th>
+				<th>Start Time</th>
+				<th>End Time</th>
+				<th>Attendance</th>
+				<th>Status</th>
+				<th>Notes</th>
 		 		</tr>
 		 	</thead>
 		 	<tbody>
