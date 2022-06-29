@@ -24,32 +24,20 @@ export default class HVAChub extends Component {
 		  } else {
 			this.setState({ loggedIn: false })
 		  }
-
-		var all_events = []
-		var url = `http://${process.env.REACT_APP_NODE_IP}:4000/event/find-all`
-		await axios.get(url)
+		
+		var url = `http://${process.env.REACT_APP_NODE_IP}:4000/event/find-hvac/50`
+		var new_events = await axios.get(url)
 			.then(res => {
-				var new_events = res.data.filter(item => ["Approved", "Canceled"].includes(item.status))
-				all_events.push(...new_events)
+				return res.data
 			})
 				.catch((error) => {
 				console.log(error);
 			})
 
-		var approved_events = all_events.filter(event => event.status === "Approved")
-		var canceled_events = all_events.filter(event => event.status === "Canceled")
-		
-		var approved_needs_work = approved_events.filter(event => !event.hvacSet).sort((a, b) => new Date(a.startTime).getTime() > new Date(b.startTime).getTime() ? 1 : -1 )
-		var approved_done = approved_events.filter(event => event.hvacSet)
-		var canceled_needs_work = canceled_events.filter(event => event.hvacSet).sort((a, b) => new Date(a.startTime).getTime() > new Date(b.startTime).getTime() ? 1 : -1 )
-		var canceled_done = canceled_events.filter(event => !event.hvacSet)		
-
-		var completed_events = [...approved_done, ...canceled_done].sort((a, b) => new Date(a.startTime).getTime() > new Date(b.startTime).getTime() ? 1 : -1 )
-		
 		this.setState({
-			approved_events: approved_needs_work,
-			canceled_events: canceled_needs_work,
-			completed_events: completed_events
+			approved_events: new_events[0],
+			canceled_events: new_events[1],
+			completed_events: new_events[2]
 		});
 	}
   

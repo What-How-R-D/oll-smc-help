@@ -166,6 +166,26 @@ router.route('/find-all').get((req, res) => {
 	})
   })
 
+router.route('/find-hvac/:limit').get((req, res) => {
+	eventSchema.find((error, data) => {
+	  if (error) {
+		return next(error)
+	  } else {
+		var approved_events = data.filter(event => event.status === "Approved")
+		var canceled_events = data.filter(event => event.status === "Canceled")
+		
+		var approved_needs_work = approved_events.filter(event => !event.hvacSet).sort((a, b) => new Date(a.startTime).getTime() > new Date(b.startTime).getTime() ? 1 : -1 )
+		var approved_done = approved_events.filter(event => event.hvacSet)
+		var canceled_needs_work = canceled_events.filter(event => event.hvacSet).sort((a, b) => new Date(a.startTime).getTime() > new Date(b.startTime).getTime() ? 1 : -1 )
+		var canceled_done = canceled_events.filter(event => !event.hvacSet)		
+
+		var completed_events = [...approved_done, ...canceled_done].sort((a, b) => new Date(a.startTime).getTime() > new Date(b.startTime).getTime() ? 1 : -1 ).slice(0, req.params.limit)
+
+		res.json([ approved_needs_work, canceled_needs_work, completed_events ])
+	  }
+	})
+  })
+
 router.route('/find-id/:id').get((req, res) => {
 	eventSchema.findById(req.params.id, (error, data) => {
 	  if (error) {
