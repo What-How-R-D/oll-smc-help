@@ -187,6 +187,21 @@ router.route('/find-user/:id').get((req, res) => {
 	  })
 	})
 
+router.route('/find-user-sorted/:id/:start/:end').get((req, res) => {
+		eventSchema.find((error, data) => {
+			if (error) {
+			  return next(error)
+			} else {
+				userEvent=data.filter(item => item.requestor === req.params.id)
+				  
+				var valid_events = userEvent.filter(item => new Date(item.endTime).getTime() > req.params.start)
+				valid_events.sort((a, b) => new Date(a.startTime).getTime() > new Date(b.startTime).getTime() ? 1 : -1 )
+				
+				res.json(valid_events)
+			}
+		  })
+		})
+
 router.route('/find-room/:id').get((req, res) => {
 	eventSchema.find((error, data) => {
 		if (error) {
