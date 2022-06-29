@@ -2,7 +2,7 @@ import React from "react"
 
 import CreateEventRequest from "./event-create.component"
 import MyEvents from "./event-list-user.component"
-import Help from "./help.component"
+
 
 const Home = (props) => {
 
@@ -10,7 +10,6 @@ const Home = (props) => {
     <div>
       <MyEvents/>
       <CreateEventRequest/> 
-      <Help/>
     </div>
   )
 }

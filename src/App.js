@@ -10,6 +10,8 @@ import axios from "axios"
 
 import { BrowserRouter as Router, Switch, Route, Link } from 'react-router-dom'
 
+import Help from "./components/help.component"
+
 import Register from "./components/Register"
 import Validate from "./components/Validate"
 import ResetPassword from "./components/ResetPassword"
@@ -116,6 +118,7 @@ function App() {
           </Row>
         </Container>
       </Router>
+      <Help/>
     </div>
   );
 }
