@@ -16,6 +16,11 @@ Date.prototype.addHours= function(h){
   return this;
 }
 
+Date.prototype.addMins= function(m){
+  this.setMinutes(this.getMinutes()+m);
+  return this;
+}
+
 export default class CreateEventRequest extends Component {
 
   constructor(props) {
@@ -177,7 +182,7 @@ export default class CreateEventRequest extends Component {
     this.setState({ startTime: start })
     this.setState({ endTime: end })
 
-    this.setState({ lockStartTime: start })
+    this.setState({ lockStartTime: new Date(start).addMins(-15) })
     this.setState({ lockEndTime: end })
 
     this.GetCalendarEvents()
