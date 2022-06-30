@@ -175,6 +175,7 @@ export default class CreateRoom extends Component {
             onChange={this.onChangeStartTime}
             value={this.state.startTime}
             disableClock={true}
+            calendarType="US"
           />
         </div>
 
@@ -184,6 +185,7 @@ export default class CreateRoom extends Component {
             onChange={this.onChangeEndTime}
             value={this.state.endTime}
             disableClock={true}
+            calendarType="US"
           />
         </div>
 
