@@ -9,15 +9,18 @@ import EventBMTableRow from './EventBMTableRow.js'
 
 export default class BMhubList extends Component {
 	constructor(props) {
-	  
 	  super(props)
+	 
+	  this.getEvents = this.getEvents.bind(this);
+
 	  this.state = {
+		user: {},
 		events: [],
 		pending_events: [],
 		loggedIn: false,
 	  };
 	}
-  
+
 	async componentDidMount() {
 		if (await checkLogin()){
 			this.setState({ loggedIn: true })
@@ -26,12 +29,18 @@ export default class BMhubList extends Component {
 		  }
 
 		var user = await findUser()
+		this.setState({ user: user })
+		console.log(this.state.user)
+		this.getEvents()
+	}
 
+	async getEvents() {
+		console.log(this.state.user)
 		var all_events = []
-		for (let room in user.rooms) {
-			var room_id = user.rooms[room]
-			var url = `http://${process.env.REACT_APP_NODE_IP}:4000/event/find-room/`
-			await axios.get(url + room_id)
+		for (let room in this.state.user.rooms) {
+			var room_id = this.state.user.rooms[room]
+			var url = `http://${process.env.REACT_APP_NODE_IP}:4000/event/find-bm-list/${room_id}/20`
+			await axios.get(url)
 			.then(res => {
 				var new_events = res.data
 				all_events.push(...new_events)
@@ -54,21 +63,22 @@ export default class BMhubList extends Component {
 	}
   
 	DataTable(kind) {
-	if (kind === "pending") {
-		return this.state.pending_events.map((res, i) => {
-			return <EventBMTableRow obj={res} key={i} />;
-		});
-	} else if (kind === "completed"){
-		return this.state.events.map((res, i) => {
-			return <EventBMTableRow obj={res} key={i} />;
-		});
-	}
+		if (kind === "pending") {
+			return this.state.pending_events.map((res, i) => {
+				return <EventBMTableRow obj={res} key={i} refresh={this.getEvents} />;
+			});
+		} else if (kind === "completed"){
+			return this.state.events.map((res, i) => {
+				return <EventBMTableRow obj={res} key={i} />;
+			});
+		}
 	}
   
   
 	render() {
 	  let html
-	  if (this.state.loggedIn) {
+	//   if (this.state.reload) {this.setState( {reload: false} ); console.log("refreshing")}
+	  if (this.state.loggedIn && !this.state.reload) {
 		html = <div className="table-wrapper">
 			<h1> Pending Requests </h1>
 		  <Table striped bordered hover>
@@ -111,6 +121,8 @@ export default class BMhubList extends Component {
 		 	</tbody>
 		 	</Table>
 		 </div>
+		} else if (this.state.reload) {
+			this.setState( {reload: false} ); console.log("refreshing")
 		} else {
 		  html = <div>
 			  <Link to="/login">Login for more functionality</Link>

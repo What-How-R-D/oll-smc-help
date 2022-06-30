@@ -51,7 +51,7 @@ export default class BMhubList extends Component {
 		var all_events = []
 		for (let room in user.rooms) {
 			var room_id = user.rooms[room]
-			var url = `http://${process.env.REACT_APP_NODE_IP}:4000/event/find-bm/`
+			var url = `http://${process.env.REACT_APP_NODE_IP}:4000/event/find-bm-cal/`
 			await axios.get(url + room_id)
 			.then(res => {
 				var new_events = res.data
@@ -101,9 +101,9 @@ export default class BMhubList extends Component {
 		  })
 	  }
 
-	rejectRequest(id) {
+	rejectRequest(id, reason) {
 		var url = `http://${process.env.REACT_APP_NODE_IP}:4000/event/reject/`
-		axios.put(url + id, {status: "Rejected"})
+		axios.put(url + id, {status: "Rejected", reason: reason})
 		.then((res) => {
 		  console.log('User successfully updated')
 		}).catch((error) => {
@@ -186,7 +186,7 @@ export default class BMhubList extends Component {
 					})
 					.then((result) => {
 						if (result.isConfirmed) {
-							this.rejectRequest(event.id)
+							this.rejectRequest(event.id, result.value)
 							event.status = "Rejected"
 
 							const index = this.state.all_events.findIndex((aEvent) => aEvent.id === event.id);

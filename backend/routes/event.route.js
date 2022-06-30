@@ -185,7 +185,7 @@ router.route('/find-hvac/:limit').get((req, res) => {
 		})
 	})
 
-  router.route('/find-locks/:limit').get((req, res) => {
+router.route('/find-locks/:limit').get((req, res) => {
 		eventSchema.find((error, data) => {
 			if (error) {
 				res.status(400).json({ error: error, })
@@ -252,7 +252,7 @@ router.route('/find-room/:id').get((req, res) => {
 		})
 	})
   
-router.route('/find-bm/:id').get((req, res) => {
+router.route('/find-bm-cal/:id').get((req, res) => {
 	eventSchema.find((error, data) => {
 		if (error) {
 			return next(error)
@@ -263,5 +263,19 @@ router.route('/find-bm/:id').get((req, res) => {
 		})
 	})
 
+router.route('/find-bm-list/:id/:limit').get((req, res) => {
+	eventSchema.find((error, data) => {
+		if (error) {
+			res.status(400).json({ error: error, })
+		} else {
+			// var all_events = []
+
+			var needs_work = data.filter(item => item.room === req.params.id).filter(item => ["Pending"].includes(item.status))
+			var done = data.filter(item => item.room === req.params.id).filter(item => !["Pending"].includes(item.status)).sort((a, b) => new Date(a.startTime).getTime() > new Date(b.startTime).getTime() ? 1 : -1 ).slice(0, req.params.limit)
+
+			res.json([...needs_work, ...done])
+		}
+		})
+	})
 
 module.exports = router

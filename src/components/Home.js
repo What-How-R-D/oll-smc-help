@@ -9,7 +9,7 @@ const Home = (props) => {
   return (
     <div>
       <MyEvents/>
-      <CreateEventRequest/> 
+      <CreateEventRequest {...props} /> 
     </div>
   )
 }
