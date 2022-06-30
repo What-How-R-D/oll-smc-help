@@ -19,6 +19,7 @@ export default class EditUser extends Component {
     this.onChangeRooms = this.onChangeRooms.bind(this);
     this.onChangePhone = this.onChangePhone.bind(this);
     this.onChangeEmpMin = this.onChangeEmpMin.bind(this);
+    this.onChangePayments = this.onChangePayments.bind(this);
     this.onSubmit = this.onSubmit.bind(this);
 
     // State
@@ -33,6 +34,7 @@ export default class EditUser extends Component {
       loggedIn: false,
       phone: '',
       emp_min: false,
+      payments: false,
     }
   }
 
@@ -56,6 +58,7 @@ export default class EditUser extends Component {
           locks: res.data.locks,
           rooms_responsible: res.data.rooms,
           emp_min: res.data.emp_min,
+          payments: res.data.payments
         });
       })
       .catch((error) => {
@@ -117,6 +120,7 @@ export default class EditUser extends Component {
   onChangeBM(e) { this.setState(({ bm }) => ({ bm: !bm })) }
   onChangeHVAC(e) { this.setState(({ hvac }) => ({ hvac: !hvac })) }
   onChangeLocks(e) { this.setState(({ locks }) => ({ locks: !locks })) }
+  onChangePayments(e) { this.setState(({ payments }) => ({ payments: !payments })) }
   onChangeEmpMin(e) { this.setState(({ emp_min }) => ({ emp_min: !emp_min })) }
 
   onSubmit(e) {
@@ -132,6 +136,7 @@ export default class EditUser extends Component {
       locks: this.state.locks,
       rooms: this.state.rooms_responsible,
       emp_min: this.state.emp_min,
+      payments: this.state.payments
     };
     
     var url = `http://${process.env.REACT_APP_NODE_IP}:4000/users/update/`
@@ -191,6 +196,14 @@ export default class EditUser extends Component {
           label="Locks"
           checked={this.state.locks}
           onChange={this.onChangeLocks}
+        />
+
+        <Form.Check 
+          type="switch"
+          id="Payments"
+          label="Payment processor"
+          checked={this.state.payments}
+          onChange={this.onChangePayments}
         />
 
         <Form.Check 

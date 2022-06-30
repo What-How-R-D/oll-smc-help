@@ -34,6 +34,8 @@ import HVAChub from './components/hvac-hub.component'
 
 import LocksHub from './components/locks-hub.component'
 
+import PaymentsHub from './components/payments-hub.component'
+
 import BlackoutList from './components/blackout-list.component'
 import CreateBlackout from './components/blackout-create.component'
 
@@ -78,6 +80,7 @@ function App() {
                 {isLoggedIn && user && user.bm && ( <Nav> <Link to={'/bm-hub'} className="nav-link"> Approve Events </Link> </Nav> )}
                 {isLoggedIn && user && user.hvac && ( <Nav> <Link to={'/hvac-hub'} className="nav-link"> HVAC requests </Link> </Nav> )}
                 {isLoggedIn && user && user.locks && ( <Nav> <Link to={'/locks-hub'} className="nav-link"> Locks requests </Link> </Nav> )}
+                {isLoggedIn && user && user.payments && ( <Nav> <Link to={'/payments-hub'} className="nav-link"> Payments </Link> </Nav> )}
                 {isLoggedIn && ( <Nav> <Link to={'/logout'} className="nav-link"> Logout </Link> </Nav>)}
               </Nav>
             </Container>
@@ -107,6 +110,7 @@ function App() {
                   <Route exact path="/bm-hub" component={(props) => <BMhub {...props} />} />
                   <Route exact path="/hvac-hub" component={(props) => <HVAChub {...props} />} />
                   <Route exact path="/locks-hub" component={(props) => <LocksHub {...props} />} />
+                  <Route exact path="/payments-hub" component={(props) => <PaymentsHub {...props} />} />
                   <Route exact path="/reject-event/:id" component={(props) => <RejectEvent {...props} />} />
 
                   <Route exact path="/blackout-list" component={(props) => <BlackoutList {...props} />} />

@@ -180,6 +180,19 @@ router.route('/find-hvac/:limit').get((req, res) => {
 		})
 	})
 
+router.route('/find-paid/:limit').get((req, res) => {
+		eventSchema.find((error, data) => {
+			if (error) {
+				return next(error)
+			} else {
+				var paid_events = data.filter(event => (event.status === "Approved" && event.paid)).sort((a, b) => new Date(a.startTime).getTime() > new Date(b.startTime).getTime() ? 1 : -1 ).slice(0, req.params.limit)
+				var unpaid_events = data.filter(event => (event.status === "Approved" && !event.paid)).sort((a, b) => new Date(a.startTime).getTime() > new Date(b.startTime).getTime() ? 1 : -1 )
+
+				res.json([ unpaid_events, paid_events ])
+			}
+		})
+	})
+
 router.route('/find-locks/:limit').get((req, res) => {
 		eventSchema.find((error, data) => {
 			if (error) {
