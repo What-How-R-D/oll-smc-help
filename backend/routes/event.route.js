@@ -252,5 +252,16 @@ router.route('/find-room/:id').get((req, res) => {
 		})
 	})
   
+router.route('/find-bm/:id').get((req, res) => {
+	eventSchema.find((error, data) => {
+		if (error) {
+			return next(error)
+		} else {
+			roomEvent=data.filter(item => item.room === req.params.id).filter(item => ["Pending", "Approved"].includes(item.status))
+			res.json(roomEvent)
+		}
+		})
+	})
+
 
 module.exports = router

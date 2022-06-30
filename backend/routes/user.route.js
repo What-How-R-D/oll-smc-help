@@ -164,9 +164,14 @@ router.route('/newpassword').post(async (req, res) => {
 router.route('/find-id/:id').get((req, res) => {
 	userSchema.findById(req.params.id, (error, data) => {
 		if (error) {
+			console.log(error)
 			res.json( {name:"", email:"", phone:"", } )
 		} else {
-			res.json(data)
+			if (data) {
+				res.json(data)
+			} else {
+				res.json( {name:"", email:"", phone:"", } )
+			}
 		}
 	})	
   })

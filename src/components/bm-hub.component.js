@@ -1,21 +1,23 @@
 import React, { Component } from "react";
 import { Link } from "react-router-dom"
+import Form from 'react-bootstrap/Form'
 import axios from 'axios';
 import Table from 'react-bootstrap/Table';
 
 import {findUser, checkLogin} from "../api/user"
 
-import EventBMTableRow from './EventBMTableRow.js'
+import BMhubList from './bm-hub-list.component.js'
+import BMhubCalendar from './bm-hub-calendar.component.js'
 
 export default class BMhub extends Component {
 	constructor(props) {
-	  
-	  super(props)
-	  this.state = {
-		events: [],
-		pending_events: [],
-		loggedIn: false,
-	  };
+		super(props)
+		this.onChangeView = this.onChangeView.bind(this);
+
+		this.state = {
+			loggedIn: false,
+			view: true,
+		};
 	}
   
 	async componentDidMount() {
@@ -26,90 +28,33 @@ export default class BMhub extends Component {
 		  }
 
 		var user = await findUser()
-
-		var all_events = []
-		for (let room in user.rooms) {
-			var room_id = user.rooms[room]
-			var url = `http://${process.env.REACT_APP_NODE_IP}:4000/event/find-room/`
-			await axios.get(url + room_id)
-			.then(res => {
-				var new_events = res.data
-				all_events.push(...new_events)
-			})
-				.catch((error) => {
-				console.log(error);
-			})
+	}
+  
+	onChangeView(e) { this.setState(({ view }) => ({ view: !view })) }
+  
+	getView(){
+		if (this.state.view){
+			return <div> <BMhubCalendar /> </div>
+		} else {
+			return <div> <BMhubList /> </div>
 		}
+	}
 
-		var pending_events = all_events.filter(event => event.status === "Pending")
-		pending_events.sort((a, b) => new Date(a.startTime).getTime() > new Date(b.startTime).getTime() ? 1 : -1 )
-		
-		var complete_events = all_events.filter(event => event.status !== "Pending")
-		complete_events.sort((a, b) => new Date(a.startTime).getTime() > new Date(b.startTime).getTime() ? 1 : -1 )
-		
-		this.setState({
-			pending_events: pending_events,
-			events: complete_events
-		});
-	}
-  
-	DataTable(kind) {
-	if (kind === "pending") {
-		return this.state.pending_events.map((res, i) => {
-			return <EventBMTableRow obj={res} key={i} />;
-		});
-	} else if (kind === "completed"){
-		return this.state.events.map((res, i) => {
-			return <EventBMTableRow obj={res} key={i} />;
-		});
-	}
-	}
-  
-  
+
 	render() {
 	  let html
 	  if (this.state.loggedIn) {
-		html = <div className="table-wrapper">
-			<h1> Pending Requests </h1>
-		  <Table striped bordered hover>
-			<thead>
-			  <tr>
-				<th>Event Name</th>
-				<th>Requestor</th>
-				<th>Email</th>
-				<th>Phone</th>
-				<th>Room</th>
-				<th>Start Time</th>
-				<th>End Time</th>
-				<th>Attendance</th>
-				<th>Status</th>
-				<th>Notes</th>
-			  </tr>
-			</thead>
-			<tbody>
-			  {this.DataTable("pending")}
-			</tbody>
-		  </Table>
-			<h1> Completed Requests </h1>
-		 	<Table striped bordered hover>
-		 	<thead>
-		 		<tr>
-				<th>Event Name</th>
-				<th>Requestor</th>
-				<th>Email</th>
-				<th>Phone</th>
-				<th>Room</th>
-				<th>Start Time</th>
-				<th>End Time</th>
-				<th>Attendance</th>
-				<th>Status</th>
-				<th>Notes</th>
-		 		</tr>
-		 	</thead>
-		 	<tbody>
-		 		{this.DataTable("completed")}
-		 	</tbody>
-		 	</Table>
+		html = <div>
+			<Form>
+			<Form.Check 
+				type="switch"
+				id="CalendarView"
+				label="Calendar View"
+				checked={this.state.view}
+				onChange={this.onChangeView}
+				/>
+			</Form>
+			{this.getView()}
 		 </div>
 		} else {
 		  html = <div>
