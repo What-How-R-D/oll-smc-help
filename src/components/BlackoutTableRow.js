@@ -70,8 +70,8 @@ export default class BlackoutTableRow extends Component {
       <tr>
         <td>{this.props.obj.name}</td>
         <td>{this.getRooms(this.props.obj.rooms)}</td>
-        <td>{format(new Date(this.props.obj.startTime), "M/d/yyyy H:mm a")}</td>
-        <td>{format(new Date(this.props.obj.endTime), "M/d/yyyy H:mm a")}</td>
+        <td>{format(new Date(this.props.obj.startTime), "M/d/yyyy hh:mm a")}</td>
+        <td>{format(new Date(this.props.obj.endTime), "M/d/yyyy hh:mm a")}</td>
         <td>
           {/* <Link
             className="edit-link" path={"room/:id"}
