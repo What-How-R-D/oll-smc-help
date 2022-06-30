@@ -58,7 +58,7 @@ export default class CreateRoom extends Component {
       console.log(error);
     })
   
-  url = `http://${process.env.REACT_APP_NODE_IP}:4000/room/find-all`
+  url = `http://${process.env.REACT_APP_NODE_IP}:4000/room/find-all/true`
     await axios.get(url)
       .then(res => {
         this.setState({
