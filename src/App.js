@@ -39,6 +39,8 @@ import PaymentsHub from './components/payments-hub.component'
 import BlackoutList from './components/blackout-list.component'
 import CreateBlackout from './components/blackout-create.component'
 
+import EditEvent from "./components/event-edit.component"
+
 require('dotenv').config()
 
 function App() {
@@ -115,6 +117,8 @@ function App() {
 
                   <Route exact path="/blackout-list" component={(props) => <BlackoutList {...props} />} />
                   <Route exact path="/create-blackout" component={(props) => <CreateBlackout {...props} />} />
+
+                  <Route exact path="/edit-event/:id" component={(props) => <EditEvent {...props} />} />
 
                 </Switch>
               </div>

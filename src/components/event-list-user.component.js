@@ -58,11 +58,11 @@ export default class EventList extends Component {
 
   }
 
-  DataTable() {
-    return this.state.events.map((res, i) => {
-      return <EventUserTableRow obj={res} key={i} />;
-    });
-  }
+  // DataTable() {
+  //   return this.state.events.map((res, i) => {
+  //     return <EventUserTableRow obj={res} key={i} />;
+  //   });
+  // }
 
   DataTable(kind) {
     if (kind === "pending") {
