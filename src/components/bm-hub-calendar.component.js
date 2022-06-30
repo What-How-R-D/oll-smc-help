@@ -21,6 +21,9 @@ export default class BMhubList extends Component {
 	constructor(props) {
 	  
 	  super(props)
+	  
+	  this.mapBlackoutRooms = this.mapBlackoutRooms.bind(this);
+
 	  this.state = {
 		events: [],
 		pending_events: [],
@@ -49,6 +52,7 @@ export default class BMhubList extends Component {
 		  })
 
 		var all_events = []
+		var all_blackouts = []
 		for (let room in user.rooms) {
 			var room_id = user.rooms[room]
 			var url = `http://${process.env.REACT_APP_NODE_IP}:4000/event/find-bm-cal/`
@@ -60,10 +64,26 @@ export default class BMhubList extends Component {
 				.catch((error) => {
 				console.log(error);
 			})
+			
+			url = `http://${process.env.REACT_APP_NODE_IP}:4000/blackout/find-all`
+			await axios.get(url)
+				.then(res => {
+					var room_blackouts = res.data.filter(item => item.rooms.includes(room_id))
+					all_blackouts.push(...room_blackouts)
+				})
+				.catch((error) => {
+					console.log(error);
+				});
 		}
 
+		var filtered_blackouts = all_blackouts.map(e => e["_id"])
+			// store the keys of the unique objects
+			.map((e, i, final) => final.indexOf(e) === i && i)
+			// eliminate the dead keys & store unique objects
+			.filter(e => all_blackouts[e]).map(e => all_blackouts[e]);
+			
 		this.setState({
-			all_events: all_events.map(
+			all_events: [...all_events.map(
 				({ startTime, endTime, name, room, status, _id, requestor, notes}) => ({
 				  start: new Date(startTime),
 				  end: new Date(endTime),
@@ -73,8 +93,24 @@ export default class BMhubList extends Component {
 				  id: _id,
 				  requestor: requestor,
 				  notes: notes,
-				})) 
+				})), 
+				...filtered_blackouts.map(
+					({ startTime, endTime, name, rooms, status, _id, requestor, notes}) => ({
+					  start: new Date(startTime),
+					  end: new Date(endTime),
+					  title: "ADMIN RESERVED - " + this.mapBlackoutRooms(rooms_map, rooms) + ": " + name,
+					  status: "Blackout",
+					  allDay: false,
+					  requestor: requestor,
+					  notes: notes,
+				})) ]
 		});
+	}
+
+	mapBlackoutRooms(map, rooms){		
+		return rooms.map( (room) => {
+			return map.get(room)
+		})
 	}
   
 	handleChangeView = (view, date) => {
@@ -95,7 +131,7 @@ export default class BMhubList extends Component {
 		var url = `http://${process.env.REACT_APP_NODE_IP}:4000/event/approve/`
 		axios.put(url + id, {status: "Approved"})
 		  .then((res) => {
-			console.log('User successfully updated')
+			console.log('Event successfully approved')
 		  }).catch((error) => {
 			console.log(error)
 		  })
@@ -105,31 +141,37 @@ export default class BMhubList extends Component {
 		var url = `http://${process.env.REACT_APP_NODE_IP}:4000/event/reject/`
 		axios.put(url + id, {status: "Rejected", reason: reason})
 		.then((res) => {
-		  console.log('User successfully updated')
+		  console.log('Event successfully rejected')
 		}).catch((error) => {
 		  console.log(error)
 		})
 	  }
 
 	swalTrigger = async (event) => {
-		console.log(event)
-		 
-		var url = `http://${process.env.REACT_APP_NODE_IP}:4000/users/find-id/`
-		console.log(url)
-		var user = await axios.get(url + event.requestor)
-		  .then(res => {
-			return res.data
+		if (event.status !== "Blackout") {
+			var url = `http://${process.env.REACT_APP_NODE_IP}:4000/users/find-id/`
+			var user = await axios.get(url + event.requestor)
+			.then(res => {
+				return res.data
+				})
+			.catch((error) => {
+				console.log(error);
 			})
-		  .catch((error) => {
-			console.log(error);
-		  })
-		console.log(user)
-		var text = `Requestor: ${user.name}<br>Email: ${user.email}<br>Phone: ${user.phone}<br>Requestor notes: ${event.notes}`
+			var text = `Requestor: ${user.name}<br>Email: ${user.email}<br>Phone: ${user.phone}<br>Requestor notes: ${event.notes}`
+		}
 		
 		if (event.status === "Approved") {
 			Swal.fire({
 				title: event.title,
 				html: text,
+				showConfirmButton: false,
+				showCancelButton: true,
+				cancelButtonText: `Cancel`,
+				showDenyButton: false,
+			})
+		} else if (event.status === "Blackout") {
+			Swal.fire({
+				title: event.title,
 				showConfirmButton: false,
 				showCancelButton: true,
 				cancelButtonText: `Cancel`,
@@ -165,7 +207,6 @@ export default class BMhubList extends Component {
 							event.status = "Approved"
 
 							const index = this.state.all_events.findIndex((aEvent) => aEvent.id === event.id);
-							console.log(index)
 							const updated_all_events = update(this.state.all_events, {$splice: [[index, 1, event]]});
 							this.setState({all_events: updated_all_events});
 						}
@@ -190,7 +231,6 @@ export default class BMhubList extends Component {
 							event.status = "Rejected"
 
 							const index = this.state.all_events.findIndex((aEvent) => aEvent.id === event.id);
-							console.log(index)
 							const updated_all_events = update(this.state.all_events, {$splice: [[index, 1]]});
 							this.setState({all_events: updated_all_events});
 						}
@@ -223,7 +263,7 @@ export default class BMhubList extends Component {
 				views={['month', 'week', 'day']}
 				eventPropGetter={(event) => ({
 					style: {
-					backgroundColor: event.status === "Approved" ? '#3174ad' : '#FF0000' ,
+					backgroundColor: ["Approved", "Blackout"].includes(event.status)  ? '#3174ad' : '#FF0000' ,
 					},
 				})}
 				/>
