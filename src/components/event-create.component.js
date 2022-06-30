@@ -291,6 +291,8 @@ export default class CreateEventRequest extends Component {
     e.preventDefault()
     var eventRequestObject = {}
     if (this.state.loggedIn) {
+      var paid = false
+      if (this.state.user_emp_min) { paid=true }
       eventRequestObject = {
         name: this.state.name,
         requestor: this.state.user_id,
@@ -301,6 +303,7 @@ export default class CreateEventRequest extends Component {
         endTime: this.state.endTime,
         lockStartTime: this.state.lockStartTime,
         lockEndTime: this.state.lockEndTime,
+        paid: paid,
       };
     } else {
       eventRequestObject = {
