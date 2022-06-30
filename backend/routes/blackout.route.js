@@ -9,10 +9,46 @@ let blackoutSchema = require('../models/blackout')
 
 // const sendNotification = require("../middleware/mailer")
 // const calendarJWT = require("../middleware/calendar")
-// const findRoomData = require("../middleware/find_room")
+const findRoomData = require("../middleware/find_room")
+const calendarJWT = require("../middleware/calendar")
 
 router.route('/create').post(async (req, res, next) => {
-	blackoutSchema.create(req.body, (error, data) => {
+	req.body.gcal_id = []
+
+	var gcal_events = {}
+	for await (const x of req.body.rooms) {
+		var room_data = await findRoomData(x)
+		if (room_data.calendar_id in gcal_events) {
+			gcal_events[room_data.calendar_id].push(room_data.name)
+		} else {
+			gcal_events[room_data.calendar_id] = [room_data.name]
+		}
+	}
+
+	for ( cal in gcal_events) {
+		var event = {
+			'summary': `ADMIN RESERVED: ${gcal_events[cal]} - ${req.body.name}`,
+			'start': {
+				'dateTime': req.body.startTime,
+				'timeZone': 'America/Chicago',
+			},
+			'end': {
+				'dateTime': req.body.endTime,
+				'timeZone': 'America/Chicago',
+			},
+			};
+
+		const gcal_id = await calendar.events.insert({
+			auth: calendarJWT(),
+			calendarId: cal,
+			resource: event,
+			}
+		).then((event) => {return event.data.id})
+		.catch((err) => { console.log("Error Creating Calender Event:", err); });
+		req.body.gcal_id.push( {calendar: cal, event_id: gcal_id} )
+	}
+
+	blackoutSchema.create(req.body, async (error, data) => {
 	  if (error) {
 		return next(error)
 	  } else {
@@ -121,7 +157,26 @@ router.route('/create').post(async (req, res, next) => {
 
 // 	})
 
-router.route('/delete/:id').delete((req, res) => {
+router.route('/delete/:id').delete( async (req, res) => {
+	const event_data = await blackoutSchema.findByIdAndUpdate(
+		req.params.id,
+		{ $set: req.body, },
+		(error, data) => {
+		  if (error) { return next(error)
+		  } else { res.json(data) }
+		},
+	  ).clone()
+
+	for ( cal in event_data.gcal_id) {
+		await calendar.events.delete({
+			auth: calendarJWT(),
+			calendarId: event_data.gcal_id[cal].calendar,
+			eventId: event_data.gcal_id[cal].event_id,
+			}
+		).then((event) => { console.log("Deleted from Google calendar") })
+		.catch((err) => { console.log("Error Creating Calender Event:", err); });
+	}
+
 	blackoutSchema.findByIdAndRemove(req.params.id, (error, data) => {
 	  if (error) {
 		return next(error)
@@ -131,6 +186,7 @@ router.route('/delete/:id').delete((req, res) => {
 		})
 	  }
 	})
+
   })
 
 router.route('/find-all').get((req, res) => {

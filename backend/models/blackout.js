@@ -5,6 +5,7 @@ const blackoutSchema = new mongoose.Schema(
 	{
 		name: { type: String },
 		rooms: [{type: String}],
+		gcal_id: [ {type: Object} ],
 		startTime: {type: Date}, 
 		endTime: {type: Date},
 		requestor: {type: String},

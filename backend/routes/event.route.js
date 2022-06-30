@@ -73,24 +73,19 @@ router.route('/update/:id').put(async (req, res, next) => {
   })
 
 router.route('/approve/:id').put(async (req, res, next) => {
-	console.log(req.params)
-
 	const event_data = await eventSchema.findByIdAndUpdate(
 		req.params.id,
 		{ $set: req.body, },
 		(error, data) => {
 		  if (error) {
 			return next(error)
-			console.log(error)
 		  } else {
 			res.json(data)
 			return data
 		  }
 		},
 	  ).clone()
-	console.log('res')
-	console.log(event_data)
-
+	
 	var subject=`${event_data.name} building request has been approved`
 	var body=`Your event ${event_data.name} building request has been approved.  It is scheduled from ${event_data.startTime} to ${event_data.endTime}.  The doors will unlock at ${event_data.lockStartTime} and the doors will lock at ${event_data.lockEndTime}.`
 	sendNotification(event_data.email, subject, body)
