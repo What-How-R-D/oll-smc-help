@@ -33,6 +33,7 @@ export const checkLogin = async function()  {
 			console.log("logged in")
 			return true
 		} else {
+			localStorage.removeItem("token")
 			console.log('logged out')
 			return false
 		}

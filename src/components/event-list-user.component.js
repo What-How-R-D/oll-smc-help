@@ -18,17 +18,15 @@ export default class EventList extends Component {
       loggedIn: checkLogin(),
     };
   }
-
-  // componentWillMount() {
-  //   const isLoggedIn = checkLogin()
-  //   if (isLoggedIn){
-  //     this.setState({ loggedIn: true })
-  //   } else {
-  //     this.setState({ loggedIn: false })
-  //   }
-  // }
-
+  
   async componentDidMount() {
+    const isLoggedIn = await checkLogin()
+    if (isLoggedIn){
+      this.setState({ loggedIn: true })
+    } else {
+      this.setState({ loggedIn: false })
+    }
+
     const user = await findUser()
 
     var url = `http://${process.env.REACT_APP_NODE_IP}:4000/event/find-user-sorted/${user._id}/${new Date().getTime()}/999`
