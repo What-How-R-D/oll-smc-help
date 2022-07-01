@@ -38,6 +38,7 @@ export default class CreateEventRequest extends Component {
     this.onChangeRequestorEmail = this.onChangeRequestorEmail.bind(this);
     this.onChangeRequestorPhone = this.onChangeRequestorPhone.bind(this);
     this.onChangeWillBePresent = this.onChangeWillBePresent.bind(this);
+    this.onChangeNotes = this.onChangeNotes.bind(this);
     this.onSubmit = this.onSubmit.bind(this);
 
     // Setting up state
@@ -54,6 +55,7 @@ export default class CreateEventRequest extends Component {
       requestorName: '',
       requestorEmail: '',
       requestorPhone: '',
+      notes: '',
       //
       events: [],
       defaultView: "week",
@@ -251,6 +253,7 @@ export default class CreateEventRequest extends Component {
   onChangeRequestorName(e) { this.setState({ requestorName: e.target.value }) }
   onChangeRequestorEmail(e) { this.setState({ requestorEmail: e.target.value }) }
   onChangeRequestorPhone(e) { this.setState({ requestorPhone: e.target.value }) }
+  onChangeNotes(e) { this.setState({ notes: e.target.value }) }
   onChangeWillBePresent(e) { this.setState(({ willBePresent }) => ({ willBePresent: !willBePresent })) }
 
   onChangeName(e) {
@@ -304,6 +307,7 @@ export default class CreateEventRequest extends Component {
         lockStartTime: this.state.lockStartTime,
         lockEndTime: this.state.lockEndTime,
         paid: paid,
+        notes: this.state.notes,
       };
     } else {
       eventRequestObject = {
@@ -317,6 +321,7 @@ export default class CreateEventRequest extends Component {
         endTime: this.state.endTime,
         lockStartTime: this.state.lockStartTime,
         lockEndTime: this.state.lockEndTime,
+        notes: this.state.notes,
       };
     };
 
@@ -377,6 +382,9 @@ export default class CreateEventRequest extends Component {
             clearIcon={null}
           />
         </div>
+
+        Notes
+        <textarea value={this.state.notes} onChange={this.onChangeNotes} />
 
         <Form.Check 
           type="switch"

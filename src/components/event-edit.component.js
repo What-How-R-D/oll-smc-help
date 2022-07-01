@@ -39,6 +39,7 @@ export default class CreateEventRequest extends Component {
     this.onChangeRequestorEmail = this.onChangeRequestorEmail.bind(this);
     this.onChangeRequestorPhone = this.onChangeRequestorPhone.bind(this);
     this.onChangeWillBePresent = this.onChangeWillBePresent.bind(this);
+    this.onChangeNotes = this.onChangeNotes.bind(this);
     this.onSubmit = this.onSubmit.bind(this);
 
     // Setting up state
@@ -59,6 +60,7 @@ export default class CreateEventRequest extends Component {
       token: "",
       requestor: "",
       status: "",
+      notes: "",
       //
       events: [],
       defaultView: "week",
@@ -100,6 +102,7 @@ export default class CreateEventRequest extends Component {
           requestorPhone: res.data.requestorPhone,
           defaultDate: new Date(res.data.startTime),
           token: res.data.token,
+          notes: res.data.notes,
         })
       })
       .catch((error) => {
@@ -115,7 +118,7 @@ export default class CreateEventRequest extends Component {
         user_emp_min: user.emp_min,
       })
 
-    if (this.state.user_id.toString() !== this.state.id) {
+    if (!(this.state.user_id.toString() === this.state.requestor || jwt.verify(this.props.match.params.token, this.state.id))) {
         await Swal.fire({
           title: "Unauthenticated",
           icon: 'warning',
@@ -128,22 +131,7 @@ export default class CreateEventRequest extends Component {
           this.props.history.push("/")
         )
       }
-		} else {
-      // Need to check the token
-      if (!jwt.verify(this.props.match.params.token, this.state.id)){
-        await Swal.fire({
-          title: "Unauthenticated",
-          icon: 'warning',
-          html: "You do not have permission to edit this event.",
-          showConfirmButton: false,
-          showCancelButton: true,
-          cancelButtonText: `Return to home`,
-          showDenyButton: false,
-        }).then(
-          this.props.history.push("/")
-        )
-      }
-    }
+		}
     
     if (this.state.status !== "Pending") {
       await Swal.fire({
@@ -319,6 +307,7 @@ export default class CreateEventRequest extends Component {
   onChangeRequestorName(e) { this.setState({ requestorName: e.target.value }) }
   onChangeRequestorEmail(e) { this.setState({ requestorEmail: e.target.value }) }
   onChangeRequestorPhone(e) { this.setState({ requestorPhone: e.target.value }) }
+  onChangeNotes(e) { this.setState({ notes: e.target.value }) }
   onChangeWillBePresent(e) { this.setState(({ willBePresent }) => ({ willBePresent: !willBePresent })) }
 
   onChangeName(e) {
@@ -372,6 +361,7 @@ export default class CreateEventRequest extends Component {
         lockStartTime: this.state.lockStartTime,
         lockEndTime: this.state.lockEndTime,
         paid: paid,
+        notes: this.state.notes,
       };
     } else {
       eventRequestObject = {
@@ -385,6 +375,7 @@ export default class CreateEventRequest extends Component {
         endTime: this.state.endTime,
         lockStartTime: this.state.lockStartTime,
         lockEndTime: this.state.lockEndTime,
+        notes: this.state.notes,
       };
     };
 
@@ -444,6 +435,9 @@ export default class CreateEventRequest extends Component {
             clearIcon={null}
           />
         </div>
+
+        Notes
+        <textarea value={this.state.notes} onChange={this.onChangeNotes} />
 
         <Form.Check 
           type="switch"
