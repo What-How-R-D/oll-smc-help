@@ -41,7 +41,7 @@ export default class RoomTableRow extends Component {
   buttons() {
       if ( ["Pending"].includes(this.props.obj.status) ) {
       return <td>
-          <Link className="edit-link" path={"edit-event/:id"} to={'/edit-event/' + this.props.obj._id} > Edit Event </Link> 
+          <Link className="edit-link" path={"edit-event/:id/:token"} to={`/edit-event/${this.props.obj._id}/token`} > Edit Event </Link> 
           <Button type="submit" size="sm" variant="danger" onClick={() => { if (window.confirm('Are you sure you want to cancel this event?')) this.cancelEvent() } }> Request Cancelation </Button> 
         </td>
     } else if ( ["Approved"].includes(this.props.obj.status) ) {

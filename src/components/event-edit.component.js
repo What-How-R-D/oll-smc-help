@@ -72,6 +72,7 @@ export default class CreateEventRequest extends Component {
       willBePresent: false,
     }
   }
+
   async componentDidMount() {
     this.setState({  id: this.props.match.params.id })
 
@@ -81,12 +82,9 @@ export default class CreateEventRequest extends Component {
       this.setState({ loggedIn: false })
     }
     
-
-    
     var url = `http://${process.env.REACT_APP_NODE_IP}:4000/event/find-id/${this.state.id}`
-    var events = await axios.get(url)
+    var event = await axios.get(url)
       .then(res => {
-        console.log(res.data)
         this.setState({
           name: res.data.name,
           room: res.data.room,
@@ -104,21 +102,27 @@ export default class CreateEventRequest extends Component {
           token: res.data.token,
           notes: res.data.notes,
         })
+        return res.data
       })
-      .catch((error) => {
-        console.log(error);
-      });
-
+      .catch((error) => { console.log(error); });
+      
+    var valid_user = false
     var user = await findUser()
     if (user['error'] !== "Unauthorized") {
-      await this.setState({ 
+      console.log("before")
+      this.setState({ 
         loggedIn: true, 
         user_id: user._id, 
         user_email: user.email,
         user_emp_min: user.emp_min,
       })
+      if (this.state.user_id.toString() === this.state.requestor) { valid_user = true }
+    }
 
-    if (!(this.state.user_id.toString() === this.state.requestor || jwt.verify(this.props.match.params.token, this.state.id))) {
+    try { if (await jwt.verify(this.props.match.params.token, this.state.id)) { valid_user = true } } 
+    catch (e) { console.log("token failed"); }
+
+    if (!valid_user) {
         await Swal.fire({
           title: "Unauthenticated",
           icon: 'warning',
@@ -131,9 +135,8 @@ export default class CreateEventRequest extends Component {
           this.props.history.push("/")
         )
       }
-		}
     
-    if (this.state.status !== "Pending") {
+    if (event.status !== "Pending") {
       await Swal.fire({
         title: "Error",
         icon: 'warning',
