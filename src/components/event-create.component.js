@@ -3,6 +3,7 @@ import Form from 'react-bootstrap/Form'
 import Button from 'react-bootstrap/Button';
 import axios from 'axios';
 
+
 import { Calendar, momentLocalizer } from 'react-big-calendar'
 import moment from 'moment'
 import "react-big-calendar/lib/css/react-big-calendar.css";
@@ -10,6 +11,8 @@ import withDragAndDrop from 'react-big-calendar/lib/addons/dragAndDrop';
 import DateTimePicker from 'react-datetime-picker';
 
 import {findUser, checkLogin} from "../api/user"
+
+var crypto = require("crypto");
 
 Date.prototype.addHours= function(h){
   this.setHours(this.getHours()+h);
@@ -21,8 +24,10 @@ Date.prototype.addMins= function(m){
   return this;
 }
 
-export default class CreateEventRequest extends Component {
 
+
+export default class CreateEventRequest extends Component {
+  
   constructor(props) {
   
 
@@ -38,6 +43,10 @@ export default class CreateEventRequest extends Component {
     this.onChangeRequestorEmail = this.onChangeRequestorEmail.bind(this);
     this.onChangeRequestorPhone = this.onChangeRequestorPhone.bind(this);
     this.onChangeWillBePresent = this.onChangeWillBePresent.bind(this);
+    this.onChangeDoesRepeat = this.onChangeDoesRepeat.bind(this);
+    this.onChangeFrequency = this.onChangeFrequency.bind(this);
+    this.onChangeFuzzy = this.onChangeFuzzy.bind(this);
+    this.onChangeRepeatCount = this.onChangeRepeatCount.bind(this);
     this.onChangeNotes = this.onChangeNotes.bind(this);
     this.onSubmit = this.onSubmit.bind(this);
 
@@ -65,6 +74,13 @@ export default class CreateEventRequest extends Component {
       user_emp_min: false,
       loggedIn: false,
       willBePresent: false,
+      doesRepeat: false,
+      repeatFrequency: "monthly",
+      repeatFuzzy: "absolute",
+      repeatCount: 1,
+      repeatDates: [],
+      days_map: ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'],
+      suffix_map: ["st", "nd", "rd", "th", "th", "th", "th", "th", "th", "th", "th", "th", "th", "th", "th", "th", "th", "th", "th", "th", "st", "nd", "rd", "th", "th", "th", "th", "th", "th", "th", "st"]
     }
   }
   async componentDidMount() {
@@ -146,8 +162,75 @@ export default class CreateEventRequest extends Component {
       })
     }
 
+    var repeats = []
+    if (this.state.doesRepeat && this.state.startTime) {        
+        this.setState({ repeatDates: [] })
+        
+        while (this.state.repeatDates.length < this.state.repeatCount) {
+          if (this.state.repeatDates.length !== 0){
+            var prevStart = new Date(this.state.repeatDates[this.state.repeatDates.length-1][0])
+            var prevEnd = new Date(this.state.repeatDates[this.state.repeatDates.length-1][1])
+          } else {
+            var prevStart = new Date(this.state.startTime)
+            var prevEnd = new Date(this.state.endTime)
+          }
+
+          if (this.state.repeatFrequency === "monthly") {
+            if (this.state.repeatFuzzy === "absolute") {
+              var nextStart = new Date(prevStart.setMonth(prevStart.getMonth()+1))
+              var nextEnd = new Date(prevEnd.setMonth(prevEnd.getMonth()+1))
+            } else if (this.state.repeatFuzzy === "relative") {
+              var dow = new Date(prevStart).getDay()
+              var wom = Math.min((0 | new Date(prevStart).getDate() / 7)+1, 4)
+
+              var nextStart = new Date(new Date(prevStart.setMonth(new Date(prevStart).getMonth()+1)).setDate(1))
+              var nextEnd = new Date(new Date(prevEnd.setMonth(new Date(prevEnd).getMonth()+1)).setDate(1))
+
+              nextStart = new Date(nextStart.setDate(
+                  nextStart.getDate() + (( 7 + dow - nextStart.getDay()) % 7 ) + ((wom-1)*7)
+                ))
+              nextEnd = new Date(nextEnd.setDate(
+                  nextEnd.getDate() + (( 7 + dow - nextEnd.getDay()) % 7) + ((wom-1)*7)
+                ))
+                
+            } else if (this.state.repeatFuzzy === "last") {
+              var dow = new Date(prevStart).getDay()
+              var wom = Math.min((0 | new Date(prevStart).getDate() / 7)+1, 4)
+
+              var nextStart = new Date(new Date(prevStart.setMonth(new Date(prevStart).getMonth()+2)).setDate(1))
+              var nextEnd = new Date(new Date(prevEnd.setMonth(new Date(prevEnd).getMonth()+2)).setDate(1))
+
+              nextStart = new Date(nextStart.setDate(
+                nextStart.getDate() + (( 7 + dow - nextStart.getDay()) % 7 ) - 7
+                ))
+              nextEnd = new Date(nextEnd.setDate(
+                nextEnd.getDate() + (( 7 + dow - nextEnd.getDay()) % 7) - 7
+                ))
+            }
+          } else if (this.state.repeatFrequency === "weekly") {
+            var nextStart = new Date(new Date(Number(prevStart)).setDate(prevStart.getDate()+7))
+            var nextEnd = new Date(new Date(Number(prevEnd)).setDate(prevEnd.getDate()+7))       
+          } else if (this.state.repeatFrequency === "daily") {
+            var nextStart = new Date(new Date(Number(prevStart)).setDate(prevStart.getDate()+1))
+            var nextEnd = new Date(new Date(Number(prevEnd)).setDate(prevEnd.getDate()+1))
+          }
+          this.state.repeatDates.push([nextStart, nextEnd])
+        }
+
+        this.state.repeatDates.forEach((element, idx) => {
+                  repeats.push({
+                    start: element[0],
+                    end: element[1],
+                    title: this.state.name,
+                    description: '',
+                    allDay: false,
+                    color: '#009788'
+                  })
+              })
+    }
+
     this.setState({
-      events: [...events, ...blackouts]
+      events: [...events, ...blackouts, ...repeats]
     });
 
   }
@@ -255,10 +338,7 @@ export default class CreateEventRequest extends Component {
   onChangeRequestorPhone(e) { this.setState({ requestorPhone: e.target.value }) }
   onChangeNotes(e) { this.setState({ notes: e.target.value }) }
   onChangeWillBePresent(e) { this.setState(({ willBePresent }) => ({ willBePresent: !willBePresent })) }
-
-  onChangeName(e) {
-    this.setState({ name: e.target.value })
-  }
+  onChangeName(e) { this.setState({ name: e.target.value }) }
 
   async onChangeAttendance(e) {
     var url = `http://${process.env.REACT_APP_NODE_IP}:4000/room/find-all/${this.state.user_emp_min}/`
@@ -282,55 +362,182 @@ export default class CreateEventRequest extends Component {
     this.GetCalendarEvents()
   }
 
-  onChangeLockStartTime(e) {
-    this.setState({ lockStartTime: e })
+  onChangeLockStartTime(e) { this.setState({ lockStartTime: e }) }
+  onChangeLockEndTime(e) { this.setState({ lockEndTime: e }) }
+
+
+  onChangeDoesRepeat(e) { 
+    this.setState(({ doesRepeat }) => ({ doesRepeat: !doesRepeat }));
+    this.GetCalendarEvents()
+   }
+  onChangeFrequency(e) { 
+    this.setState({ repeatFrequency: e.target.value });
+    this.GetCalendarEvents()
+  }
+  onChangeFuzzy(e) { 
+    this.setState({ repeatFuzzy: e.target.value });
+    this.GetCalendarEvents()
+  }
+  onChangeRepeatCount(e) { 
+    this.setState({ repeatCount: e.target.value }); 
+    this.GetCalendarEvents() 
   }
 
-  onChangeLockEndTime(e) {
-    this.setState({ lockEndTime: e })
+
+  Repeater() {
+    if (this.state.loggedIn && this.state.user_emp_min) {
+      return <div><Form.Check 
+                type="switch"
+                id="doesRepeat"
+                label="Event repeat"
+                checked={this.state.doesRepeat}
+                onChange={this.onChangeDoesRepeat}
+              />
+              {this.FindFreq()}
+              </div>
+  }}
+
+  FindFreq() {
+    if (this.state.doesRepeat) {
+      return <div>
+      <Form.Group controlId="RepeatFrequency">
+        <Form.Label>Repeat frequency</Form.Label>
+          <Form.Select onChange={this.onChangeFrequency}>
+            <option key={"monthly"} value={"monthly"}>Monthly</option>
+            <option key={"weekly"} value={"weekly"}>Weekly</option>
+            <option key={"daily"} value={"daily"}>Daily</option>
+          </Form.Select>
+        </Form.Group> 
+        {this.findFuzzyDates()}
+        </div>
+    }
+  }
+
+  getLast(days_to_end, dow){
+      if (days_to_end < 7 ) {
+        return <option key={"last"} value={"last"}>{`On the last ${dow} of each month`}</option>
+      }
+    }
+
+  findFuzzyDates() {
+    if (this.state.repeatFrequency === "monthly") {
+      if (this.state.startTime) {
+        var date = this.state.startTime.getDate()
+        var date_suffix = this.state.suffix_map[date-1]
+        var dow = this.state.days_map[this.state.startTime.getDay()]
+        var wom = Math.min((0 | this.state.startTime.getDate() / 7)+1, 4)
+        var wom_suffix = this.state.suffix_map[wom-1]
+        var date_holder = new Date(this.state.startTime)
+        var days_to_end = new Date(new Date(date_holder.setMonth(new Date(date_holder).getMonth()+1)).setDate(0)).getDate() - date
+
+
+        var absolute = `On the ${date}${date_suffix} of each month`
+        var relative = `On the ${wom}${wom_suffix} ${dow} of each month`
+      } else {
+        var absolute = `On the same date each month`
+        var relative= 'Relative within the month'
+      }
+      return <div>
+            <Form.Group controlId="RepeatInterval">
+              <Form.Label>Repeat Interval</Form.Label>
+                <Form.Select onChange={this.onChangeFuzzy}>
+                  <option key={"absolute"} value={"absolute"}>{absolute}</option>
+                  <option key={"relative"} value={"relative"}>{relative}</option>
+                  {this.getLast(days_to_end, dow)}
+                </Form.Select>
+              </Form.Group> 
+              {this.numberRepeats()}
+        </div>
+    } else if (["weekly", "daily"].includes(this.state.repeatFrequency) ) {
+      return <div>
+              {this.numberRepeats()}
+        </div>
+    }
+  }
+
+  numberRepeats() {
+    if ( ["monthly", ,].includes(this.state.repeatFrequency) ) {
+      return <div>
+      <Form.Group controlId="RepeatFrequency">
+        <Form.Label>Number of repeats</Form.Label>
+          <Form.Select onChange={this.onChangeRepeatCount}>
+              {[...Array(11).keys()].map(i => i + 1).map((option) => {
+                  return <option key={option} value={option}>{option}</option>
+                })}
+          </Form.Select>
+        </Form.Group> 
+        </div>
+    } else if ( ["weekly",].includes(this.state.repeatFrequency)) {
+              return <div>
+              <Form.Group controlId="RepeatFrequency">
+                <Form.Label>Number of repeats</Form.Label>
+                  <Form.Select onChange={this.onChangeRepeatCount}>
+                      {[...Array(51).keys()].map(i => i + 1).map((option) => {
+                          return <option key={option} value={option}>{option}</option>
+                        })}
+                  </Form.Select>
+                </Form.Group> 
+                </div>
+    } else if ( ["daily",].includes(this.state.repeatFrequency)) {
+      return <div>
+      <Form.Group controlId="RepeatFrequency">
+        <Form.Label>Number of repeats</Form.Label>
+          <Form.Select onChange={this.onChangeRepeatCount}>
+              {[...Array(6).keys()].map(i => i + 1).map((option) => {
+                  return <option key={option} value={option}>{option}</option>
+                })}
+          </Form.Select>
+        </Form.Group> 
+        </div>
+    }
   }
 
   async onSubmit(e) {
     e.preventDefault()
     var eventRequestObject = {}
+    eventRequestObject = {
+      name: this.state.name,
+      room: this.state.room,
+      attendance: this.state.attendance,
+      startTime: this.state.startTime,
+      endTime: this.state.endTime,
+      lockStartTime: this.state.lockStartTime,
+      lockEndTime: this.state.lockEndTime,
+      paid: paid,
+      notes: this.state.notes,
+    };
+
     if (this.state.loggedIn) {
       var paid = false
       if (this.state.user_emp_min) { paid=true }
-      eventRequestObject = {
-        name: this.state.name,
-        requestor: this.state.user_id,
-        email: this.state.user_email,
-        room: this.state.room,
-        attendance: this.state.attendance,
-        startTime: this.state.startTime,
-        endTime: this.state.endTime,
-        lockStartTime: this.state.lockStartTime,
-        lockEndTime: this.state.lockEndTime,
-        paid: paid,
-        notes: this.state.notes,
-      };
+      // eventRequestObject.push({
+      eventRequestObject.requestor = this.state.user_id;
+      eventRequestObject.email = this.state.user_email;
+      eventRequestObject.paid = paid;
+      // });
     } else {
-      eventRequestObject = {
-        name: this.state.name,
-        room: this.state.room,
-        contact: this.state.requestorName,
-        email: this.state.requestorEmail,
-        phone: this.state.requestorPhone,
-        attendance: this.state.attendance,
-        startTime: this.state.startTime,
-        endTime: this.state.endTime,
-        lockStartTime: this.state.lockStartTime,
-        lockEndTime: this.state.lockEndTime,
-        notes: this.state.notes,
-      };
+      // eventRequestObject.push{(
+      eventRequestObject.contact = this.state.requestorName;
+      eventRequestObject.email = this.state.requestorEmail;
+      eventRequestObject.phone = this.state.requestorPhone;
+      // )};
     };
 
-    var url = `http://${process.env.REACT_APP_NODE_IP}:4000/event/create`
-    await axios.post(url, eventRequestObject)
-      .then(res => console.log(res.data));
+    if (this.state.doesRepeat) {
+      eventRequestObject.repeat = crypto.randomBytes(20).toString('hex');
+      eventRequestObject.repeatDates = this.state.repeatDates;
+      var url = `http://${process.env.REACT_APP_NODE_IP}:4000/event/create-multiple`
+        await axios.post(url, eventRequestObject)
+          .then(res => console.log(res.data));
+    // } else {
+    //   var url = `http://${process.env.REACT_APP_NODE_IP}:4000/event/create`
+    //     await axios.post(url, eventRequestObject)
+    //       .then(res => console.log(res.data));
+    }
 
-    window.confirm('Thank you for your event request')
-    window.location.reload(true);
+
+    // window.confirm('Thank you for your event request')
+    // window.location.reload(true);
   }
 
   render() {
@@ -385,6 +592,8 @@ export default class CreateEventRequest extends Component {
 
         Notes
         <textarea value={this.state.notes} onChange={this.onChangeNotes} />
+
+        {this.Repeater()}
 
         <Form.Check 
           type="switch"

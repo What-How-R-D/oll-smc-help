@@ -45,6 +45,85 @@ router.route('/create').post(async (req, res, next) => {
 	})
   })
 
+router.route('/create-multiple').post(async (req, res, next) => {
+	const room_data = await findRoomData(req.body.room)
+	
+	var return_data = []
+	var name_temp = req.body.name
+	var num_events = req.body.repeatDates.length + 1
+	req.body.name = `${name_temp} - (1/${num_events})`
+
+	var event = {
+		'summary': `${room_data.name}: ${req.body.name} - PENDING`,
+		'start': {
+		  'dateTime': req.body.startTime,
+		  'timeZone': 'America/Chicago',
+		},
+		'end': {
+		  'dateTime': req.body.endTime,
+		  'timeZone': 'America/Chicago',
+		},
+	  };
+
+	const gcal_id = await calendar.events.insert({
+		auth: calendarJWT(),
+		calendarId: room_data.calendar_id,
+		resource: event,
+	  }
+	).then((event) => {return event.data.id})
+	.catch((err) => { console.log("Error Creating Calender Event:", err); });
+	req.body.event_gcal_id = gcal_id
+	
+	eventSchema.create(req.body, (error, data) => {
+	  if (error) { return next(error) } 
+	  else { return_data.push(data) }
+	})
+
+	for (var idx in req.body.repeatDates){
+		var dates = req.body.repeatDates[idx]
+		let count = req.body.repeatDates.indexOf(dates) + 2
+		req.body.name = `${name_temp} - (${count}/${num_events})`
+		req.body.startTime = dates[0]
+		req.body.endTime = dates[1]
+
+		var start = new Date(dates[0])
+		var end = new Date(dates[1])
+		var lock_start = new Date(req.body.lockStartTime)
+		var lock_end = new Date(req.body.lockEndTime)
+		req.body.lockStartTime = new Date(start.getFullYear(), start.getMonth(), start.getDate(), lock_start.getHours(), lock_start.getMinutes())
+		req.body.lockEndTime = new Date(end.getFullYear(), end.getMonth(), end.getDate(), lock_end.getHours(), lock_end.getMinutes())
+		
+		var event = {
+			'summary': `${room_data.name}: ${req.body.name} - PENDING`,
+			'start': {
+				'dateTime': req.body.startTime,
+				'timeZone': 'America/Chicago',
+			},
+			'end': {
+				'dateTime': req.body.endTime,
+				'timeZone': 'America/Chicago',
+			},
+		};
+
+		const gcal_id = await calendar.events.insert({
+			auth: calendarJWT(),
+			calendarId: room_data.calendar_id,
+			resource: event,
+		}
+		).then((event) => {return event.data.id})
+		.catch((err) => { console.log("Error Creating Calender Event:", err); });
+		req.body.event_gcal_id = gcal_id
+		
+		// console.log(req.body.name)
+		await eventSchema.create(req.body, (error, data) => {
+		if (error) { return next(error) } 
+			else { return_data.push(data) }
+		})
+	}
+	res.json(return_data)
+  })
+
+
 router.route('/update/:id').put(async (req, res, next) => {
 	const event_data = await eventSchema.findByIdAndUpdate(
 	  req.params.id,

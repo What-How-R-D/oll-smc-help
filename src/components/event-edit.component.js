@@ -85,6 +85,7 @@ export default class CreateEventRequest extends Component {
     var url = `http://${process.env.REACT_APP_NODE_IP}:4000/event/find-id/${this.state.id}`
     var event = await axios.get(url)
       .then(res => {
+        console.log(res.data)
         this.setState({
           name: res.data.name,
           room: res.data.room,
@@ -312,10 +313,7 @@ export default class CreateEventRequest extends Component {
   onChangeRequestorPhone(e) { this.setState({ requestorPhone: e.target.value }) }
   onChangeNotes(e) { this.setState({ notes: e.target.value }) }
   onChangeWillBePresent(e) { this.setState(({ willBePresent }) => ({ willBePresent: !willBePresent })) }
-
-  onChangeName(e) {
-    this.setState({ name: e.target.value })
-  }
+  onChangeName(e) { this.setState({ name: e.target.value }) }
 
   async onChangeAttendance(e) {
     var url = `http://${process.env.REACT_APP_NODE_IP}:4000/room/find-all/${this.state.user_emp_min}/`
