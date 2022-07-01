@@ -28,7 +28,6 @@ import CreateRoom from './components/room-create.component'
 import EditRoom from './components/room-edit.component'
 
 import BMhub from './components/bm-hub.component'
-import RejectEvent from './components/event-reject.component'
 
 import HVAChub from './components/hvac-hub.component'
 
@@ -113,7 +112,6 @@ function App() {
                   <Route exact path="/hvac-hub" component={(props) => <HVAChub {...props} />} />
                   <Route exact path="/locks-hub" component={(props) => <LocksHub {...props} />} />
                   <Route exact path="/payments-hub" component={(props) => <PaymentsHub {...props} />} />
-                  <Route exact path="/reject-event/:id" component={(props) => <RejectEvent {...props} />} />
 
                   <Route exact path="/blackout-list" component={(props) => <BlackoutList {...props} />} />
                   <Route exact path="/create-blackout" component={(props) => <CreateBlackout {...props} />} />
