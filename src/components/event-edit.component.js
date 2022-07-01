@@ -9,8 +9,11 @@ import "react-big-calendar/lib/css/react-big-calendar.css";
 import withDragAndDrop from 'react-big-calendar/lib/addons/dragAndDrop';
 import DateTimePicker from 'react-datetime-picker';
 
+import Swal from 'sweetalert2';
+
 import {findUser, checkLogin} from "../api/user"
 
+const jwt = require("jsonwebtoken")
 Date.prototype.addHours= function(h){
   this.setHours(this.getHours()+h);
   return this;
@@ -53,6 +56,9 @@ export default class CreateEventRequest extends Component {
       requestorName: '',
       requestorEmail: '',
       requestorPhone: '',
+      token: "",
+      requestor: "",
+      status: "",
       //
       events: [],
       defaultView: "week",
@@ -73,16 +79,7 @@ export default class CreateEventRequest extends Component {
       this.setState({ loggedIn: false })
     }
     
-    var user = await findUser()
-    
-    if (user['error'] !== "Unauthorized") {
-      this.setState({ 
-        loggedIn: true, 
-        user_id: user._id, 
-        user_email: user.email,
-        user_emp_min: user.emp_min,
-      })
-		}
+
     
     var url = `http://${process.env.REACT_APP_NODE_IP}:4000/event/find-id/${this.state.id}`
     var events = await axios.get(url)
@@ -91,22 +88,77 @@ export default class CreateEventRequest extends Component {
         this.setState({
           name: res.data.name,
           room: res.data.room,
+          status: res.data.status,
           attendance: res.data.attendance,
           startTime: new Date(res.data.startTime),
           endTime: new Date(res.data.endTime),
           lockStartTime: res.data.lockStartTime,
           lockEndTime: res.data.lockEndTime,
+          requestor: res.data.requestor,
           requestorName: res.data.requestorName,
           requestorEmail: res.data.requestorEmail,
           requestorPhone: res.data.requestorPhone,
           defaultDate: new Date(res.data.startTime),
+          token: res.data.token,
         })
       })
       .catch((error) => {
         console.log(error);
       });
 
-    //Do a thing here to make sure it's my event.
+    var user = await findUser()
+    if (user['error'] !== "Unauthorized") {
+      await this.setState({ 
+        loggedIn: true, 
+        user_id: user._id, 
+        user_email: user.email,
+        user_emp_min: user.emp_min,
+      })
+
+    if (this.state.user_id.toString() !== this.state.id) {
+        await Swal.fire({
+          title: "Unauthenticated",
+          icon: 'warning',
+          html: "You do not have permission to edit this event.",
+          showConfirmButton: false,
+          showCancelButton: true,
+          cancelButtonText: `Return to home`,
+          showDenyButton: false,
+        }).then(
+          this.props.history.push("/")
+        )
+      }
+		} else {
+      // Need to check the token
+      if (!jwt.verify(this.props.match.params.token, this.state.id)){
+        await Swal.fire({
+          title: "Unauthenticated",
+          icon: 'warning',
+          html: "You do not have permission to edit this event.",
+          showConfirmButton: false,
+          showCancelButton: true,
+          cancelButtonText: `Return to home`,
+          showDenyButton: false,
+        }).then(
+          this.props.history.push("/")
+        )
+      }
+    }
+    
+    if (this.state.status !== "Pending") {
+      await Swal.fire({
+        title: "Error",
+        icon: 'warning',
+        html: "Only pending events can be updated.",
+        showConfirmButton: false,
+        showCancelButton: true,
+        cancelButtonText: `Return to home`,
+        showDenyButton: false,
+      }).then(
+        this.props.history.push("/")
+      )
+    }
+    
     
     var url = `http://${process.env.REACT_APP_NODE_IP}:4000/room/find-all/${this.state.user_emp_min}/`
     await axios.get(url)
@@ -169,7 +221,6 @@ export default class CreateEventRequest extends Component {
           console.log(error);
         });
     
-    console.log(this.state.startTime)
     if (this.state.startTime) {
       events.push({
         id: 1,
@@ -265,27 +316,6 @@ export default class CreateEventRequest extends Component {
           />
   }
 
-  guest(){
-    if (!this.state.loggedIn) {
-      return <div>
-        <Form.Group controlId="Name">
-          <Form.Label>Requestor Name</Form.Label>
-          <Form.Control type="text" value={this.state.requestorName} onChange={this.onChangeRequestorName} required />
-        </Form.Group>
-
-        <Form.Group controlId="Attendance">
-          <Form.Label>Requestor Email</Form.Label>
-          <Form.Control type="text" defaultValue={this.state.requestorEmail} onChange={this.onChangeRequestorEmail} required />
-        </Form.Group>
-
-        <Form.Group controlId="Attendance">
-          <Form.Label>Requestor Phone Number</Form.Label>
-          <Form.Control type="text" defaultValue={this.state.requestorPhone} onChange={this.onChangeRequestorPhone} required />
-        </Form.Group>
-      </div>
-    }
-  }
-
   onChangeRequestorName(e) { this.setState({ requestorName: e.target.value }) }
   onChangeRequestorEmail(e) { this.setState({ requestorEmail: e.target.value }) }
   onChangeRequestorPhone(e) { this.setState({ requestorPhone: e.target.value }) }
@@ -345,7 +375,7 @@ export default class CreateEventRequest extends Component {
       };
     } else {
       eventRequestObject = {
-        name: this.state.name,
+        name: this.state.requestorName,
         room: this.state.room,
         contact: this.state.requestorName,
         email: this.state.requestorEmail,
@@ -371,7 +401,6 @@ export default class CreateEventRequest extends Component {
     html = <div className="form-wrapper">
       <h1> Edit your event request </h1>
       <Form onSubmit={this.onSubmit}>
-        {this.guest()}
 
         <Form.Group controlId="Name">
           <Form.Label>Event Name</Form.Label>

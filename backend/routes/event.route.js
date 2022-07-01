@@ -1,4 +1,5 @@
 const {google} = require('googleapis');
+const jwt = require("jsonwebtoken")
 let mongoose = require('mongoose'),
   express = require('express'),
   router = express.Router()
@@ -137,6 +138,32 @@ router.route('/reject/:id').put(async (req, res, next) => {
 		).then((event) => { console.log("Deleted from Google calendar") })
 		.catch((err) => { console.log("Error Creating Calender Event:", err); });
 	})
+
+router.route('/request-update/:id').put(async (req, res, next) => {
+
+	const token = await jwt.sign( { id: "verifieduser" }, req.params.id, { expiresIn: "72h", })
+
+	const event_data = await eventSchema.findByIdAndUpdate(
+		req.params.id,
+		{token: token},
+		(error, data) => {
+			if (error) { return next(error)
+			} else { res.json(data) }
+		},
+		).clone()
+	
+	console.log(event_data)
+	console.log(req.body.reason)
+
+	if (event_data.requestor) {
+		var subject=`${event_data.name} building update has been requested`
+		var body=`An update has been requested for your event ${event_data.name}\n
+		The update is asking for: ${req.body.reason}.\n
+		Please go to: http://${process.env.REACT_APP_NODE_IP}:3000/edit-event/${event_data._id}/${token}`
+	}
+
+	sendNotification(event_data.email, subject, body)
+})
 
 router.route('/delete/:id').delete((req, res) => {
 	eventSchema.findByIdAndRemove(req.params.id, (error, data) => {

@@ -24,6 +24,7 @@ const eventSchema = new mongoose.Schema(
 		locksSet: {type:Boolean, default:false},
 		hvacSet: {type:Boolean, default:false},
 		notes: {type:String},
+		token: {type:String},
 	},
  	{ timestamps: true }
 )

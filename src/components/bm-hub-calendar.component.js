@@ -15,8 +15,6 @@ import Swal from 'sweetalert2';
 import {findUser, checkLogin} from "../api/user"
 
 
-
-
 export default class BMhubList extends Component {
 	constructor(props) {
 	  
@@ -147,6 +145,17 @@ export default class BMhubList extends Component {
 		})
 	  }
 
+	requestUpdate(id, reason) {
+		var url = `http://${process.env.REACT_APP_NODE_IP}:4000/event/request-update/`
+		axios.put(url + id, {reason: reason})
+		.then((res) => {
+		  console.log('Event update request has been sent.')
+		}).catch((error) => {
+		  console.log(error)
+		})
+	  }
+
+
 	swalTrigger = async (event) => {
 		if (event.status !== "Blackout") {
 			var url = `http://${process.env.REACT_APP_NODE_IP}:4000/users/find-id/`
@@ -184,13 +193,13 @@ export default class BMhubList extends Component {
 				showConfirmButton: true,
 				confirmButtonText: `Approve`,
 				showCancelButton: true,
-				cancelButtonText: `Cancel`,
+				cancelButtonText: `Request Update`,
 				showDenyButton: true,
 				denyButtonText: `Reject`,
 			})
 			.then((result) => {
 				if (result.isConfirmed) {
-				Swal.fire({
+					Swal.fire({
 						title: event.title,
 						icon: 'warning',
 						html: "Verify event approval",
@@ -207,6 +216,7 @@ export default class BMhubList extends Component {
 							event.status = "Approved"
 
 							const index = this.state.all_events.findIndex((aEvent) => aEvent.id === event.id);
+
 							const updated_all_events = update(this.state.all_events, {$splice: [[index, 1, event]]});
 							this.setState({all_events: updated_all_events});
 						}
@@ -233,6 +243,24 @@ export default class BMhubList extends Component {
 							const index = this.state.all_events.findIndex((aEvent) => aEvent.id === event.id);
 							const updated_all_events = update(this.state.all_events, {$splice: [[index, 1]]});
 							this.setState({all_events: updated_all_events});
+						}
+					});
+				} else if (result.isDismissed && result.dismiss==="cancel") {
+					Swal.fire({
+						title: event.title,
+						icon: 'warning',
+						html: "What kind of update would you like made?",
+						showConfirmButton: true,
+						confirmButtonText: `Request Update`,
+						showCancelButton: true,
+						cancelButtonText: `Cancel`,
+						showDenyButton: false,
+						reverseButtons: true,
+						input: "text",
+					})
+					.then((result) => {
+						if (result.isConfirmed) {
+							this.requestUpdate(event.id, result.value)
 						}
 					});
 				}
