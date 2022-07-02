@@ -5,7 +5,7 @@ import MyEvents from "./event-list-user.component"
 
 
 const Home = (props) => {
-
+  
   return (
     <div>
       <MyEvents/>

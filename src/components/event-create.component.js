@@ -9,6 +9,7 @@ import moment from 'moment'
 import "react-big-calendar/lib/css/react-big-calendar.css";
 import withDragAndDrop from 'react-big-calendar/lib/addons/dragAndDrop';
 import DateTimePicker from 'react-datetime-picker';
+import Swal from 'sweetalert2';
 
 import {findUser, checkLogin} from "../api/user"
 
@@ -527,17 +528,23 @@ export default class CreateEventRequest extends Component {
       eventRequestObject.repeat = crypto.randomBytes(20).toString('hex');
       eventRequestObject.repeatDates = this.state.repeatDates;
       var url = `http://${process.env.REACT_APP_NODE_IP}:4000/event/create-multiple`
-        await axios.post(url, eventRequestObject)
+        axios.post(url, eventRequestObject)
           .then(res => console.log(res.data));
-    // } else {
-    //   var url = `http://${process.env.REACT_APP_NODE_IP}:4000/event/create`
-    //     await axios.post(url, eventRequestObject)
-    //       .then(res => console.log(res.data));
+    } else {
+      var url = `http://${process.env.REACT_APP_NODE_IP}:4000/event/create`
+        axios.post(url, eventRequestObject)
+          .then(res => console.log(res.data));
     }
 
 
-    // window.confirm('Thank you for your event request')
-    // window.location.reload(true);
+    Swal.fire({
+      icon: 'success',
+      title: 'Event request successfully created',
+      showConfirmButton: false,
+      timer: 3000,
+    }).then((result) => {
+      if (result.isDismissed) {window.location.reload(true);}
+    })
   }
 
   render() {
