@@ -112,8 +112,10 @@ export default class CreateRoom extends Component {
           />
       })
     } else if (kind === "bm") {
-      return this.state.rooms_available.map((option) => {
-        if (this.state.rooms_responsible.includes(option._id)) {
+
+      var rooms = this.state.rooms_available.filter( room => this.state.rooms_responsible.includes(room._id) )
+
+      return rooms.map((option) => {
           return <Form.Check 
               type="checkbox"
               key={option._id}
@@ -122,7 +124,6 @@ export default class CreateRoom extends Component {
               checked={this.state.rooms_selected.includes(option._id)}
               onChange={this.onChangeRooms}
             />
-        }
       })
     }
   }

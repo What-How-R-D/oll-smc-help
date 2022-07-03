@@ -1,10 +1,8 @@
 import React, { Component } from "react";
 import { Link } from "react-router-dom"
 import Form from 'react-bootstrap/Form'
-import axios from 'axios';
-import Table from 'react-bootstrap/Table';
 
-import {findUser, checkLogin} from "../api/user"
+import {checkLogin} from "../api/user"
 
 import BMhubList from './bm-hub-list.component.js'
 import BMhubCalendar from './bm-hub-calendar.component.js'
@@ -26,8 +24,6 @@ export default class BMhub extends Component {
 		  } else {
 			this.setState({ loggedIn: false })
 		  }
-
-		var user = await findUser()
 	}
   
 	onChangeView(e) { this.setState(({ view }) => ({ view: !view })) }

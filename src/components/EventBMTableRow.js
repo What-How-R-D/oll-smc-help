@@ -1,5 +1,4 @@
 import React, { Component } from 'react'
-import { Link } from 'react-router-dom'
 import axios from 'axios'
 import Button from 'react-bootstrap/Button'
 import { format } from "date-fns";
@@ -34,7 +33,7 @@ export default class RoomTableRow extends Component {
         console.log(error);
       })
 
-    var url = `http://${process.env.REACT_APP_NODE_IP}:4000/room/find-id/${this.props.obj.room}`
+    url = `http://${process.env.REACT_APP_NODE_IP}:4000/room/find-id/${this.props.obj.room}`
     await axios.get(url)
       .then(res => {
         this.setState({

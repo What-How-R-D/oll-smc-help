@@ -15,16 +15,16 @@ import {findUser, checkLogin} from "../api/user"
 
 var crypto = require("crypto");
 
-Date.prototype.addHours= function(h){
-  this.setHours(this.getHours()+h);
+/*eslint no-extend-native: ["error", { "exceptions": ["Date"] }]*/
+Date.prototype.addHours = function(h) {
+    this.setHours(this.getHours()+h);
   return this;
 }
 
-Date.prototype.addMins= function(m){
-  this.setMinutes(this.getMinutes()+m);
+Date.prototype.addMins = function(m) {
+    this.setMinutes(this.getMinutes()+m);
   return this;
 }
-
 
 
 export default class CreateEventRequest extends Component {
@@ -172,8 +172,8 @@ export default class CreateEventRequest extends Component {
             var prevStart = new Date(this.state.repeatDates[this.state.repeatDates.length-1][0])
             var prevEnd = new Date(this.state.repeatDates[this.state.repeatDates.length-1][1])
           } else {
-            var prevStart = new Date(this.state.startTime)
-            var prevEnd = new Date(this.state.endTime)
+            prevStart = new Date(this.state.startTime)
+            prevEnd = new Date(this.state.endTime)
           }
 
           if (this.state.repeatFrequency === "monthly") {
@@ -184,8 +184,8 @@ export default class CreateEventRequest extends Component {
               var dow = new Date(prevStart).getDay()
               var wom = Math.min((0 | new Date(prevStart).getDate() / 7)+1, 4)
 
-              var nextStart = new Date(new Date(prevStart.setMonth(new Date(prevStart).getMonth()+1)).setDate(1))
-              var nextEnd = new Date(new Date(prevEnd.setMonth(new Date(prevEnd).getMonth()+1)).setDate(1))
+              nextStart = new Date(new Date(prevStart.setMonth(new Date(prevStart).getMonth()+1)).setDate(1))
+              nextEnd = new Date(new Date(prevEnd.setMonth(new Date(prevEnd).getMonth()+1)).setDate(1))
 
               nextStart = new Date(nextStart.setDate(
                   nextStart.getDate() + (( 7 + dow - nextStart.getDay()) % 7 ) + ((wom-1)*7)
@@ -195,11 +195,11 @@ export default class CreateEventRequest extends Component {
                 ))
                 
             } else if (this.state.repeatFuzzy === "last") {
-              var dow = new Date(prevStart).getDay()
-              var wom = Math.min((0 | new Date(prevStart).getDate() / 7)+1, 4)
+              dow = new Date(prevStart).getDay()
+              wom = Math.min((0 | new Date(prevStart).getDate() / 7)+1, 4)
 
-              var nextStart = new Date(new Date(prevStart.setMonth(new Date(prevStart).getMonth()+2)).setDate(1))
-              var nextEnd = new Date(new Date(prevEnd.setMonth(new Date(prevEnd).getMonth()+2)).setDate(1))
+              nextStart = new Date(new Date(prevStart.setMonth(new Date(prevStart).getMonth()+2)).setDate(1))
+              nextEnd = new Date(new Date(prevEnd.setMonth(new Date(prevEnd).getMonth()+2)).setDate(1))
 
               nextStart = new Date(nextStart.setDate(
                 nextStart.getDate() + (( 7 + dow - nextStart.getDay()) % 7 ) - 7
@@ -209,11 +209,11 @@ export default class CreateEventRequest extends Component {
                 ))
             }
           } else if (this.state.repeatFrequency === "weekly") {
-            var nextStart = new Date(new Date(Number(prevStart)).setDate(prevStart.getDate()+7))
-            var nextEnd = new Date(new Date(Number(prevEnd)).setDate(prevEnd.getDate()+7))       
+            nextStart = new Date(new Date(Number(prevStart)).setDate(prevStart.getDate()+7))
+            nextEnd = new Date(new Date(Number(prevEnd)).setDate(prevEnd.getDate()+7))       
           } else if (this.state.repeatFrequency === "daily") {
-            var nextStart = new Date(new Date(Number(prevStart)).setDate(prevStart.getDate()+1))
-            var nextEnd = new Date(new Date(Number(prevEnd)).setDate(prevEnd.getDate()+1))
+            nextStart = new Date(new Date(Number(prevStart)).setDate(prevStart.getDate()+1))
+            nextEnd = new Date(new Date(Number(prevEnd)).setDate(prevEnd.getDate()+1))
           }
           this.state.repeatDates.push([nextStart, nextEnd])
         }
@@ -435,8 +435,8 @@ export default class CreateEventRequest extends Component {
         var absolute = `On the ${date}${date_suffix} of each month`
         var relative = `On the ${wom}${wom_suffix} ${dow} of each month`
       } else {
-        var absolute = `On the same date each month`
-        var relative= 'Relative within the month'
+        absolute = `On the same date each month`
+        relative= 'Relative within the month'
       }
       return <div>
             <Form.Group controlId="RepeatInterval">
@@ -457,7 +457,7 @@ export default class CreateEventRequest extends Component {
   }
 
   numberRepeats() {
-    if ( ["monthly", ,].includes(this.state.repeatFrequency) ) {
+    if ( ["monthly", ].includes(this.state.repeatFrequency) ) {
       return <div>
       <Form.Group controlId="RepeatFrequency">
         <Form.Label>Number of repeats</Form.Label>
@@ -504,7 +504,7 @@ export default class CreateEventRequest extends Component {
       endTime: this.state.endTime,
       lockStartTime: this.state.lockStartTime,
       lockEndTime: this.state.lockEndTime,
-      paid: paid,
+      paid: false,
       notes: this.state.notes,
     };
 
@@ -531,7 +531,7 @@ export default class CreateEventRequest extends Component {
         axios.post(url, eventRequestObject)
           .then(res => console.log(res.data));
     } else {
-      var url = `http://${process.env.REACT_APP_NODE_IP}:4000/event/create`
+      url = `http://${process.env.REACT_APP_NODE_IP}:4000/event/create`
         axios.post(url, eventRequestObject)
           .then(res => console.log(res.data));
     }

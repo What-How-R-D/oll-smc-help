@@ -14,6 +14,8 @@ import Swal from 'sweetalert2';
 import {findUser, checkLogin} from "../api/user"
 
 const jwt = require("jsonwebtoken")
+
+/*eslint no-extend-native: ["error", { "exceptions": ["Date"] }]*/
 Date.prototype.addHours= function(h){
   this.setHours(this.getHours()+h);
   return this;
@@ -152,7 +154,7 @@ export default class CreateEventRequest extends Component {
     }
     
     
-    var url = `http://${process.env.REACT_APP_NODE_IP}:4000/room/find-all/${this.state.user_emp_min}/`
+    url = `http://${process.env.REACT_APP_NODE_IP}:4000/room/find-all/${this.state.user_emp_min}/`
     await axios.get(url)
       .then(res => {
         this.setState({

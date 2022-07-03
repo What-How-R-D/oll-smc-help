@@ -27,7 +27,7 @@ export default class PaymentsTableRow extends Component {
       })
 
       
-      var url = `http://${process.env.REACT_APP_NODE_IP}:4000/users/find-id/`
+      url = `http://${process.env.REACT_APP_NODE_IP}:4000/users/find-id/`
       var user = await axios.get(url + this.props.obj.requestor)
         .then(res => {
           return res.data

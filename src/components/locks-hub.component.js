@@ -25,7 +25,6 @@ export default class LocksHub extends Component {
 			this.setState({ loggedIn: false })
 		  }
 
-		var all_events = []
 		var url = `http://${process.env.REACT_APP_NODE_IP}:4000/event/find-locks/50`
 		var new_events = await axios.get(url)
 			.then(res => {

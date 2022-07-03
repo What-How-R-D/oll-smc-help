@@ -7,8 +7,6 @@ import { Calendar, momentLocalizer } from 'react-big-calendar'
 import moment from 'moment'
 import "react-big-calendar/lib/css/react-big-calendar.css";
 
-import withDragAndDrop from 'react-big-calendar/lib/addons/dragAndDrop';
-import DateTimePicker from 'react-datetime-picker';
 import Swal from 'sweetalert2';
 
 
@@ -40,7 +38,7 @@ export default class BMhubList extends Component {
 
 		var user = await findUser()
 		
-		url = `http://${process.env.REACT_APP_NODE_IP}:4000/room/find-all/true`
+		var url = `http://${process.env.REACT_APP_NODE_IP}:4000/room/find-all/true`
 		var rooms_map = await axios.get(url)
 		  .then(res => {
 			return new Map(res.data.map(i => [i._id, i.name]))
@@ -52,8 +50,8 @@ export default class BMhubList extends Component {
 		var all_events = []
 		var all_blackouts = []
 		for (let room in user.rooms) {
-			var room_id = user.rooms[room]
-			var url = `http://${process.env.REACT_APP_NODE_IP}:4000/event/find-bm-cal/`
+			let room_id = user.rooms[room]
+			url = `http://${process.env.REACT_APP_NODE_IP}:4000/event/find-bm-cal/`
 			await axios.get(url + room_id)
 			.then(res => {
 				var new_events = res.data
