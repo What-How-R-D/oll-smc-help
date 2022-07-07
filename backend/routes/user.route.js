@@ -48,6 +48,8 @@ router.route('/register').post(async (req, res, next) => {
 	let user = await userSchema.findOne({ email })
 	if (user) {
 		return res.status(401).json({ error: "User already exists" })
+	  } else {
+		res.status(200).json({ error: "Account being created" })
 	  }
 
 	const name = req.body.name
@@ -66,12 +68,9 @@ router.route('/register').post(async (req, res, next) => {
 		.then((data) => { return data })
 		.catch((err) => { console.log("Error creating user:", err); });
 
-	console.log(user_data)
 	const token = await jwt.sign( { _id: user_data._id } , user_data.password, { expiresIn: "24h", })
-	console.log(token)
-
 	var subject=`OLL-SMC help email validation`
-	var body=`To reset your password follow this link http://45.33.18.72:3000/validate/${user_data._id}/${token}`
+	var body=`To verify your email please follow this link http://45.33.18.72:3000/validate/${user_data._id}/${token}`
 	sendNotification(user_data.email, subject, body)
 
   })

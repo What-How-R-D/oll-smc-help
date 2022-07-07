@@ -5,6 +5,7 @@ import Form from 'react-bootstrap/Form'
 import Button from 'react-bootstrap/Button';
 import axios from 'axios';
 
+import Swal from 'sweetalert2';
 
 export default class Register extends Component {
 
@@ -38,11 +39,26 @@ export default class Register extends Component {
 			var url = `http://${process.env.REACT_APP_NODE_IP}:4000/users/register`
 			await axios.post(url, this.state)
 			.then((res) => {
-				window.confirm('Thank you please login to your account')
+				console.log(res)
+				Swal.fire({
+					position: 'top-end',
+					icon: 'success',
+					title: 'Thank you for registering!',
+					html: 'Please check your email to validate your account.',
+					showConfirmButton: false,
+					timer: 5000
+				  })
 				this.props.history.push("/login")
 			})
 			.catch( (err) => {
-				window.confirm('Email already exists.  Reset password if necessary.')
+				Swal.fire({
+					position: 'top-end',
+					icon: 'error',
+					title: 'Email already exists.',
+					html: 'Reset password if necessary.',
+					showConfirmButton: false,
+					timer: 5000
+				  })
 				this.props.history.push("/login")
 			})
 
