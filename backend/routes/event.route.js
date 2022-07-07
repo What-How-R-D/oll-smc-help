@@ -3,38 +3,20 @@ const jwt = require("jsonwebtoken")
 let mongoose = require('mongoose'),
   express = require('express'),
   router = express.Router()
-let calendar = google.calendar('v3')
+
 
 let eventSchema = require('../models/event')
 let roomSchema = require('../models/room')
 
 const sendNotification = require("../middleware/mailer")
-const calendarJWT = require("../middleware/calendar")
-const findRoomData = require("../middleware/find_room")
+const calendarEvent = require("../middleware/calendar")
+
 
 router.route('/create').post(async (req, res, next) => {
-	const room_data = await findRoomData(req.body.room)
 	
-	var event = {
-		'summary': `${room_data.name}: ${req.body.name} - PENDING`,
-		'start': {
-		  'dateTime': req.body.startTime,
-		  'timeZone': 'America/Chicago',
-		},
-		'end': {
-		  'dateTime': req.body.endTime,
-		  'timeZone': 'America/Chicago',
-		},
-	  };
-
-	const gcal_id = await calendar.events.insert({
-		auth: calendarJWT(),
-		calendarId: room_data.calendar_id,
-		resource: event,
-	  }
-	).then((event) => {return event.data.id})
-	.catch((err) => { console.log("Error Creating Calender Event:", err); });
-	req.body.event_gcal_id = gcal_id
+	req.body.event_gcal_id = await calendarEvent(req.body, " - PENDING")
+		.then((event) => {return event})
+		.catch((err) => { console.log("Error Creating Calender Event:", err); });
 	
 	eventSchema.create(req.body, (error, data) => {
 	  if (error) {
@@ -45,34 +27,15 @@ router.route('/create').post(async (req, res, next) => {
 	})
   })
 
-router.route('/create-multiple').post(async (req, res, next) => {
-	const room_data = await findRoomData(req.body.room)
-	
+router.route('/create-multiple').post(async (req, res, next) => {	
 	var return_data = []
 	var name_temp = req.body.name
 	var num_events = req.body.repeatDates.length + 1
 	req.body.name = `${name_temp} - (1/${num_events})`
 
-	var event = {
-		'summary': `${room_data.name}: ${req.body.name} - PENDING`,
-		'start': {
-		  'dateTime': req.body.startTime,
-		  'timeZone': 'America/Chicago',
-		},
-		'end': {
-		  'dateTime': req.body.endTime,
-		  'timeZone': 'America/Chicago',
-		},
-	  };
-
-	const gcal_id = await calendar.events.insert({
-		auth: calendarJWT(),
-		calendarId: room_data.calendar_id,
-		resource: event,
-	  }
-	).then((event) => {return event.data.id})
-	.catch((err) => { console.log("Error Creating Calender Event:", err); });
-	req.body.event_gcal_id = gcal_id
+	req.body.event_gcal_id = await calendarEvent(req.body, " - PENDING")
+		.then((event) => {return event})
+		.catch((err) => { console.log("Error Creating Calender Event:", err); });
 	
 	eventSchema.create(req.body, (error, data) => {
 	  if (error) { return next(error) } 
@@ -93,26 +56,14 @@ router.route('/create-multiple').post(async (req, res, next) => {
 		req.body.lockStartTime = new Date(start.getFullYear(), start.getMonth(), start.getDate(), lock_start.getHours(), lock_start.getMinutes())
 		req.body.lockEndTime = new Date(end.getFullYear(), end.getMonth(), end.getDate(), lock_end.getHours(), lock_end.getMinutes())
 		
-		var event = {
-			'summary': `${room_data.name}: ${req.body.name} - PENDING`,
-			'start': {
-				'dateTime': req.body.startTime,
-				'timeZone': 'America/Chicago',
-			},
-			'end': {
-				'dateTime': req.body.endTime,
-				'timeZone': 'America/Chicago',
-			},
-		};
-
-		const gcal_id = await calendar.events.insert({
-			auth: calendarJWT(),
-			calendarId: room_data.calendar_id,
-			resource: event,
-		}
-		).then((event) => {return event.data.id})
-		.catch((err) => { console.log("Error Creating Calender Event:", err); });
-		req.body.event_gcal_id = gcal_id
+		req.body.event_gcal_id = await calendarEvent(req.body, " - PENDING")
+			.then((event) => {return event})
+			.catch((err) => { console.log("Error Creating Calender Event:", err); });
+	
+		eventSchema.create(req.body, (error, data) => {
+			if (error) { return next(error) } 
+			else { return_data.push(data) }
+		})
 		
 		// console.log(req.body.name)
 		await eventSchema.create(req.body, (error, data) => {
@@ -139,15 +90,9 @@ router.route('/update/:id').put(async (req, res, next) => {
 	).clone()
 
 	if (req.body.status === "Canceled") {
-		const room_data = await findRoomData(event_data.room)
-
-		await calendar.events.delete({
-			auth: calendarJWT(),
-			calendarId: room_data.calendar_id,
-			eventId: event_data.event_gcal_id,
-		  }
-		).then((event) => { console.log("Deleted from Google calendar") })
-		.catch((err) => { console.log("Error Creating Calender Event:", err); });
+		const gcal_id = await calendarEvent(event_data, "", "delete")
+		.then((event) => {return event})
+		.catch((err) => { console.log("Error approving calender event:", err); });
 	}
 
   })
@@ -170,28 +115,11 @@ router.route('/approve/:id').put(async (req, res, next) => {
 	var body=`Your event ${event_data.name} building request has been approved.  It is scheduled from ${event_data.startTime} to ${event_data.endTime}.  The doors will unlock at ${event_data.lockStartTime} and the doors will lock at ${event_data.lockEndTime}.`
 	sendNotification(event_data.email, subject, body)
 
-	const room_data = await findRoomData(event_data.room)
-	var event = {
-		'summary': `${room_data.name}: ${event_data.name}`,
-		'start': {
-			'dateTime': event_data.startTime,
-			'timeZone': 'America/Chicago',
-		},
-		'end': {
-			'dateTime': event_data.endTime,
-			'timeZone': 'America/Chicago',
-		},
-		};
+	const gcal_id = await calendarEvent(event_data, "", "update")
+		.then((event) => {return event})
+		.catch((err) => { console.log("Error approving calender event:", err); });
+});
 
-	await calendar.events.update({
-		auth: calendarJWT(),
-		calendarId: room_data.calendar_id,
-		eventId: event_data.event_gcal_id,
-		resource: event,
-		}
-	).then((event) => {console.log("Event approved")})
-	.catch((err) => { console.log("Error Creating Calender Event:", err); });
-	})
 
 router.route('/reject/:id').put(async (req, res, next) => {
 		const event_data = await eventSchema.findByIdAndUpdate(
@@ -207,15 +135,10 @@ router.route('/reject/:id').put(async (req, res, next) => {
 		var body=`Your event ${event_data.name} building request has been reject for the following reason: ${req.body.reason}. \nFor more information please contact the parish office.`
 		sendNotification(event_data.email, subject, body)
 
-		const room_data = await findRoomData(event_data.room)
+		const gcal_id = await calendarEvent(event_data, "", "delete")
+		.then((event) => {return event})
+		.catch((err) => { console.log("Error approving calender event:", err); });
 
-		await calendar.events.delete({
-			auth: calendarJWT(),
-			calendarId: room_data.calendar_id,
-			eventId: event_data.event_gcal_id,
-			}
-		).then((event) => { console.log("Deleted from Google calendar") })
-		.catch((err) => { console.log("Error Creating Calender Event:", err); });
 	})
 
 router.route('/request-update/:id').put(async (req, res, next) => {
