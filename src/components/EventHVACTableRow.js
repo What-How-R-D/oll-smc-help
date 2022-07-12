@@ -35,7 +35,7 @@ export default class HVACTableRow extends Component {
       }).catch((error) => {
         console.log(error)
       })
-    this.window.location.reload(true);
+    window.location.reload(true);
     // this.props.refresh();
   }
 
@@ -47,7 +47,7 @@ export default class HVACTableRow extends Component {
       }).catch((error) => {
         console.log(error)
       })
-    this.window.location.reload(true);
+    window.location.reload(true);
     // this.props.refresh();
   }
 
