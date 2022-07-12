@@ -64,12 +64,6 @@ router.route('/create-multiple').post(async (req, res, next) => {
 			if (error) { return next(error) } 
 			else { return_data.push(data) }
 		})
-		
-		// console.log(req.body.name)
-		await eventSchema.create(req.body, (error, data) => {
-		if (error) { return next(error) } 
-			else { return_data.push(data) }
-		})
 	}
 	res.json(return_data)
   })
