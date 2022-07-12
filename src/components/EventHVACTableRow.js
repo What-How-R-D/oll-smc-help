@@ -35,7 +35,8 @@ export default class HVACTableRow extends Component {
       }).catch((error) => {
         console.log(error)
       })
-      this.props.refresh();
+    this.window.location.reload(true);
+    // this.props.refresh();
   }
 
   removeHVAC() {
@@ -46,7 +47,8 @@ export default class HVACTableRow extends Component {
       }).catch((error) => {
         console.log(error)
       })
-    this.props.refresh();
+    this.window.location.reload(true);
+    // this.props.refresh();
   }
 
   buttons() {
