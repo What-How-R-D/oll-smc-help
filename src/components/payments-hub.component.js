@@ -26,6 +26,7 @@ export default class PaymentsHub extends Component {
 		  } else {
 			this.setState({ loggedIn: false })
 		  }
+		this.getEvents()
 	}
 	
 	async getEvents() {
