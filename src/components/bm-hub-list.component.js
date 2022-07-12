@@ -30,12 +30,10 @@ export default class BMhubList extends Component {
 
 		var user = await findUser()
 		this.setState({ user: user })
-		console.log(this.state.user)
 		this.getEvents()
 	}
 
 	async getEvents() {
-		console.log(this.state.user)
 		var all_events = []
 		for (let room in this.state.user.rooms) {
 			var room_id = this.state.user.rooms[room]
