@@ -50,7 +50,7 @@ export default class PaymentsTableRow extends Component {
       }).catch((error) => {
         console.log(error)
       })
-    this.window.location.reload(true);
+    window.location.reload(true);
     // this.props.refresh();
   }
 
