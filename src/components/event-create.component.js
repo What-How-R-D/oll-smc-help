@@ -551,12 +551,12 @@ export default class CreateEventRequest extends Component {
           .then(res => console.log(res.data));
     }
 
-
     Swal.fire({
       icon: 'success',
       title: 'Event request successfully created',
+      html: 'You will receive an email when the building manager approves or rejects your request(s)',
       showConfirmButton: false,
-      timer: 3000,
+      timer: 5000,
     }).then((result) => {
       if (result.isDismissed) {window.location.reload(true);}
     })
