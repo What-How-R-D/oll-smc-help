@@ -51,7 +51,7 @@ module.exports = async function (event_data, status, kind="create") {
 		  'dateTime': event_data.endTime,
 		  'timeZone': 'America/Chicago',
 		},
-		'description': `Requester: ${req_name}\nRequester email: ${req_email}\nRequester Phone: ${req_phone}\nRequester Notes: ${event_data.notes}\nEvent Attendance: ${event_data.attendance}\nUnlock time: ${format(new Date(event_data.lockStartTime), "M/d/yyyy H:mm a")}\nLock time: ${format(new Date(event_data.lockEndTime), "M/d/yyyy H:mm a")}\nHVAC set: ${event_data.hvacSet}\nLocks set: ${event_data.locksSet}\nPayments received: ${event_data.paid}`
+		'description': `Requester: ${req_name}\nRequester email: ${req_email}\nRequester Phone: ${req_phone}\nRequester Notes: ${event_data.notes}\nEvent Attendance: ${event_data.attendance}\nUnlock time: ${format(new Date(event_data.lockStartTime), "M/d/yyyy h:mm a")}\nLock time: ${format(new Date(event_data.lockEndTime), "M/d/yyyy h:mm a")}\nHVAC set: ${event_data.hvacSet}\nLocks set: ${event_data.locksSet}\nPayments received: ${event_data.paid}`
 	  };
 
 	if (kind==='update'){

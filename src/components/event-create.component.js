@@ -521,6 +521,8 @@ export default class CreateEventRequest extends Component {
       lockEndTime: this.state.lockEndTime,
       paid: false,
       notes: this.state.notes,
+      locksSet: false,
+      hvacSet: false,
     };
 
     if ( this.state.loggedIn && !this.state.onBehalfOf ) {
