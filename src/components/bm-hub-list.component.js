@@ -85,7 +85,7 @@ export default class BMhubList extends Component {
 			<thead>
 			  <tr>
 				<th>Event Name</th>
-				<th>Requestor</th>
+				<th>Requester</th>
 				<th>Email</th>
 				<th>Phone</th>
 				<th>Room</th>
@@ -105,7 +105,7 @@ export default class BMhubList extends Component {
 		 	<thead>
 		 		<tr>
 				<th>Event Name</th>
-				<th>Requestor</th>
+				<th>Requester</th>
 				<th>Email</th>
 				<th>Phone</th>
 				<th>Room</th>

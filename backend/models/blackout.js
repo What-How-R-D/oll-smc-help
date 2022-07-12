@@ -8,7 +8,7 @@ const blackoutSchema = new mongoose.Schema(
 		gcal_id: [ {type: Object} ],
 		startTime: {type: Date}, 
 		endTime: {type: Date},
-		requestor: {type: String},
+		requester: {type: String},
 	},
  	{ timestamps: true }
 )

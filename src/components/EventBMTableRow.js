@@ -22,7 +22,7 @@ export default class RoomTableRow extends Component {
 
 
   async componentDidMount() {
-    var url = `http://${process.env.REACT_APP_NODE_IP}:4000/users/find-id/${this.props.obj.requestor}`
+    var url = `http://${process.env.REACT_APP_NODE_IP}:4000/users/find-id/${this.props.obj.requester}`
     await axios.get(url)
       .then(res => {
         this.setState({

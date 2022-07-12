@@ -11,7 +11,7 @@ export default class PaymentsTableRow extends Component {
       super(props)
       this.state = {
         room_name: "",
-        requestor: "",
+        requester: "",
         user: {},
       };
     }
@@ -28,7 +28,7 @@ export default class PaymentsTableRow extends Component {
 
       
       url = `http://${process.env.REACT_APP_NODE_IP}:4000/users/find-id/`
-      var user = await axios.get(url + this.props.obj.requestor)
+      var user = await axios.get(url + this.props.obj.requester)
         .then(res => {
           return res.data
           })

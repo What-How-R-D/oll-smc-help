@@ -37,9 +37,9 @@ export default class CreateEventRequest extends Component {
     this.onChangeRoom = this.onChangeRoom.bind(this);
     this.onChangeLockStartTime = this.onChangeLockStartTime.bind(this);
     this.onChangeLockEndTime = this.onChangeLockEndTime.bind(this);
-    this.onChangeRequestorName = this.onChangeRequestorName.bind(this);
-    this.onChangeRequestorEmail = this.onChangeRequestorEmail.bind(this);
-    this.onChangeRequestorPhone = this.onChangeRequestorPhone.bind(this);
+    this.onChangeRequesterName = this.onChangeRequesterName.bind(this);
+    this.onChangeRequesterEmail = this.onChangeRequesterEmail.bind(this);
+    this.onChangeRequesterPhone = this.onChangeRequesterPhone.bind(this);
     this.onChangeWillBePresent = this.onChangeWillBePresent.bind(this);
     this.onChangeNotes = this.onChangeNotes.bind(this);
     this.onSubmit = this.onSubmit.bind(this);
@@ -56,11 +56,11 @@ export default class CreateEventRequest extends Component {
       endTime: '',
       lockStartTime: '',
       lockEndTime: '',
-      requestorName: '',
-      requestorEmail: '',
-      requestorPhone: '',
+      requesterName: '',
+      requesterEmail: '',
+      requesterPhone: '',
       token: "",
-      requestor: "",
+      requester: "",
       status: "",
       notes: "",
       //
@@ -96,10 +96,10 @@ export default class CreateEventRequest extends Component {
           endTime: new Date(res.data.endTime),
           lockStartTime: res.data.lockStartTime,
           lockEndTime: res.data.lockEndTime,
-          requestor: res.data.requestor,
-          requestorName: res.data.requestorName,
-          requestorEmail: res.data.requestorEmail,
-          requestorPhone: res.data.requestorPhone,
+          requester: res.data.requester,
+          requesterName: res.data.requesterName,
+          requesterEmail: res.data.requesterEmail,
+          requesterPhone: res.data.requesterPhone,
           defaultDate: new Date(res.data.startTime),
           token: res.data.token,
           notes: res.data.notes,
@@ -117,7 +117,7 @@ export default class CreateEventRequest extends Component {
         user_email: user.email,
         user_emp_min: user.emp_min,
       })
-      if (this.state.user_id.toString() === this.state.requestor) { valid_user = true }
+      if (this.state.user_id.toString() === this.state.requester) { valid_user = true }
     }
 
     try { if (await jwt.verify(this.props.match.params.token, this.state.id)) { valid_user = true } } 
@@ -313,9 +313,9 @@ export default class CreateEventRequest extends Component {
           />
   }
 
-  onChangeRequestorName(e) { this.setState({ requestorName: e.target.value }) }
-  onChangeRequestorEmail(e) { this.setState({ requestorEmail: e.target.value }) }
-  onChangeRequestorPhone(e) { this.setState({ requestorPhone: e.target.value }) }
+  onChangeRequesterName(e) { this.setState({ requesterName: e.target.value }) }
+  onChangeRequesterEmail(e) { this.setState({ requesterEmail: e.target.value }) }
+  onChangeRequesterPhone(e) { this.setState({ requesterPhone: e.target.value }) }
   onChangeNotes(e) { this.setState({ notes: e.target.value }) }
   onChangeWillBePresent(e) { this.setState(({ willBePresent }) => ({ willBePresent: !willBePresent })) }
   onChangeName(e) { this.setState({ name: e.target.value }) }
@@ -358,7 +358,7 @@ export default class CreateEventRequest extends Component {
       if (this.state.user_emp_min) { paid=true }
       eventRequestObject = {
         name: this.state.name,
-        requestor: this.state.user_id,
+        requester: this.state.user_id,
         email: this.state.user_email,
         room: this.state.room,
         attendance: this.state.attendance,
@@ -371,11 +371,11 @@ export default class CreateEventRequest extends Component {
       };
     } else {
       eventRequestObject = {
-        name: this.state.requestorName,
+        name: this.state.requesterName,
         room: this.state.room,
-        contact: this.state.requestorName,
-        email: this.state.requestorEmail,
-        phone: this.state.requestorPhone,
+        contact: this.state.requesterName,
+        email: this.state.requesterEmail,
+        phone: this.state.requesterPhone,
         attendance: this.state.attendance,
         startTime: this.state.startTime,
         endTime: this.state.endTime,

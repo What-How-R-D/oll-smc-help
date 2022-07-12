@@ -214,7 +214,7 @@ router.route('/find-all').get((req, res) => {
 // 		if (error) {
 // 		  return next(error)
 // 		} else {
-// 			userEvent=data.filter(item => item.requestor === req.params.id)
+// 			userEvent=data.filter(item => item.requester === req.params.id)
 // 		  	res.json(userEvent)
 // 		}
 // 	  })

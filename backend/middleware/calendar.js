@@ -29,8 +29,8 @@ module.exports = async function (event_data, status, kind="create") {
 	});
 
 	const room_data = await findRoomData(event_data.room)
-	if (event_data.requestor) {
-		const user_data = await findUserData(event_data.requestor)
+	if (event_data.requester) {
+		const user_data = await findUserData(event_data.requester)
 		var req_name = user_data.name
 		var req_email = user_data.email
 		var phone = user_data.phone
@@ -40,7 +40,7 @@ module.exports = async function (event_data, status, kind="create") {
 		var req_phone = event_data.phone
 	}
 
-	const user_data = await findUserData(event_data.requestor)
+	const user_data = await findUserData(event_data.requester)
 	var event = {
 		'summary': `${room_data.name}: ${event_data.name}${status}`,
 		'start': {
@@ -51,7 +51,7 @@ module.exports = async function (event_data, status, kind="create") {
 		  'dateTime': event_data.endTime,
 		  'timeZone': 'America/Chicago',
 		},
-		'description': `Requestor: ${req_name}\nRequestor email: ${req_email}\nRequestor Phone: ${req_phone}\nRequestor Notes: ${event_data.notes}\nEvent Attendance: ${event_data.attendance}\nUnlock time: ${format(new Date(event_data.lockStartTime), "M/d/yyyy H:mm a")}\nLock time: ${format(new Date(event_data.lockEndTime), "M/d/yyyy H:mm a")}\n`
+		'description': `Requester: ${req_name}\nRequester email: ${req_email}\nRequester Phone: ${req_phone}\nRequester Notes: ${event_data.notes}\nEvent Attendance: ${event_data.attendance}\nUnlock time: ${format(new Date(event_data.lockStartTime), "M/d/yyyy H:mm a")}\nLock time: ${format(new Date(event_data.lockEndTime), "M/d/yyyy H:mm a")}\n`
 	  };
 
 	if (kind==='update'){

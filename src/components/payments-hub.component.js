@@ -64,7 +64,7 @@ export default class PaymentsHub extends Component {
 					<th>Room</th>
 					<th>Start Time</th>
 					<th>End Time</th>
-					<th>Requestor</th>
+					<th>Requester</th>
 					<th>Email</th>
 					<th>Phone</th>
 				</tr>
@@ -81,7 +81,7 @@ export default class PaymentsHub extends Component {
 					<th>Room</th>
 					<th>Start Time</th>
 					<th>End Time</th>
-					<th>Requestor</th>
+					<th>Requester</th>
 					<th>Email</th>
 					<th>Phone</th>
 				</tr>

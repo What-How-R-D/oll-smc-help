@@ -4,7 +4,7 @@ var moment = require('moment');
 const eventSchema = new mongoose.Schema(
 	{
 		name: { type: String },
-		requestor: { type: String },
+		requester: { type: String },
 		event_gcal_id: { type: String },
 		attendance: { type: Number },
 		contact: {type: String},

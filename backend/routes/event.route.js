@@ -151,7 +151,7 @@ router.route('/request-update/:id').put(async (req, res, next) => {
 	console.log(event_data)
 	console.log(req.body.reason)
 
-	if (event_data.requestor) {
+	if (event_data.requester) {
 		var subject=`${event_data.name} building update has been requested`
 		var body=`An update has been requested for your event ${event_data.name}\n
 		The update is asking for: ${req.body.reason}.\n
@@ -251,7 +251,7 @@ router.route('/find-user/:id').get((req, res) => {
 		if (error) {
 		  return next(error)
 		} else {
-			userEvent=data.filter(item => item.requestor === req.params.id)
+			userEvent=data.filter(item => item.requester === req.params.id)
 		  	res.json(userEvent)
 		}
 	  })
@@ -262,7 +262,7 @@ router.route('/find-user-sorted/:id/:start/:end').get((req, res) => {
 			if (error) {
 			  return next(error)
 			} else {
-				userEvent=data.filter(item => item.requestor === req.params.id)
+				userEvent=data.filter(item => item.requester === req.params.id)
 				  
 				var valid_events = userEvent.filter(item => new Date(item.endTime).getTime() > req.params.start)
 				valid_events.sort((a, b) => new Date(a.startTime).getTime() > new Date(b.startTime).getTime() ? 1 : -1 )

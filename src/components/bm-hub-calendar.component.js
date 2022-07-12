@@ -80,24 +80,27 @@ export default class BMhubList extends Component {
 			
 		this.setState({
 			all_events: [...all_events.map(
-				({ startTime, endTime, name, room, status, _id, requestor, notes}) => ({
+				({ startTime, endTime, name, room, status, _id, requester, notes, contact, email, phone}) => ({
 				  start: new Date(startTime),
 				  end: new Date(endTime),
 				  title: rooms_map.get(room) + ": " + name,
 				  status: status,
 				  allDay: false,
 				  id: _id,
-				  requestor: requestor,
+				  requester: requester,
 				  notes: notes,
+				  contact: contact,
+				  email: email,
+				  phone: phone
 				})), 
 				...filtered_blackouts.map(
-					({ startTime, endTime, name, rooms, status, _id, requestor, notes}) => ({
+					({ startTime, endTime, name, rooms, status, _id, requester, notes}) => ({
 					  start: new Date(startTime),
 					  end: new Date(endTime),
 					  title: "ADMIN RESERVED - " + this.mapBlackoutRooms(rooms_map, rooms) + ": " + name,
 					  status: "Blackout",
 					  allDay: false,
-					  requestor: requestor,
+					  requester: requester,
 					  notes: notes,
 				})) ]
 		});
@@ -156,15 +159,19 @@ export default class BMhubList extends Component {
 
 	swalTrigger = async (event) => {
 		if (event.status !== "Blackout") {
-			var url = `http://${process.env.REACT_APP_NODE_IP}:4000/users/find-id/`
-			var user = await axios.get(url + event.requestor)
-			.then(res => {
-				return res.data
+			if (event.requester){ 
+				var url = `http://${process.env.REACT_APP_NODE_IP}:4000/users/find-id/`
+				var user = await axios.get(url + event.requester)
+				.then(res => {
+					return res.data
+					})
+				.catch((error) => {
+					console.log(error);
 				})
-			.catch((error) => {
-				console.log(error);
-			})
-			var text = `Requestor: ${user.name}<br>Email: ${user.email}<br>Phone: ${user.phone}<br>Requestor notes: ${event.notes}`
+				var text = `requester: ${user.name}<br>Email: ${user.email}<br>Phone: ${user.phone}<br>Requester notes: ${event.notes}`
+			} else {
+				text = `Requester: ${event.contact}<br>Email: ${event.email}<br>Phone: ${event.phone}<br>Requester notes: ${event.notes}`
+			}
 		}
 		
 		if (event.status === "Approved") {

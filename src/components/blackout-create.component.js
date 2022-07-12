@@ -31,7 +31,7 @@ export default class CreateRoom extends Component {
       rooms_available: [],
       rooms_selected: [],
       rooms_responsible: [],
-      requestor: "",
+      requester: "",
     }
   }
 
@@ -48,7 +48,7 @@ export default class CreateRoom extends Component {
   await axios.get(url + user._id)
     .then(res => {
       this.setState({
-        requestor: user._id,
+        requester: user._id,
         user_type: res.data.type,
         user_bm: res.data.bm,
         rooms_responsible: res.data.rooms,
@@ -148,7 +148,7 @@ export default class CreateRoom extends Component {
       rooms: this.state.rooms_selected,
       startTime: this.state.startTime,
       endTime: this.state.endTime,
-      requestor: this.state.requestor,
+      requester: this.state.requester,
     };
     var url = `http://${process.env.REACT_APP_NODE_IP}:4000/blackout/create`
     axios.post(url, roomObject)

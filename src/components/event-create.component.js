@@ -40,15 +40,16 @@ export default class CreateEventRequest extends Component {
     this.onChangeRoom = this.onChangeRoom.bind(this);
     this.onChangeLockStartTime = this.onChangeLockStartTime.bind(this);
     this.onChangeLockEndTime = this.onChangeLockEndTime.bind(this);
-    this.onChangeRequestorName = this.onChangeRequestorName.bind(this);
-    this.onChangeRequestorEmail = this.onChangeRequestorEmail.bind(this);
-    this.onChangeRequestorPhone = this.onChangeRequestorPhone.bind(this);
+    this.onChangeRequesterName = this.onChangeRequesterName.bind(this);
+    this.onChangeRequesterEmail = this.onChangeRequesterEmail.bind(this);
+    this.onChangeRequesterPhone = this.onChangeRequesterPhone.bind(this);
     this.onChangeWillBePresent = this.onChangeWillBePresent.bind(this);
     this.onChangeDoesRepeat = this.onChangeDoesRepeat.bind(this);
     this.onChangeFrequency = this.onChangeFrequency.bind(this);
     this.onChangeFuzzy = this.onChangeFuzzy.bind(this);
     this.onChangeRepeatCount = this.onChangeRepeatCount.bind(this);
     this.onChangeNotes = this.onChangeNotes.bind(this);
+    this.onChangeOnBehalfOf = this.onChangeOnBehalfOf.bind(this);
     this.onSubmit = this.onSubmit.bind(this);
 
     // Setting up state
@@ -62,9 +63,9 @@ export default class CreateEventRequest extends Component {
       endTime: '',
       lockStartTime: '',
       lockEndTime: '',
-      requestorName: '',
-      requestorEmail: '',
-      requestorPhone: '',
+      requesterName: '',
+      requesterEmail: '',
+      requesterPhone: '',
       notes: '',
       //
       events: [],
@@ -75,6 +76,7 @@ export default class CreateEventRequest extends Component {
       user_emp_min: false,
       loggedIn: false,
       willBePresent: false,
+      onBehalfOf: false,
       doesRepeat: false,
       repeatFrequency: "monthly",
       repeatFuzzy: "absolute",
@@ -84,8 +86,8 @@ export default class CreateEventRequest extends Component {
       suffix_map: ["st", "nd", "rd", "th", "th", "th", "th", "th", "th", "th", "th", "th", "th", "th", "th", "th", "th", "th", "th", "th", "st", "nd", "rd", "th", "th", "th", "th", "th", "th", "th", "st"]
     }
   }
-  async componentDidMount() {
-    
+
+  async componentDidMount() {  
     if (await checkLogin()){
       this.setState({ loggedIn: true })
     } else {
@@ -314,31 +316,44 @@ export default class CreateEventRequest extends Component {
   }
 
   guest(){
-    if (!this.state.loggedIn) {
+    if (!this.state.loggedIn || this.state.onBehalfOf) {
       return <div>
         <Form.Group controlId="Name">
-          <Form.Label>Requestor Name</Form.Label>
-          <Form.Control type="text" value={this.state.requestorName} onChange={this.onChangeRequestorName} required />
+          <Form.Label>Requester Name</Form.Label>
+          <Form.Control type="text" value={this.state.requesterName} onChange={this.onChangeRequesterName} required />
         </Form.Group>
 
         <Form.Group controlId="Attendance">
-          <Form.Label>Requestor Email</Form.Label>
-          <Form.Control type="text" defaultValue={this.state.requestorEmail} onChange={this.onChangeRequestorEmail} required />
+          <Form.Label>Requester Email</Form.Label>
+          <Form.Control type="text" defaultValue={this.state.requesterEmail} onChange={this.onChangeRequesterEmail} required />
         </Form.Group>
 
         <Form.Group controlId="Attendance">
-          <Form.Label>Requestor Phone Number</Form.Label>
-          <Form.Control type="text" defaultValue={this.state.requestorPhone} onChange={this.onChangeRequestorPhone} required />
+          <Form.Label>Requester Phone Number</Form.Label>
+          <Form.Control type="text" defaultValue={this.state.requesterPhone} onChange={this.onChangeRequesterPhone} required />
         </Form.Group>
       </div>
     }
   }
 
-  onChangeRequestorName(e) { this.setState({ requestorName: e.target.value }) }
-  onChangeRequestorEmail(e) { this.setState({ requestorEmail: e.target.value }) }
-  onChangeRequestorPhone(e) { this.setState({ requestorPhone: e.target.value }) }
+  onBehalfSwitch() {
+    if (this.state.loggedIn) {
+    return <Form.Check 
+        type="switch"
+        id="onBehalfOf"
+        label="Make a request for someone else."
+        checked={this.state.onBehalfOf}
+        onChange={this.onChangeOnBehalfOf}
+      />
+    }
+  }
+
+  onChangeRequesterName(e) { this.setState({ requesterName: e.target.value }) }
+  onChangeRequesterEmail(e) { this.setState({ requesterEmail: e.target.value }) }
+  onChangeRequesterPhone(e) { this.setState({ requesterPhone: e.target.value }) }
   onChangeNotes(e) { this.setState({ notes: e.target.value }) }
   onChangeWillBePresent(e) { this.setState(({ willBePresent }) => ({ willBePresent: !willBePresent })) }
+  onChangeOnBehalfOf(e) { this.setState(({ onBehalfOf }) => ({ onBehalfOf: !onBehalfOf })) }
   onChangeName(e) { this.setState({ name: e.target.value }) }
 
   async onChangeAttendance(e) {
@@ -508,19 +523,19 @@ export default class CreateEventRequest extends Component {
       notes: this.state.notes,
     };
 
-    if (this.state.loggedIn) {
+    if ( this.state.loggedIn && !this.state.onBehalfOf ) {
       var paid = false
-      if (this.state.user_emp_min) { paid=true }
+      if (this.state.user_emp_min && !this.state.onBehalfOf) { paid=true }
       // eventRequestObject.push({
-      eventRequestObject.requestor = this.state.user_id;
+      eventRequestObject.requester = this.state.user_id;
       eventRequestObject.email = this.state.user_email;
       eventRequestObject.paid = paid;
       // });
     } else {
       // eventRequestObject.push{(
-      eventRequestObject.contact = this.state.requestorName;
-      eventRequestObject.email = this.state.requestorEmail;
-      eventRequestObject.phone = this.state.requestorPhone;
+      eventRequestObject.contact = this.state.requesterName;
+      eventRequestObject.email = this.state.requesterEmail;
+      eventRequestObject.phone = this.state.requesterPhone;
       // )};
     };
 
@@ -552,6 +567,8 @@ export default class CreateEventRequest extends Component {
     html = <div className="form-wrapper">
       <h1> Create a new event request </h1>
       <Form onSubmit={this.onSubmit}>
+        {this.onBehalfSwitch()}
+
         {this.guest()}
 
         <Form.Group controlId="Name">
