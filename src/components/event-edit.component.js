@@ -389,8 +389,15 @@ export default class CreateEventRequest extends Component {
     await axios.put(url, eventRequestObject)
       .then(res => console.log(res.data));
 
-    window.confirm('Thank you for updating your event request')
-    window.location.reload(true);
+      Swal.fire({
+        icon: 'success',
+        title: 'Event updated successfully',
+        html: 'You will receive an email when the building manager approves or rejects your request(s)',
+        showConfirmButton: false,
+        timer: 5000,
+      }).then((result) => {
+        if (result.isDismissed) {this.props.history.push("/");}
+      })
   }
 
   render() {
