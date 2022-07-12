@@ -1,6 +1,5 @@
 #!/bin/bash
 
-git pull 
 npm run build
 
-rsync -avP build/ /var/www/example.com/
+rsync -avP build/ root@45.33.18.72:/var/www/ollsmc-help.com/
