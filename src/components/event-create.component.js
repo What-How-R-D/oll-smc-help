@@ -120,7 +120,7 @@ export default class CreateEventRequest extends Component {
     var url = `http://${process.env.REACT_APP_NODE_IP}:4000/event/find-all`
     var events = await axios.get(url)
       .then(res => {
-        var room_events = res.data.filter(item => item.status !== "Canceled").filter(item => item.room === this.state.room)
+        var room_events = res.data.filter(item => !["Rejected", "Canceled"].includes(item.status)).filter(item => item.room === this.state.room)
 
         return room_events.map(
           ({ startTime, endTime, name}) => ({
