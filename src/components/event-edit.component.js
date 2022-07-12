@@ -87,7 +87,6 @@ export default class CreateEventRequest extends Component {
     var url = `http://${process.env.REACT_APP_NODE_IP}:4000/event/find-id/${this.state.id}`
     var event = await axios.get(url)
       .then(res => {
-        console.log(res.data)
         this.setState({
           name: res.data.name,
           room: res.data.room,
@@ -108,11 +107,10 @@ export default class CreateEventRequest extends Component {
         return res.data
       })
       .catch((error) => { console.log(error); });
-      
+    
     var valid_user = false
     var user = await findUser()
     if (user['error'] !== "Unauthorized") {
-      console.log("before")
       this.setState({ 
         loggedIn: true, 
         user_id: user._id, 
@@ -158,19 +156,24 @@ export default class CreateEventRequest extends Component {
     await axios.get(url)
       .then(res => {
         this.setState({
-          rooms: res.data.filter(item => item.occupancy > this.state.attendance)
+          rooms: res.data.filter(item => item.occupancy >= this.state.attendance)
         });
       })
       .catch((error) => {
         console.log(error);
       })
-
+    
     this.GetCalendarEvents()
   }
   
   OptionList() {
     return this.state.rooms.map((option) => {
-      return <option key={option._id} value={option._id}>{option.name}</option>
+      // if (option._id === this.state.room) {
+      //   return <option key={option._id} value={option._id} selected>{option.name}</option>
+      // } else {
+        return <option key={option._id} value={option._id}>{option.name}</option>
+      // }
+      
     })
   }
 
@@ -408,7 +411,7 @@ export default class CreateEventRequest extends Component {
 
         <Form.Group controlId="Room">
         <Form.Label>Room</Form.Label>
-          <Form.Select id="disabledSelect" onChange={this.onChangeRoom}>
+          <Form.Select id="disabledSelect" onChange={this.onChangeRoom} value={this.state.room}>
             {this.OptionList()}
           </Form.Select>
         </Form.Group>
