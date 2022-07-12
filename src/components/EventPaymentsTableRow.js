@@ -26,7 +26,7 @@ export default class PaymentsTableRow extends Component {
         console.log(error);
       })
 
-      
+    if (this.props.obj.requester) {
       url = `http://${process.env.REACT_APP_NODE_IP}:4000/users/find-id/`
       var user = await axios.get(url + this.props.obj.requester)
         .then(res => {
@@ -36,6 +36,10 @@ export default class PaymentsTableRow extends Component {
           console.log(error);
         })
       this.setState({ user:user });
+    } else {
+      this.setState({ user: {name: this.props.obj.contact , email: this.props.obj.email , phone: this.props.obj.phone} });
+    }
+
   }
 
   recordPayment() {
