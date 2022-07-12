@@ -11,6 +11,9 @@ let roomSchema = require('../models/room')
 const sendNotification = require("../middleware/mailer")
 const calendarEvent = require("../middleware/calendar")
 
+const findRoomData = require("../middleware/find_room")
+
+const { format } = require('date-fns');
 
 router.route('/create').post(async (req, res, next) => {
 	
@@ -105,8 +108,16 @@ router.route('/approve/:id').put(async (req, res, next) => {
 		},
 	  ).clone()
 	
-	var subject=`${event_data.name} building request has been approved`
-	var body=`Your event ${event_data.name} building request has been approved.  It is scheduled from ${event_data.startTime} to ${event_data.endTime}.  The doors will unlock at ${event_data.lockStartTime} and the doors will lock at ${event_data.lockEndTime}.`
+	var room_data = await findRoomData(event_data.room)
+	var subject=`${event_data.name} has been APPROVED`
+	var body=`Your event ${event_data.name} has been approved.\nThe event details are as follows:
+	Room: ${room_data.name}
+	Event start time: ${format(new Date(event_data.startTime), "M/d/yyyy h:mm a")}
+	Event end time: ${format(new Date(event_data.endTime), "M/d/yyyy h:mm a")}
+	Door unlock time: ${format(new Date(event_data.lockStartTime), "M/d/yyyy h:mm a")}
+	Door lock time: ${format(new Date(event_data.lockEndTime), "M/d/yyyy h:mm a")}
+	`
+
 	sendNotification(event_data.email, subject, body)
 
 	const gcal_id = await calendarEvent(event_data, "", "update")
@@ -125,8 +136,9 @@ router.route('/reject/:id').put(async (req, res, next) => {
 			},
 		  ).clone()
 
-		var subject=`${event_data.name} building request has been rejected`
+		var subject=`${event_data.name} has been REJECTED`
 		var body=`Your event ${event_data.name} building request has been reject for the following reason: ${req.body.reason}. \nFor more information please contact the parish office.`
+
 		sendNotification(event_data.email, subject, body)
 
 		const gcal_id = await calendarEvent(event_data, "", "delete")
@@ -147,15 +159,10 @@ router.route('/request-update/:id').put(async (req, res, next) => {
 			} else { res.json(data) }
 		},
 		).clone()
-	
-	console.log(event_data)
-	console.log(req.body.reason)
 
 	if (event_data.requester) {
-		var subject=`${event_data.name} building update has been requested`
-		var body=`An update has been requested for your event ${event_data.name}\n
-		The update is asking for: ${req.body.reason}.\n
-		Please go to: http://${process.env.REACT_APP_NODE_IP}:3000/edit-event/${event_data._id}/${token}`
+		var subject=`${event_data.name} UPDATE REQUESTED`
+		var body=`An update has been requested for your event: ${event_data.name}\n\nThe update is asking for: ${req.body.reason}.\n\nPlease go to: http://${process.env.REACT_APP_NODE_IP}:3000/edit-event/${event_data._id}/${token}`
 	}
 
 	sendNotification(event_data.email, subject, body)
