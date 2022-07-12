@@ -86,7 +86,15 @@ router.route('/update/:id').put(async (req, res, next) => {
 	  },
 	).clone()
 
-	if (req.body.status === "Canceled") {
+	if (event_data.status === "Pending") {
+		const gcal_id = await calendarEvent(event_data, " - PENDING", "update")
+		.then((event) => {return event})
+		.catch((err) => { console.log("Error approving calender event:", err); });
+	} else if (event_data.status === "Approved") {
+		const gcal_id = await calendarEvent(event_data, "", "update")
+		.then((event) => {return event})
+		.catch((err) => { console.log("Error approving calender event:", err); });
+	} else if (event_data.status === "Canceled") {
 		const gcal_id = await calendarEvent(event_data, "", "delete")
 		.then((event) => {return event})
 		.catch((err) => { console.log("Error approving calender event:", err); });
