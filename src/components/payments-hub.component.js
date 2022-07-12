@@ -28,7 +28,7 @@ export default class PaymentsHub extends Component {
 		  }
 	}
 	
-	getEvents() {
+	async getEvents() {
 		var url = `http://${process.env.REACT_APP_NODE_IP}:4000/event/find-paid/50`
 		var new_events = await axios.get(url)
 			.then(res => {
