@@ -189,8 +189,8 @@ export default class CreateEventRequest extends Component {
 
         return room_events.map(
           ({ startTime, endTime, name}) => ({
-            start: new Date(startTime).addHours(-2),
-            end: new Date(endTime).addHours(2),
+            start: new Date(Math.max(new Date(startTime).addHours(-2), new Date(endTime).setHours(0,0,0,1))),
+            end: new Date(Math.min(new Date(endTime).addHours(2), new Date(endTime).setHours(23,59,59,999))),
             title: "Reserved",
             description: '',
             allDay: false,
