@@ -35,7 +35,7 @@ export default class EventLocksTableRow extends Component {
       }).catch((error) => {
         console.log(error)
       })
-    window.location.reload(true);
+    this.props.refresh();
   }
 
   removeLocks() {
@@ -46,7 +46,7 @@ export default class EventLocksTableRow extends Component {
       }).catch((error) => {
         console.log(error)
       })
-    window.location.reload(true);
+      this.props.refresh();
   }
 
   buttons() {

@@ -10,6 +10,9 @@ import EventLocksTableRow from './EventLocksTableRow.js'
 export default class LocksHub extends Component {
 	constructor(props) {
 	  super(props)
+	  
+	  this.getEvents = this.getEvents.bind(this)
+
 	  this.state = {
 		completed_events: [],
 		canceled_events: [],
@@ -24,7 +27,10 @@ export default class LocksHub extends Component {
 		  } else {
 			this.setState({ loggedIn: false })
 		  }
-
+		this.getEvents()
+	}
+	
+	async getEvents() {
 		var url = `http://${process.env.REACT_APP_NODE_IP}:4000/event/find-locks/50`
 		var new_events = await axios.get(url)
 			.then(res => {
@@ -44,15 +50,15 @@ export default class LocksHub extends Component {
 	DataTable(kind) {
 	if (kind === "approved") {
 		return this.state.approved_events.map((res, i) => {
-			return <EventLocksTableRow obj={res} key={i} />;
+			return <EventLocksTableRow obj={res} key={i} refresh={this.getEvents} />;
 		});
 	} else if (kind === "completed"){
 		return this.state.completed_events.map((res, i) => {
-			return <EventLocksTableRow obj={res} key={i} />;
+			return <EventLocksTableRow obj={res} key={i} refresh={this.getEvents} />;
 		});
 	} else if (kind === "canceled"){
 		return this.state.canceled_events.map((res, i) => {
-			return <EventLocksTableRow obj={res} key={i} />;
+			return <EventLocksTableRow obj={res} key={i} refresh={this.getEvents} />;
 		});
 	}
 	}
