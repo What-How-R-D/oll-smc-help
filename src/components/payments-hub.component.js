@@ -10,6 +10,9 @@ import EventPaymentsTableRow from './EventPaymentsTableRow.js'
 export default class PaymentsHub extends Component {
 	constructor(props) {
 	  super(props)
+
+		this.getEvents = this.getEvents.bind(this);
+
 	  this.state = {
 		paid_events: [],
 		unpaid_events: [],
@@ -23,7 +26,9 @@ export default class PaymentsHub extends Component {
 		  } else {
 			this.setState({ loggedIn: false })
 		  }
-		
+	}
+	
+	getEvents() {
 		var url = `http://${process.env.REACT_APP_NODE_IP}:4000/event/find-paid/50`
 		var new_events = await axios.get(url)
 			.then(res => {
@@ -42,11 +47,11 @@ export default class PaymentsHub extends Component {
 	DataTable(kind) {
 	if (kind === "unpaid") {
 		return this.state.unpaid_events.map((res, i) => {
-			return <EventPaymentsTableRow obj={res} key={i} />;
+			return <EventPaymentsTableRow obj={res} key={i} refresh={this.getEvents} />;
 		});
 	} else if (kind === "paid"){
 		return this.state.paid_events.map((res, i) => {
-			return <EventPaymentsTableRow obj={res} key={i} />;
+			return <EventPaymentsTableRow obj={res} key={i} refresh={this.getEvents} />;
 		});
 	}
 	}
