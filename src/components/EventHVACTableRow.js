@@ -67,8 +67,8 @@ export default class HVACTableRow extends Component {
       <tr>
         <td>{this.props.obj.name}</td>
         <td>{this.state.room_name}</td>
-        <td>{format(new Date(this.props.obj.startTime), "M/d/yyyy H:mm a")}</td>
-        <td>{format(new Date(this.props.obj.endTime), "M/d/yyyy H:mm a")}</td>
+        <td>{format(new Date(this.props.obj.startTime), "M/d/yyyy h:mm a")}</td>
+        <td>{format(new Date(this.props.obj.endTime), "M/d/yyyy h:mm a")}</td>
         {this.buttons()}
       </tr>
     )
