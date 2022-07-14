@@ -3,14 +3,13 @@ let mongoose = require('mongoose'),
   express = require('express'),
   router = express.Router()
 let calendar = google.calendar('v3')
+let privatekey = require("../middleware//ollsmc.json");
+const SCOPES = ['https://www.googleapis.com/auth/calendar.events'];
 
 let blackoutSchema = require('../models/blackout')
 // let roomSchema = require('../models/room')
 
-// const sendNotification = require("../middleware/mailer")
-// const calendarJWT = require("../middleware/calendar")
 const findRoomData = require("../middleware/find_room")
-const calendarJWT = require("../middleware/calendar")
 
 router.route('/create').post(async (req, res, next) => {
 	req.body.gcal_id = []
@@ -24,6 +23,22 @@ router.route('/create').post(async (req, res, next) => {
 			gcal_events[room_data.calendar_id] = [room_data.name]
 		}
 	}
+
+	// configure a JWT auth client
+	let jwtClient = new google.auth.JWT(
+		privatekey.client_email,
+		null,
+		privatekey.private_key,
+		SCOPES);
+	//authenticate request
+	jwtClient.authorize(function (err, tokens) {
+		if (err) {
+			console.log(err);
+			return;
+		} else {
+			console.log("Successfully connected to calendar");
+		}
+	});
 
 	for ( cal in gcal_events) {
 		var event = {
@@ -39,7 +54,7 @@ router.route('/create').post(async (req, res, next) => {
 			};
 
 		const gcal_id = await calendar.events.insert({
-			auth: calendarJWT(),
+			auth: jwtClient,
 			calendarId: cal,
 			resource: event,
 			}

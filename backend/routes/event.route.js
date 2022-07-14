@@ -9,7 +9,7 @@ let eventSchema = require('../models/event')
 let roomSchema = require('../models/room')
 
 const sendNotification = require("../middleware/mailer")
-const calendarEvent = require("../middleware/calendar")
+const calendarEvent = require("../middleware/calendar_event")
 
 const findRoomData = require("../middleware/find_room")
 
