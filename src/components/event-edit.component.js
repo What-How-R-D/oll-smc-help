@@ -302,7 +302,6 @@ export default class CreateEventRequest extends Component {
           startAccessor="start"
           endAccessor="end"
           defaultView={this.state.defaultView}
-          style={{ height: '70vh' }}
           onSelectSlot={this.handleCalendarSelect}
           onNavigate={this.handleOnNavigate}
           onView={this.handleChangeView}
