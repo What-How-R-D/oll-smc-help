@@ -316,8 +316,8 @@ router.route('/find-bm-list/:id/:limit').get((req, res) => {
 		} else {
 			// var all_events = []
 
-			var needs_work = data.filter(item => item.room === req.params.id).filter(item => ["Pending"].includes(item.status))
-			var done = data.filter(item => item.room === req.params.id).filter(item => !["Pending"].includes(item.status)).sort((a, b) => new Date(a.startTime).getTime() > new Date(b.startTime).getTime() ? 1 : -1 ).slice(0, req.params.limit)
+			var needs_work = data.filter(item => item.room === req.params.id).filter(item => ["Pending"].includes(item.status)).filter(event => new Date(event.endTime).getTime() > new Date())
+			var done = data.filter(item => item.room === req.params.id).filter(item => !["Pending"].includes(item.status)).sort((a, b) => new Date(a.startTime).getTime() > new Date(b.startTime).getTime() ? 1 : -1 ).slice(0, req.params.limit).filter(event => new Date(event.endTime).getTime() > new Date())
 
 			res.json([...needs_work, ...done])
 		}
