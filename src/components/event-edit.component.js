@@ -37,6 +37,8 @@ export default class CreateEventRequest extends Component {
     this.onChangeRoom = this.onChangeRoom.bind(this);
     this.onChangeLockStartTime = this.onChangeLockStartTime.bind(this);
     this.onChangeLockEndTime = this.onChangeLockEndTime.bind(this);
+    this.onChangeStartTime = this.onChangeStartTime.bind(this);
+    this.onChangeEndTime = this.onChangeEndTime.bind(this);
     this.onChangeRequesterName = this.onChangeRequesterName.bind(this);
     this.onChangeRequesterEmail = this.onChangeRequesterEmail.bind(this);
     this.onChangeRequesterPhone = this.onChangeRequesterPhone.bind(this);
@@ -350,6 +352,18 @@ export default class CreateEventRequest extends Component {
     this.setState({ lockEndTime: e })
   }
 
+  onChangeStartTime(e) { 
+    this.handleCalendarSelect({start: e, end:this.state.endTime}, e)
+  }
+
+  onChangeEndTime(e) { 
+    if (this.state.startTime) {
+      this.handleCalendarSelect({start:this.state.startTime, end: e}, e)
+    } else {
+      this.setState({ endTime: e })
+    }
+  }
+
   async onSubmit(e) {
     e.preventDefault()
     var eventRequestObject = {}
@@ -406,6 +420,11 @@ export default class CreateEventRequest extends Component {
       <h1> Edit your event request </h1>
       <Form onSubmit={this.onSubmit}>
 
+        <div>
+          <h4>Please update your event details.</h4>
+        </div>
+
+
         <Form.Group controlId="Name">
           <Form.Label>Event Name</Form.Label>
           <Form.Control type="text" value={this.state.name} onChange={this.onChangeName} required />
@@ -424,9 +443,43 @@ export default class CreateEventRequest extends Component {
         </Form.Group>
 
         <div>
+          <h4>Select event times with the following dialog boxes or click and drag in the calendar below </h4>
+        </div>
+
+        <div>
+          Event start time: 
+          <DateTimePicker
+            onChange={this.onChangeStartTime}
+            value={this.state.startTime}
+            disableClock={true}
+            calendarIcon={null}
+            clearIcon={null}
+          />
+        </div>
+
+        <div>
+          Event end time:
+          <DateTimePicker
+            onChange={this.onChangeEndTime}
+            value={this.state.endTime}
+            disableClock={true}
+            calendarIcon={null}
+            clearIcon={null}
+          />
+        </div>
+
+        <div>
+          <p>Times in the calendar are the official times, those shown above in the drop downs do not reflect time changes due to previously scheduled events.</p>
+        </div>
+
+        <div>
           {this.Scheduler()}
         </div>
         
+        <div>
+          <h4>Please select the times when you would like the doors to unlock and lock.</h4>
+        </div>
+
         <div>
           Door Unlock Time: 
           <DateTimePicker
