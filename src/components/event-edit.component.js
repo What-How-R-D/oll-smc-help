@@ -454,6 +454,7 @@ export default class CreateEventRequest extends Component {
             disableClock={true}
             calendarIcon={null}
             clearIcon={null}
+            calendarType="US"
           />
         </div>
 
@@ -465,6 +466,7 @@ export default class CreateEventRequest extends Component {
             disableClock={true}
             calendarIcon={null}
             clearIcon={null}
+            calendarType="US"
           />
         </div>
 
@@ -488,6 +490,7 @@ export default class CreateEventRequest extends Component {
             disableClock={true}
             calendarIcon={null}
             clearIcon={null}
+            calendarType="US"
           />
         </div>
 
@@ -499,6 +502,7 @@ export default class CreateEventRequest extends Component {
             disableClock={true}
             calendarIcon={null}
             clearIcon={null}
+            calendarType="US"
           />
         </div>
 
