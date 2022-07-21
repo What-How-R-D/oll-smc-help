@@ -33,14 +33,19 @@ router.route('/create').post(async (req, res, next) => {
 			},
 			).clone()
 
+		var startTime = new Date(event_data.startTime).toLocaleString('en-US', { timeZone: 'America/Chicago' })
+		var endTime = new Date(event_data.endTime).toLocaleString('en-US', { timeZone: 'America/Chicago' })
+		var lockStartTime = new Date(event_data.lockStartTime).toLocaleString('en-US', { timeZone: 'America/Chicago' })
+		var lockEndTime = new Date(event_data.lockEndTime).toLocaleString('en-US', { timeZone: 'America/Chicago' })
+
 		var room_data = await findRoomData(event_data.room)
 		var subject=`${event_data.name} request has been received`
 		var body=`Your event ${event_data.name} has been received.\nThe event details are as follows:
 		Room: ${room_data.name}
-		Event start time: ${format(new Date(event_data.startTime), "M/d/yyyy h:mm a")}
-		Event end time: ${format(new Date(event_data.endTime), "M/d/yyyy h:mm a")}
-		Door unlock time: ${format(new Date(event_data.lockStartTime), "M/d/yyyy h:mm a")}
-		Door lock time: ${format(new Date(event_data.lockEndTime), "M/d/yyyy h:mm a")}\n\nTo update the event request please login or follow this link: http://${process.env.REACT_APP_NODE_IP}/edit-event/${event_data._id}/${token} \n\n You will be contacted via email upon approval.
+		Event start time: ${format(new Date(startTime), "M/d/yyyy h:mm a")}
+		Event end time: ${format(new Date(endTime), "M/d/yyyy h:mm a")}
+		Door unlock time: ${format(new Date(lockStartTime), "M/d/yyyy h:mm a")}
+		Door lock time: ${format(new Date(lockEndTime), "M/d/yyyy h:mm a")}\n\nTo update the event request please login or follow this link: http://${process.env.REACT_APP_NODE_IP}/edit-event/${event_data._id}/${token} \n\n You will be contacted via email upon approval.
 		`
 
 		sendNotification(event_data.email, subject, body)
@@ -60,10 +65,6 @@ router.route('/create-multiple').post(async (req, res, next) => {
 		.then((event) => {return event})
 		.catch((err) => { console.log("Error Creating Calender Event:", err); });
 	
-	// eventSchema.create(req.body, (error, data) => {
-	//   if (error) { return next(error) } 
-	//   else { return_data.push(data) }
-	// })
 	try {
 		var event_data = await eventSchema.create(req.body)
 	} catch (error) {
@@ -107,14 +108,19 @@ router.route('/create-multiple').post(async (req, res, next) => {
 		},
 		).clone()
 
+	var startTime = new Date(event_data.startTime).toLocaleString('en-US', { timeZone: 'America/Chicago' })
+	var endTime = new Date(event_data.endTime).toLocaleString('en-US', { timeZone: 'America/Chicago' })
+	var lockStartTime = new Date(event_data.lockStartTime).toLocaleString('en-US', { timeZone: 'America/Chicago' })
+	var lockEndTime = new Date(event_data.lockEndTime).toLocaleString('en-US', { timeZone: 'America/Chicago' })
+
 	var room_data = await findRoomData(event_data.room)
 	var subject=`${event_data.name} repeating request has been received`
 	var body=`Your event ${event_data.name} and all repeats have been received.\nThe initial event details are as follows:
 	Room: ${room_data.name}
-	Event start time: ${format(new Date(event_data.startTime), "M/d/yyyy h:mm a")}
-	Event end time: ${format(new Date(event_data.endTime), "M/d/yyyy h:mm a")}
-	Door unlock time: ${format(new Date(event_data.lockStartTime), "M/d/yyyy h:mm a")}
-	Door lock time: ${format(new Date(event_data.lockEndTime), "M/d/yyyy h:mm a")}\n\nTo update the event request please login or follow this link: http://${process.env.REACT_APP_NODE_IP}/edit-event/${event_data._id}/${token} \n\n You will be contacted via email upon approval.
+	Event start time: ${format(new Date(startTime), "M/d/yyyy h:mm a")}
+	Event end time: ${format(new Date(endTime), "M/d/yyyy h:mm a")}
+	Door unlock time: ${format(new Date(lockStartTime), "M/d/yyyy h:mm a")}
+	Door lock time: ${format(new Date(lockEndTime), "M/d/yyyy h:mm a")}\n\nTo update the event request please login or follow this link: http://${process.env.REACT_APP_NODE_IP}/edit-event/${event_data._id}/${token} \n\n You will be contacted via email upon approval.
 	`
 
 	sendNotification(event_data.email, subject, body)
@@ -165,14 +171,19 @@ router.route('/approve/:id').put(async (req, res, next) => {
 		},
 	  ).clone()
 	
+	var startTime = new Date(event_data.startTime).toLocaleString('en-US', { timeZone: 'America/Chicago' })
+	var endTime = new Date(event_data.endTime).toLocaleString('en-US', { timeZone: 'America/Chicago' })
+	var lockStartTime = new Date(event_data.lockStartTime).toLocaleString('en-US', { timeZone: 'America/Chicago' })
+	var lockEndTime = new Date(event_data.lockEndTime).toLocaleString('en-US', { timeZone: 'America/Chicago' })
+
 	var room_data = await findRoomData(event_data.room)
 	var subject=`${event_data.name} has been APPROVED`
 	var body=`Your event ${event_data.name} has been approved.\nThe event details are as follows:
 	Room: ${room_data.name}
-	Event start time: ${format(new Date(event_data.startTime), "M/d/yyyy h:mm a")}
-	Event end time: ${format(new Date(event_data.endTime), "M/d/yyyy h:mm a")}
-	Door unlock time: ${format(new Date(event_data.lockStartTime), "M/d/yyyy h:mm a")}
-	Door lock time: ${format(new Date(event_data.lockEndTime), "M/d/yyyy h:mm a")}
+	Event start time: ${format(new Date(startTime), "M/d/yyyy h:mm a")}
+	Event end time: ${format(new Date(endTime), "M/d/yyyy h:mm a")}
+	Door unlock time: ${format(new Date(lockStartTime), "M/d/yyyy h:mm a")}
+	Door lock time: ${format(new Date(lockEndTime), "M/d/yyyy h:mm a")}
 	`
 
 	sendNotification(event_data.email, subject, body)
