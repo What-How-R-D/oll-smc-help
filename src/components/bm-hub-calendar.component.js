@@ -289,6 +289,7 @@ export default class BMhubList extends Component {
 				startAccessor="start"
 				endAccessor="end"
 				defaultView={this.state.defaultView}
+				style={{ height: '85vh' }}
 				onSelectEvent={this.swalTrigger}
 				onNavigate={this.handleOnNavigate}
 				onView={this.handleChangeView}
