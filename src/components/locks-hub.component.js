@@ -63,53 +63,79 @@ export default class LocksHub extends Component {
 	}
 	}
   
+	newTable(){
+		if (this.state.approved_events.length !== 0 ) {
+			return <div> <h1> New Locks Requests </h1>
+			<Table striped bordered hover>
+			  <thead>
+				<tr>
+				  <th>Name</th>
+				  <th>Room</th>
+				  <th>Start Time</th>
+				  <th>End Time</th>
+				</tr>
+			  </thead>
+			  <tbody>
+				{this.DataTable("approved")}
+			  </tbody>
+			</Table>
+			</div>
+		} else {
+			return <h2> No new requests </h2>
+		}
+	}
+  
+	canceledTables(){
+		if (this.state.canceled_events.length !== 0 ) {
+		return <div> <h1> Canceled Locks Requests </h1>
+				<Table striped bordered hover>
+				<thead>
+					<tr>
+					<th>Name</th>
+					<th>Room</th>
+					<th>Start Time</th>
+					<th>End Time</th>
+					</tr>
+				</thead>
+				<tbody>
+					{this.DataTable("canceled")}
+				</tbody>
+				</Table>
+			</div>
+		} else {
+			return <h2> No canceled requests to handle </h2>
+		}
+	}
+
+	completedTable(){
+		if (this.state.completed_events.length !== 0 ) {
+			return <div> <h1> Completed Locks Requests </h1>
+				<Table striped bordered hover>
+				<thead>
+					<tr>
+					<th>Name</th>
+					<th>Room</th>
+					<th>Start Time</th>
+					<th>End Time</th>
+					</tr>
+				</thead>
+				<tbody>
+					{this.DataTable("completed")}
+				</tbody>
+				</Table>
+			</div>
+		} else {
+			return <h2> No completed event requests. </h2>
+		}
+	}
   
 	render() {
 	  let html
 	  if (this.state.loggedIn) {
 		html = <div className="table-wrapper">
-		<h1> New Locks Requests </h1>
-		  <Table striped bordered hover>
-			<thead>
-			  <tr>
-				<th>Name</th>
-				<th>Room</th>
-				<th>Start Time</th>
-				<th>End Time</th>
-			  </tr>
-			</thead>
-			<tbody>
-			  {this.DataTable("approved")}
-			</tbody>
-		  </Table>
-		<h1> Canceled Locks Requests </h1>
-		  <Table striped bordered hover>
-			<thead>
-			  <tr>
-				<th>Name</th>
-				<th>Room</th>
-				<th>Start Time</th>
-				<th>End Time</th>
-			  </tr>
-			</thead>
-			<tbody>
-			  {this.DataTable("canceled")}
-			</tbody>
-		  </Table>
-		<h1> Completed Locks Requests </h1>
-			<Table striped bordered hover>
-		 	<thead>
-		 		<tr>
-		 		<th>Name</th>
-		 		<th>Room</th>
-		 		<th>Start Time</th>
-		 		<th>End Time</th>
-		 		</tr>
-		 	</thead>
-		 	<tbody>
-		 		{this.DataTable("completed")}
-		 	</tbody>
-		 	</Table>
+			{this.newTable()}
+			{this.canceledTables()}
+			{this.completedTable()}
 		 </div>
 		} else {
 		  html = <div>

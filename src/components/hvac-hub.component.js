@@ -64,12 +64,9 @@ export default class HVAChub extends Component {
 	}
 	}
   
-  
-	render() {
-	  let html
-	  if (this.state.loggedIn) {
-		html = <div className="table-wrapper">
-		<h1> New HVAC Requests </h1>
+	newTable(){
+		if (this.state.approved_events.length !== 0 ) {
+			return <div> <h1> New HVAC Requests </h1>
 			<Table striped bordered hover>
 				<thead>
 				<tr>
@@ -83,7 +80,15 @@ export default class HVAChub extends Component {
 				{this.DataTable("approved")}
 				</tbody>
 			</Table>
-		<h1> Canceled HVAC Requests </h1>
+			</div>
+		} else {
+			return <h2> No new requests </h2>
+		}
+	}
+  
+	canceledTables(){
+		if (this.state.canceled_events.length !== 0 ) {
+		return <div><h1> Canceled HVAC Requests </h1>
 			<Table striped bordered hover>
 				<thead>
 				<tr>
@@ -97,7 +102,15 @@ export default class HVAChub extends Component {
 				{this.DataTable("canceled")}
 				</tbody>
 			</Table>
-		<h1> Completed HVAC Requests </h1>
+			</div>
+		} else {
+			return <h2> No canceled requests to handle </h2>
+		}
+	}
+
+	completedTable(){
+		if (this.state.completed_events.length !== 0 ) {
+			return <div> <h1> Completed HVAC Requests </h1>
 		 	<Table striped bordered hover>
 		 	<thead>
 		 		<tr>
@@ -112,6 +125,19 @@ export default class HVAChub extends Component {
 		 	</tbody>
 		 	</Table>
 		 </div>
+		} else {
+			return <h2> No completed event requests. </h2>
+		}
+	}
+
+	render() {
+	  let html
+	  if (this.state.loggedIn) {
+		html = <div className="table-wrapper">
+			{this.newTable()}
+			{this.canceledTables()}
+			{this.completedTable()}
+			</div>
 		} else {
 		  html = <div>
 			  <Link to="/login">Login for more functionality</Link>

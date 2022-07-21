@@ -79,27 +79,32 @@ export default class EventList extends Component {
   }
 
 
+  pendingTable(){
+    if (this.state.pending_events.length !== 0 ) {
+      return <div><h1> Your upcoming pending event requests </h1>
+       <Table striped bordered hover>
+         <thead>
+           <tr>
+             <th>Name</th>
+             <th>Room</th>
+             <th>Start Time</th>
+             <th>End Time</th>
+             <th>Status</th>
+           </tr>
+         </thead>
+         <tbody>
+           {this.DataTable("pending")}
+         </tbody>
+       </Table>
+      </div>
+    } else{
+      return <h2> You have no pending requests </h2>
+    }
+  }
 
-  render() {
-    let html
-    if (this.state.loggedIn) {
-      html = <div className="table-wrapper">
-        <h1> Your upcoming pending event requests </h1>
-        <Table striped bordered hover>
-          <thead>
-            <tr>
-              <th>Name</th>
-              <th>Room</th>
-              <th>Start Time</th>
-              <th>End Time</th>
-              <th>Status</th>
-            </tr>
-          </thead>
-          <tbody>
-            {this.DataTable("pending")}
-          </tbody>
-        </Table>
-        <h1> Your upcoming approved event requests  </h1>
+  upcomingTable() {
+    if (this.state.approved_events.length !== 0 ) {
+      return <div><h1> Your upcoming approved event requests  </h1>
         <Table striped bordered hover>
           <thead>
             <tr>
@@ -114,21 +119,42 @@ export default class EventList extends Component {
             {this.DataTable("approved")}
           </tbody>
         </Table>
-        <h1> Your upcoming canceled/rejected event requests  </h1>
-        <Table striped bordered hover>
-          <thead>
-            <tr>
-              <th>Name</th>
-              <th>Room</th>
-              <th>Start Time</th>
-              <th>End Time</th>
-              <th>Status</th>
-            </tr>
-          </thead>
-          <tbody>
-            {this.DataTable("canceled")}
-          </tbody>
-        </Table>
+      </div>
+    } else{
+      return <h2> You have no upcoming approved requests </h2>
+    }
+  }
+
+  canceledTable() {
+    if (this.state.canceled_events.length !== 0 ) {
+      return <div><h1> Your upcoming canceled/rejected event requests  </h1>
+      <Table striped bordered hover>
+        <thead>
+          <tr>
+            <th>Name</th>
+            <th>Room</th>
+            <th>Start Time</th>
+            <th>End Time</th>
+            <th>Status</th>
+          </tr>
+        </thead>
+        <tbody>
+          {this.DataTable("canceled")}
+        </tbody>
+      </Table>
+      </div>
+    } else {
+      return <h2> You have no upcoming canceled/rejected requests </h2>
+    }
+  }
+
+  render() {
+    let html
+    if (this.state.loggedIn) {
+      html = <div className="table-wrapper">
+        {this.pendingTable()}
+        {this.upcomingTable()}
+        {this.canceledTable()}
       </div>
       } else {
         html = <div>
