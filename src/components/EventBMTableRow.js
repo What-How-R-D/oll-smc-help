@@ -110,8 +110,8 @@ export default class RoomTableRow extends Component {
         <td>{this.state.user.email}</td>
         <td>{this.state.user.phone}</td>
         <td>{this.state.room_name}</td>
-        <td>{format(new Date(this.props.obj.startTime), "M/d/yyyy H:mm a")}</td>
-        <td>{format(new Date(this.props.obj.endTime), "M/d/yyyy H:mm a")}</td>
+        <td>{format(new Date(this.props.obj.startTime), "M/d/yyyy h:mm a")}</td>
+        <td>{format(new Date(this.props.obj.endTime), "M/d/yyyy h:mm a")}</td>
         <td>{this.props.obj.attendance}</td>
         <td>{this.props.obj.status}</td>
         <td>{this.props.obj.notes}</td>
