@@ -296,8 +296,8 @@ router.route('/find-locks/:limit').get((req, res) => {
 			if (error) {
 				res.status(400).json({ error: error, })
 			} else {
-				var approved_events = data.filter(event => event.status === "Approved").filter(event => new Date(event.endTime).getTime() > new Date())
-				var canceled_events = data.filter(event => event.status === "Canceled").filter(event => new Date(event.endTime).getTime() > new Date())
+				var approved_events = data.filter(event => event.lockStartTime !== null).filter(event => event.status === "Approved").filter(event => new Date(event.endTime).getTime() > new Date())
+				var canceled_events = data.filter(event => event.lockStartTime !== null).filter(event => event.status === "Canceled").filter(event => new Date(event.endTime).getTime() > new Date())
 				
 				var approved_needs_work = approved_events.filter(event => !event.locksSet).sort((a, b) => new Date(a.startTime).getTime() > new Date(b.startTime).getTime() ? 1 : -1 )
 				var approved_done = approved_events.filter(event => event.locksSet)

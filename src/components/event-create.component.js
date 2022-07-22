@@ -45,6 +45,7 @@ export default class CreateEventRequest extends Component {
     this.onChangeRequesterName = this.onChangeRequesterName.bind(this);
     this.onChangeRequesterEmail = this.onChangeRequesterEmail.bind(this);
     this.onChangeRequesterPhone = this.onChangeRequesterPhone.bind(this);
+    this.onChangeNeedLocks = this.onChangeNeedLocks.bind(this);
     this.onChangeWillBePresent = this.onChangeWillBePresent.bind(this);
     this.onChangeDoesRepeat = this.onChangeDoesRepeat.bind(this);
     this.onChangeFrequency = this.onChangeFrequency.bind(this);
@@ -80,6 +81,7 @@ export default class CreateEventRequest extends Component {
       willBePresent: false,
       onBehalfOf: false,
       doesRepeat: false,
+      needLocks: true,
       repeatFrequency: "monthly",
       repeatFuzzy: "absolute",
       repeatCount: 1,
@@ -356,6 +358,7 @@ export default class CreateEventRequest extends Component {
   onChangeNotes(e) { this.setState({ notes: e.target.value }) }
   onChangeWillBePresent(e) { this.setState(({ willBePresent }) => ({ willBePresent: !willBePresent })) }
   onChangeOnBehalfOf(e) { this.setState(({ onBehalfOf }) => ({ onBehalfOf: !onBehalfOf })) }
+  onChangeNeedLocks(e) { this.setState(({ needLocks }) => ({ needLocks: !needLocks })) }
   onChangeName(e) { this.setState({ name: e.target.value }) }
 
   async onChangeAttendance(e) {
@@ -520,6 +523,33 @@ export default class CreateEventRequest extends Component {
         </div>
     }
   }
+  
+  showLocks() {
+    if (this.state.needLocks) {
+      return <div><div>
+                Door Unlock Time: 
+                <DateTimePicker
+                  onChange={this.onChangeLockStartTime}
+                  value={this.state.lockStartTime}
+                  disableClock={true}
+                  calendarIcon={null}
+                  clearIcon={null}
+                  calendarType="US"
+                />
+              </div>
+              <div>
+                Door Lock Time:
+                <DateTimePicker
+                  onChange={this.onChangeLockEndTime}
+                  value={this.state.lockEndTime}
+                  disableClock={true}
+                  calendarIcon={null}
+                  clearIcon={null}
+                  calendarType="US"
+                />
+              </div> </div>
+    }
+  }
 
   async onSubmit(e) {
     e.preventDefault()
@@ -553,6 +583,11 @@ export default class CreateEventRequest extends Component {
       eventRequestObject.phone = this.state.requesterPhone;
       // )};
     };
+
+    if (!this.state.needLocks) {
+        eventRequestObject.lockStartTime = null;
+        eventRequestObject.lockEndTime = null;
+    }
 
     if (this.state.doesRepeat) {
       eventRequestObject.repeat = crypto.randomBytes(20).toString('hex');
@@ -647,29 +682,14 @@ export default class CreateEventRequest extends Component {
           <h4>Please select the times when you would like the doors to unlock and lock.</h4>
         </div>
 
-        <div>
-          Door Unlock Time: 
-          <DateTimePicker
-            onChange={this.onChangeLockStartTime}
-            value={this.state.lockStartTime}
-            disableClock={true}
-            calendarIcon={null}
-            clearIcon={null}
-            calendarType="US"
-          />
-        </div>
-
-        <div>
-          Door Lock Time:
-          <DateTimePicker
-            onChange={this.onChangeLockEndTime}
-            value={this.state.lockEndTime}
-            disableClock={true}
-            calendarIcon={null}
-            clearIcon={null}
-            calendarType="US"
-          />
-        </div>
+        <Form.Check 
+          type="switch"
+          id="needLocks"
+          label="Need doors unlocked"
+          checked={this.state.needLocks}
+          onChange={this.onChangeNeedLocks}
+        />
+        {this.showLocks()}
 
         Notes
         <textarea value={this.state.notes} onChange={this.onChangeNotes} />
