@@ -411,7 +411,7 @@ export default class CreateEventRequest extends Component {
     this.GetCalendarEvents()
   }
   onChangeRepeatCount(e) { 
-    this.setState({ repeatCount: e.target.value }); 
+    this.setState({ repeatCount: e.target.value-1 }); 
     this.GetCalendarEvents() 
   }
 
@@ -491,9 +491,9 @@ export default class CreateEventRequest extends Component {
     if ( ["monthly", ].includes(this.state.repeatFrequency) ) {
       return <div>
       <Form.Group controlId="RepeatFrequency">
-        <Form.Label>Number of repeats</Form.Label>
+        <Form.Label>Total number of events</Form.Label>
           <Form.Select onChange={this.onChangeRepeatCount}>
-              {[...Array(11).keys()].map(i => i + 1).map((option) => {
+              {[...Array(11).keys()].map(i => i + 2).map((option) => {
                   return <option key={option} value={option}>{option}</option>
                 })}
           </Form.Select>
@@ -502,9 +502,9 @@ export default class CreateEventRequest extends Component {
     } else if ( ["weekly",].includes(this.state.repeatFrequency)) {
               return <div>
               <Form.Group controlId="RepeatFrequency">
-                <Form.Label>Number of repeats</Form.Label>
+                <Form.Label>Total number of events</Form.Label>
                   <Form.Select onChange={this.onChangeRepeatCount}>
-                      {[...Array(51).keys()].map(i => i + 1).map((option) => {
+                      {[...Array(51).keys()].map(i => i + 2).map((option) => {
                           return <option key={option} value={option}>{option}</option>
                         })}
                   </Form.Select>
@@ -513,9 +513,9 @@ export default class CreateEventRequest extends Component {
     } else if ( ["daily",].includes(this.state.repeatFrequency)) {
       return <div>
       <Form.Group controlId="RepeatFrequency">
-        <Form.Label>Number of repeats</Form.Label>
+        <Form.Label>Total number of events</Form.Label>
           <Form.Select onChange={this.onChangeRepeatCount}>
-              {[...Array(6).keys()].map(i => i + 1).map((option) => {
+              {[...Array(6).keys()].map(i => i + 2).map((option) => {
                   return <option key={option} value={option}>{option}</option>
                 })}
           </Form.Select>
