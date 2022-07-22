@@ -220,7 +220,19 @@ export default class CreateEventRequest extends Component {
           } else if (this.state.repeatFrequency === "daily") {
             nextStart = new Date(new Date(Number(prevStart)).setDate(prevStart.getDate()+1))
             nextEnd = new Date(new Date(Number(prevEnd)).setDate(prevEnd.getDate()+1))
+          } else if (this.state.repeatFrequency === "weekdays") {
+            if (prevStart.getDay() === 5) {// Friday 
+              nextStart = new Date(new Date(Number(prevStart)).setDate(prevStart.getDate()+3))
+              nextEnd = new Date(new Date(Number(prevEnd)).setDate(prevEnd.getDate()+3))
+            } else if (prevStart.getDay() === 6) {// Saturday
+              nextStart = new Date(new Date(Number(prevStart)).setDate(prevStart.getDate()+2))
+              nextEnd = new Date(new Date(Number(prevEnd)).setDate(prevEnd.getDate()+2))
+            } else {
+              nextStart = new Date(new Date(Number(prevStart)).setDate(prevStart.getDate()+1))
+              nextEnd = new Date(new Date(Number(prevEnd)).setDate(prevEnd.getDate()+1))
+            }
           }
+
           this.state.repeatDates.push([nextStart, nextEnd])
         }
 
@@ -437,6 +449,7 @@ export default class CreateEventRequest extends Component {
           <Form.Select onChange={this.onChangeFrequency}>
             <option key={"monthly"} value={"monthly"}>Monthly</option>
             <option key={"weekly"} value={"weekly"}>Weekly</option>
+            <option key={"weekdays"} value={"weekdays"}>Every Weekday</option>
             <option key={"daily"} value={"daily"}>Daily</option>
           </Form.Select>
         </Form.Group> 
@@ -480,7 +493,7 @@ export default class CreateEventRequest extends Component {
               </Form.Group> 
               {this.numberRepeats()}
         </div>
-    } else if (["weekly", "daily"].includes(this.state.repeatFrequency) ) {
+    } else if (["weekly", "weekdays", "daily"].includes(this.state.repeatFrequency) ) {
       return <div>
               {this.numberRepeats()}
         </div>
@@ -493,7 +506,7 @@ export default class CreateEventRequest extends Component {
       <Form.Group controlId="RepeatFrequency">
         <Form.Label>Total number of events</Form.Label>
           <Form.Select onChange={this.onChangeRepeatCount}>
-              {[...Array(11).keys()].map(i => i + 2).map((option) => {
+              {[...Array(12).keys()].map(i => i + 1).map((option) => {
                   return <option key={option} value={option}>{option}</option>
                 })}
           </Form.Select>
@@ -504,18 +517,29 @@ export default class CreateEventRequest extends Component {
               <Form.Group controlId="RepeatFrequency">
                 <Form.Label>Total number of events</Form.Label>
                   <Form.Select onChange={this.onChangeRepeatCount}>
-                      {[...Array(51).keys()].map(i => i + 2).map((option) => {
+                      {[...Array(52).keys()].map(i => i + 1).map((option) => {
                           return <option key={option} value={option}>{option}</option>
                         })}
                   </Form.Select>
                 </Form.Group> 
                 </div>
+    } else if ( ["weekdays",].includes(this.state.repeatFrequency)) {
+          return <div>
+          <Form.Group controlId="RepeatFrequency">
+            <Form.Label>Total number weeks for event</Form.Label>
+              <Form.Select onChange={this.onChangeRepeatCount}>
+                  {[...Array(52).keys()].map(i => i + 1).map((option) => {
+                      return <option key={option} value={5*option}>{option}</option>
+                    })}
+              </Form.Select>
+            </Form.Group> 
+            </div>
     } else if ( ["daily",].includes(this.state.repeatFrequency)) {
       return <div>
       <Form.Group controlId="RepeatFrequency">
         <Form.Label>Total number of events</Form.Label>
           <Form.Select onChange={this.onChangeRepeatCount}>
-              {[...Array(6).keys()].map(i => i + 2).map((option) => {
+              {[...Array(7).keys()].map(i => i + 1).map((option) => {
                   return <option key={option} value={option}>{option}</option>
                 })}
           </Form.Select>
