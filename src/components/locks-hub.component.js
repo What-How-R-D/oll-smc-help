@@ -73,6 +73,8 @@ export default class LocksHub extends Component {
 				  <th>Room</th>
 				  <th>Start Time</th>
 				  <th>End Time</th>
+				  <th>Status</th>
+				  <th>Notes</th>
 				</tr>
 			  </thead>
 			  <tbody>
@@ -95,6 +97,8 @@ export default class LocksHub extends Component {
 					<th>Room</th>
 					<th>Start Time</th>
 					<th>End Time</th>
+					<th>Status</th>
+				  	<th>Notes</th>
 					</tr>
 				</thead>
 				<tbody>
@@ -117,6 +121,8 @@ export default class LocksHub extends Component {
 					<th>Room</th>
 					<th>Start Time</th>
 					<th>End Time</th>
+					<th>Status</th>
+				  	<th>Notes</th>
 					</tr>
 				</thead>
 				<tbody>

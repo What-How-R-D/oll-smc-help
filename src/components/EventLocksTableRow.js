@@ -70,6 +70,8 @@ export default class EventLocksTableRow extends Component {
         <td>{this.state.room_name}</td>
         <td>{format(new Date(this.props.obj.lockStartTime), "M/d/yyyy h:mm a")}</td>
         <td>{format(new Date(this.props.obj.lockEndTime), "M/d/yyyy h:mm a")}</td>
+        <td>{this.props.obj.status}</td>
+        <td>{this.props.obj.notes}</td>
           {this.buttons()}
       </tr>
     )
