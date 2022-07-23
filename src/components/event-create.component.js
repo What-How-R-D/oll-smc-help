@@ -61,7 +61,7 @@ export default class CreateEventRequest extends Component {
       //
       name: '',
       room: '',
-      attendance: '',
+      attendance: 0,
       startTime: '',
       endTime: '',
       lockStartTime: '',
@@ -108,11 +108,23 @@ export default class CreateEventRequest extends Component {
         user_emp_min: user.emp_min,
       })
 		}
+
+    var url = `http://${process.env.REACT_APP_NODE_IP}:4000/room/find-all/${this.state.user_emp_min}/`
+    var first_room = await axios.get(url)
+      .then(res => { 
+        this.setState({ rooms: res.data });
+        return  this.state.rooms[0]._id
+      })
+      .catch((error) => { console.log(error); })
+    this.setState({ room: first_room })
+    this.GetCalendarEvents()
   }
 
   OptionList() {
     return this.state.rooms.map((option) => {
-      return <option key={option._id} value={option._id}>{option.name}</option>
+      if (option.occupancy > this.state.attendance){
+          return <option key={option._id} value={option._id}>{option.name}</option>
+        }
     })
   }
 
@@ -374,19 +386,11 @@ export default class CreateEventRequest extends Component {
   onChangeName(e) { this.setState({ name: e.target.value }) }
 
   async onChangeAttendance(e) {
-    var url = `http://${process.env.REACT_APP_NODE_IP}:4000/room/find-all/${this.state.user_emp_min}/`
-    await axios.get(url)
-      .then(res => {
-        this.setState({
-          rooms: res.data.filter(item => item.occupancy > this.state.attendance)
-        });
-      })
-      .catch((error) => {
-        console.log(error);
-      })
-
     this.setState({ attendance: e.target.value })
-    this.setState({ room: this.state.rooms[0]._id })
+
+    var first_room = this.state.rooms.filter(item => item.occupancy > this.state.attendance)[0]._id
+    this.setState({ room: first_room  })
+    this.setState({ events: [] })
     this.GetCalendarEvents()
   }
 
