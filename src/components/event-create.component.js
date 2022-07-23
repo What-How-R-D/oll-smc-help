@@ -723,7 +723,7 @@ export default class CreateEventRequest extends Component {
         <Form.Check 
           type="switch"
           id="willBePresent"
-          label="Buy checking this box I verify that someone will be present at all time when the doors are unlocked."
+          label="By checking this box I verify that someone will be present at all times when the doors are unlocked."
           checked={this.state.willBePresent}
           onChange={this.onChangeWillBePresent}
         />
