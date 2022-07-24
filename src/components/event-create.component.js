@@ -297,8 +297,6 @@ export default class CreateEventRequest extends Component {
 
     this.setState({ startTime: start })
     this.setState({ endTime: end })
-    // this.setState({ startTime: moment(start, ) })
-    // this.setState({ endTime: moment(end) })
     
     this.setState({ lockStartTime: new Date(start).addMins(-15) })
     this.setState({ lockEndTime: end })
@@ -703,6 +701,7 @@ export default class CreateEventRequest extends Component {
           <DateTimePicker
             onChange={this.onChangeStartTime}
             value={this.state.startTime}
+            selected={this.state.startTime}
             clearIcon={null}
             calendarType="US"
           />
@@ -712,6 +711,7 @@ export default class CreateEventRequest extends Component {
           Event end time:
           <DateTimePicker
             onChange={this.onChangeEndTime}
+            selected={this.state.endTime}
             value={this.state.endTime}
             clearIcon={null}
             calendarType="US"
