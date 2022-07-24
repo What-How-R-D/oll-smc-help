@@ -268,7 +268,6 @@ export default class CreateEventRequest extends Component {
 
   handleCalendarSelect = (event, e) => {
     var { start, end } = event;
-    console.log(start, end)
     
     var valid_events = this.state.events.filter(
         item => new Date(item.end).getTime() > new Date(start).getTime()
