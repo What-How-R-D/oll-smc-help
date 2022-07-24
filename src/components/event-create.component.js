@@ -268,6 +268,7 @@ export default class CreateEventRequest extends Component {
 
   handleCalendarSelect = (event, e) => {
     var { start, end } = event;
+    console.log(start, end)
     
     var valid_events = this.state.events.filter(
         item => new Date(item.end).getTime() > new Date(start).getTime()
@@ -297,7 +298,9 @@ export default class CreateEventRequest extends Component {
 
     this.setState({ startTime: start })
     this.setState({ endTime: end })
-
+    // this.setState({ startTime: moment(start, ) })
+    // this.setState({ endTime: moment(end) })
+    
     this.setState({ lockStartTime: new Date(start).addMins(-15) })
     this.setState({ lockEndTime: end })
 
@@ -403,12 +406,34 @@ export default class CreateEventRequest extends Component {
   onChangeLockEndTime(e) { this.setState({ lockEndTime: e }) }
 
   async onChangeStartTime(e) { 
-    this.handleCalendarSelect({start: e, end:this.state.endTime}, e)
+    if (this.state.endTime){
+      var forcedEnd = new Date(e)
+
+      forcedEnd.setYear(e.getFullYear())
+      forcedEnd.setMonth(e.getMonth())
+      forcedEnd.setDate(e.getDate())
+      forcedEnd.setHours(this.state.endTime.getHours())
+      forcedEnd.setMinutes(this.state.endTime.getMinutes())
+      this.setState({endTime: forcedEnd})
+
+      this.handleCalendarSelect({start: e, end:forcedEnd}, e)
+    } else {
+      this.handleCalendarSelect({start: e, end:this.state.endTime}, e)
+    }
   }
 
   onChangeEndTime(e) { 
     if (this.state.startTime) {
-      this.handleCalendarSelect({start:this.state.startTime, end: e}, e)
+      var forcedStart = new Date(e)
+
+      forcedStart.setYear(e.getFullYear())
+      forcedStart.setMonth(e.getMonth())
+      forcedStart.setDate(e.getDate())
+      forcedStart.setHours(this.state.startTime.getHours())
+      forcedStart.setMinutes(this.state.startTime.getMinutes())
+      this.setState({startTime: forcedStart})
+
+      this.handleCalendarSelect({start: forcedStart, end:e}, e)
     } else {
       this.setState({ endTime: e })
     }
@@ -679,8 +704,6 @@ export default class CreateEventRequest extends Component {
           <DateTimePicker
             onChange={this.onChangeStartTime}
             value={this.state.startTime}
-            disableClock={true}
-            calendarIcon={null}
             clearIcon={null}
             calendarType="US"
           />
@@ -691,8 +714,6 @@ export default class CreateEventRequest extends Component {
           <DateTimePicker
             onChange={this.onChangeEndTime}
             value={this.state.endTime}
-            disableClock={true}
-            calendarIcon={null}
             clearIcon={null}
             calendarType="US"
           />
