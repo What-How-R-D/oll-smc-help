@@ -403,6 +403,7 @@ export default class CreateEventRequest extends Component {
   onChangeLockEndTime(e) { this.setState({ lockEndTime: e }) }
 
   async onChangeStartTime(e) { 
+    this.setState({defaultDate: e})
     if (this.state.endTime){
       var forcedEnd = new Date(e)
 
@@ -420,6 +421,7 @@ export default class CreateEventRequest extends Component {
   }
 
   onChangeEndTime(e) { 
+    this.setState({defaultDate: e})
     if (this.state.startTime) {
       var forcedStart = new Date(e)
 
