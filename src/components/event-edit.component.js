@@ -363,12 +363,62 @@ export default class CreateEventRequest extends Component {
   }
 
   onChangeStartTime(e) { 
-    this.handleCalendarSelect({start: e, end:this.state.endTime}, e)
+    this.setState({defaultDate: e})
+    if (this.state.endTime){
+      var forcedEnd = new Date(e)
+
+      forcedEnd.setYear(e.getFullYear())
+      forcedEnd.setMonth(e.getMonth())
+      forcedEnd.setDate(e.getDate())
+      forcedEnd.setHours(this.state.endTime.getHours())
+      forcedEnd.setMinutes(this.state.endTime.getMinutes())
+      if (
+        (this.state.endTime.getFullYear() !== e.getFullYear()) || 
+        (this.state.endTime.getMonth() !== e.getMonth()) || 
+        (this.state.endTime.getDate() !== e.getDate())) {
+        Swal.fire({
+            icon: 'warning',
+            title: 'Multi-day events not allowed',
+            html: `Event end date set to: ${format(new Date(forcedEnd), "M/d/yyyy h:mm a")}`,
+            showConfirmButton: false,
+            timer: 3500,
+        })
+      }
+
+      this.setState({endTime: forcedEnd})
+
+      this.handleCalendarSelect({start: e, end:forcedEnd}, e)
+    } else {
+      this.handleCalendarSelect({start: e, end:this.state.endTime}, e)
+    }
   }
 
   onChangeEndTime(e) { 
+    this.setState({defaultDate: e})
     if (this.state.startTime) {
-      this.handleCalendarSelect({start:this.state.startTime, end: e}, e)
+      var forcedStart = new Date(e)
+
+      forcedStart.setYear(e.getFullYear())
+      forcedStart.setMonth(e.getMonth())
+      forcedStart.setDate(e.getDate())
+      forcedStart.setHours(this.state.startTime.getHours())
+      forcedStart.setMinutes(this.state.startTime.getMinutes())
+      if (
+        (this.state.startTime.getFullYear() !== e.getFullYear()) || 
+        (this.state.startTime.getMonth() !== e.getMonth()) || 
+        (this.state.startTime.getDate() !== e.getDate())) {
+        Swal.fire({
+            icon: 'warning',
+            title: 'Multi-day events not allowed',
+            html: `Event start date set to: ${format(new Date(forcedStart), "M/d/yyyy h:mm a")}`,
+            showConfirmButton: false,
+            timer: 3500,
+        })
+      }
+
+      this.setState({startTime: forcedStart})
+
+      this.handleCalendarSelect({start: forcedStart, end:e}, e)
     } else {
       this.setState({ endTime: e })
     }

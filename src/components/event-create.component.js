@@ -420,6 +420,19 @@ export default class CreateEventRequest extends Component {
       forcedEnd.setDate(e.getDate())
       forcedEnd.setHours(this.state.endTime.getHours())
       forcedEnd.setMinutes(this.state.endTime.getMinutes())
+      if (
+        (this.state.endTime.getFullYear() !== e.getFullYear()) || 
+        (this.state.endTime.getMonth() !== e.getMonth()) || 
+        (this.state.endTime.getDate() !== e.getDate())) {
+        Swal.fire({
+            icon: 'warning',
+            title: 'Multi-day events not allowed',
+            html: `Event end date set to: ${format(new Date(forcedEnd), "M/d/yyyy h:mm a")}`,
+            showConfirmButton: false,
+            timer: 3500,
+        })
+      }
+
       this.setState({endTime: forcedEnd})
 
       this.handleCalendarSelect({start: e, end:forcedEnd}, e)
@@ -438,6 +451,19 @@ export default class CreateEventRequest extends Component {
       forcedStart.setDate(e.getDate())
       forcedStart.setHours(this.state.startTime.getHours())
       forcedStart.setMinutes(this.state.startTime.getMinutes())
+      if (
+        (this.state.startTime.getFullYear() !== e.getFullYear()) || 
+        (this.state.startTime.getMonth() !== e.getMonth()) || 
+        (this.state.startTime.getDate() !== e.getDate())) {
+        Swal.fire({
+            icon: 'warning',
+            title: 'Multi-day events not allowed',
+            html: `Event start date set to: ${format(new Date(forcedStart), "M/d/yyyy h:mm a")}`,
+            showConfirmButton: false,
+            timer: 3500,
+        })
+      }
+
       this.setState({startTime: forcedStart})
 
       this.handleCalendarSelect({start: forcedStart, end:e}, e)
