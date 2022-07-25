@@ -2,7 +2,7 @@ import React, { Component } from "react";
 import Form from 'react-bootstrap/Form'
 import Button from 'react-bootstrap/Button';
 import axios from 'axios';
-
+import { format } from "date-fns";
 
 import { Calendar, momentLocalizer } from 'react-big-calendar'
 import moment from 'moment'
@@ -293,6 +293,14 @@ export default class CreateEventRequest extends Component {
       } else {
         end = new Date(blackout_start)
       }
+
+      Swal.fire({
+        icon: 'warning',
+        title: 'Event conflict detected',
+        html: `Due to scheduling conflicts you event has been changed to:<br> Event Start: ${format(new Date(start), "M/d/yyyy h:mm a")}<br> Event End: ${format(new Date(end), "M/d/yyyy h:mm a")}`,
+        showConfirmButton: false,
+        timer: 3500,
+      })
     } 
 
     this.setState({ startTime: start })
@@ -704,6 +712,7 @@ export default class CreateEventRequest extends Component {
             onChange={this.onChangeStartTime}
             value={this.state.startTime}
             selected={this.state.startTime}
+            disableClock={true}
             clearIcon={null}
             calendarType="US"
           />
@@ -715,6 +724,7 @@ export default class CreateEventRequest extends Component {
             onChange={this.onChangeEndTime}
             selected={this.state.endTime}
             value={this.state.endTime}
+            disableClock={true}
             clearIcon={null}
             calendarType="US"
           />
