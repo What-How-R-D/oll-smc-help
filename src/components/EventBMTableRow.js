@@ -12,6 +12,7 @@ export default class RoomTableRow extends Component {
       
       this.approveRequest = this.approveRequest.bind(this);
       this.rejectRequest = this.rejectRequest.bind(this);
+      this.requestUpdate = this.requestUpdate.bind(this);
 
       this.state = {
         room_name: "",
@@ -90,6 +91,33 @@ export default class RoomTableRow extends Component {
           this.props.refresh()
       }
     })
+  }
+
+  requestUpdate() {
+    Swal.fire({
+      title: this.props.obj.name,
+      icon: 'warning',
+      html: "What kind of update would you like made?",
+      showConfirmButton: true,
+      confirmButtonText: `Request Update`,
+      showCancelButton: true,
+      cancelButtonText: `Cancel`,
+      showDenyButton: false,
+      reverseButtons: true,
+      input: "text",
+    })
+    .then((result) => {
+      if (result.isConfirmed) {
+        var url = `http://${process.env.REACT_APP_NODE_IP}:4000/event/request-update/`
+        axios.put(url + this.props.obj._id, {reason: result.value})
+        .then((res) => {
+          console.log('Event update request has been sent.')
+        }).catch((error) => {
+          console.log(error)
+        })
+      }
+    });
+
 
   }
 
@@ -112,6 +140,7 @@ export default class RoomTableRow extends Component {
     if (this.props.obj.status === "Pending") {
       return  <td>
         <Button type="submit" size="sm" onClick={this.approveRequest}> Approve </Button>
+        <Button type="submit" size="sm" variant="success" onClick={this.requestUpdate}> Request Update </Button>
         <Button type="submit" size="sm" variant="danger" onClick={this.rejectRequest}> Reject </Button>
         </td>
     }
