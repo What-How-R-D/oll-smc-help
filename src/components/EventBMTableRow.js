@@ -16,7 +16,7 @@ export default class RoomTableRow extends Component {
 
       this.state = {
         room_name: "",
-        user: {name:"", email:"", phone:"", },
+        user: {name:"", email:"", phone:""},
       };
     }
 
@@ -27,7 +27,7 @@ export default class RoomTableRow extends Component {
     await axios.get(url)
       .then(res => {
         this.setState({
-          user: {name:res.data.name, email:res.data.email, phone:res.data.phone, }
+          user: {name:res.data.name, email:res.data.email, phone:res.data.phone, type: res.data.type}
         });
       })
       .catch((error) => {
@@ -136,13 +136,21 @@ export default class RoomTableRow extends Component {
     else { return <td>{this.props.obj.phone}</td>}
   }
 
-  buttons() {
-    if (this.props.obj.status === "Pending") {
-      return  <td>
-        <Button type="submit" size="sm" onClick={this.approveRequest}> Approve </Button>
-        <Button type="submit" size="sm" variant="success" onClick={this.requestUpdate}> Request Update </Button>
-        <Button type="submit" size="sm" variant="danger" onClick={this.rejectRequest}> Reject </Button>
-        </td>
+  buttons(bm_type) {
+    if (bm_type === "Admin"){
+      if (["Approved", "Pending"].includes(this.props.obj.status)) {
+        return  <td>
+          <Button type="submit" size="sm" variant="danger" onClick={this.rejectRequest}> Reject </Button>
+          </td>
+      }
+    } else {
+      if (this.props.obj.status === "Pending") {
+        return  <td>
+          <Button type="submit" size="sm" onClick={this.approveRequest}> Approve </Button>
+          <Button type="submit" size="sm" variant="success" onClick={this.requestUpdate}> Request Update </Button>
+          <Button type="submit" size="sm" variant="danger" onClick={this.rejectRequest}> Reject </Button>
+          </td>
+      }
     }
   }
 
@@ -159,7 +167,7 @@ export default class RoomTableRow extends Component {
         <td>{this.props.obj.attendance}</td>
         <td>{this.props.obj.status}</td>
         <td>{this.props.obj.notes}</td>
-          {this.buttons()}
+        {this.buttons(this.props.bm_type)}
       </tr>
     )
   }
