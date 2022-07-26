@@ -70,7 +70,7 @@ router.route('/register').post(async (req, res, next) => {
 
 	const token = await jwt.sign( { _id: user_data._id } , user_data.password, { expiresIn: "24h", })
 	var subject=`OLL-SMC help email validation`
-	var body=`To verify your email please follow this link http://45.33.18.72:3000/validate/${user_data._id}/${token}`
+	var body=`To verify your email please follow this link http://${process.env.REACT_APP_NODE_IP}/validate/${user_data._id}/${token}`
 	sendNotification(user_data.email, subject, body)
 
   })
@@ -129,7 +129,7 @@ router.route('/resetpwd/:email').get(async (req, res) => {
 		)
 
 		var subject=`OLL-SMC help password reset`
-		var body=`To reset your password follow this link http://45.33.18.72:3000/newpassword/${user_data._id}/${token}`
+		var body=`To reset your password follow this link http://${process.env.REACT_APP_NODE_IP}/newpassword/${user_data._id}/${token}`
 		sendNotification(user_data.email, subject, body)
 	} else {
 		res.status(401).json({ error: "Email does not exist" })

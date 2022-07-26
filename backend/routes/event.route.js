@@ -230,7 +230,7 @@ router.route('/request-update/:id').put(async (req, res, next) => {
 
 	if (event_data.requester) {
 		var subject=`${event_data.name} UPDATE REQUESTED`
-		var body=`An update has been requested for your event: ${event_data.name}\n\nThe update is asking for: ${req.body.reason}.\n\nPlease go to: http://${process.env.REACT_APP_NODE_IP}:3000/edit-event/${event_data._id}/${token}`
+		var body=`An update has been requested for your event: ${event_data.name}\n\nThe update is asking for: ${req.body.reason}.\n\nPlease go to: http://${process.env.REACT_APP_NODE_IP}/edit-event/${event_data._id}/${token}`
 	}
 
 	sendNotification(event_data.email, subject, body)
