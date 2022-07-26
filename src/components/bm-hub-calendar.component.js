@@ -26,6 +26,7 @@ export default class BMhubList extends Component {
 		loggedIn: false,
 		defaultView: "week",
      	defaultDate: "",
+		user: {},
 	  };
 	}
   
@@ -37,6 +38,7 @@ export default class BMhubList extends Component {
 		  }
 
 		var user = await findUser()
+		this.setState({user: user})
 		
 		var url = `http://${process.env.REACT_APP_NODE_IP}:4000/room/find-all/true`
 		var rooms_map = await axios.get(url)
@@ -174,15 +176,51 @@ export default class BMhubList extends Component {
 			}
 		}
 		
-		if (event.status === "Approved") {
+		if (event.status === "Approved" && this.state.user.type === "Admin") {
 			Swal.fire({
 				title: event.title,
 				html: text,
 				showConfirmButton: false,
 				showCancelButton: true,
 				cancelButtonText: `Cancel`,
-				showDenyButton: false,
+				showDenyButton: true,
+				denyButtonText: `Reject`,
 			})
+			.then((result) => {
+				if (result.isDenied) {
+					Swal.fire({
+						title: event.title,
+						icon: 'warning',
+						html: "Please provide a reason for the rejection",
+						showConfirmButton: true,
+						confirmButtonText: `Reject`,
+						showCancelButton: true,
+						cancelButtonText: `Cancel`,
+						showDenyButton: false,
+						reverseButtons: true,
+						input: "text",
+						required: 'true'
+					})
+					.then((result) => {
+						if (result.isConfirmed) {
+							this.rejectRequest(event.id, result.value)
+							event.status = "Rejected"
+
+							const index = this.state.all_events.findIndex((aEvent) => aEvent.id === event.id);
+							const updated_all_events = update(this.state.all_events, {$splice: [[index, 1]]});
+							this.setState({all_events: updated_all_events});
+						}
+					});
+				}})
+		} else if (event.status === "Approved") {
+				Swal.fire({
+					title: event.title,
+					html: text,
+					showConfirmButton: false,
+					showCancelButton: true,
+					cancelButtonText: `Cancel`,
+					showDenyButton: false,
+				})				
 		} else if (event.status === "Blackout") {
 			Swal.fire({
 				title: event.title,
