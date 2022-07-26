@@ -75,6 +75,7 @@ export default class CreateEventRequest extends Component {
       defaultView: "week",
       defaultDate: "",
       user_id: "",
+      user_type: "Basic",
       user_email: "",
       user_emp_min: false,
       loggedIn: false,
@@ -105,6 +106,7 @@ export default class CreateEventRequest extends Component {
         loggedIn: true, 
         user_id: user._id, 
         user_email: user.email,
+        user_type: user.type,
         user_emp_min: user.emp_min,
       })
 		}
@@ -278,29 +280,39 @@ export default class CreateEventRequest extends Component {
       )
     
     if (valid_events.length !== 0){
-      var blackout_start = valid_events.sort((a, b) => new Date(a.startTime).getTime() > new Date(b.startTime).getTime() ? -1 : 1 )[0].start
-      var blackout_end = valid_events.sort((a, b) => new Date(a.endTime).getTime() > new Date(b.endTime).getTime() ? 1 : -1 )[0].end
-      
-      var start_ok = false
-      if (new Date(start).getTime() < new Date(blackout_start).getTime()) {
-        start_ok = true
-      } else {
-        start = new Date(blackout_end)
-      }
+      if (this.state.user_type !== "Admin") {
+        var blackout_start = valid_events.sort((a, b) => new Date(a.startTime).getTime() > new Date(b.startTime).getTime() ? -1 : 1 )[0].start
+        var blackout_end = valid_events.sort((a, b) => new Date(a.endTime).getTime() > new Date(b.endTime).getTime() ? 1 : -1 )[0].end
+        
+        var start_ok = false
+        if (new Date(start).getTime() < new Date(blackout_start).getTime()) {
+          start_ok = true
+        } else {
+          start = new Date(blackout_end)
+        }
 
-      if (new Date(end).getTime() > new Date(blackout_end).getTime()) {
-        if (start_ok) { end = new Date(blackout_start) }
-      } else {
-        end = new Date(blackout_start)
-      }
+        if (new Date(end).getTime() > new Date(blackout_end).getTime()) {
+          if (start_ok) { end = new Date(blackout_start) }
+        } else {
+          end = new Date(blackout_start)
+        }
 
-      Swal.fire({
-        icon: 'warning',
-        title: 'Event conflict detected',
-        html: `Due to scheduling conflicts you event has been changed to:<br> Event Start: ${format(new Date(start), "M/d/yyyy h:mm a")}<br> Event End: ${format(new Date(end), "M/d/yyyy h:mm a")}`,
-        showConfirmButton: false,
-        timer: 3500,
-      })
+        Swal.fire({
+          icon: 'warning',
+          title: 'Event conflict detected',
+          html: `Due to scheduling conflicts you event has been changed to:<br> Event Start: ${format(new Date(start), "M/d/yyyy h:mm a")}<br> Event End: ${format(new Date(end), "M/d/yyyy h:mm a")}`,
+          showConfirmButton: false,
+          timer: 3500,
+        })
+      } else {
+        Swal.fire({
+          icon: 'warning',
+          title: 'Event conflict detected',
+          html: `Be careful creating overlapping events.`,
+          showConfirmButton: false,
+          timer: 3500,
+        })
+      }
     } 
 
     this.setState({ startTime: start })
