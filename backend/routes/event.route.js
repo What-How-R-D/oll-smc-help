@@ -12,11 +12,18 @@ const sendNotification = require("../middleware/mailer")
 const calendarEvent = require("../middleware/calendar_event")
 
 const findRoomData = require("../middleware/find_room")
+const check_users = require("../middleware/check_users")
 
 const { format } = require('date-fns');
 
 router.route('/create').post(async (req, res, next) => {
-	
+
+	if (!req.body.requester){
+		console.log("I'm a guest")
+		var id = await check_users(req.body.email)
+		if (id !== "") {req.body.requester = id}
+	}
+
 	req.body.event_gcal_id = await calendarEvent(req.body, " - PENDING")
 		.then((event) => {return event})
 		.catch((err) => { console.log("Error Creating Calender Event:", err); });
@@ -56,6 +63,12 @@ router.route('/create').post(async (req, res, next) => {
   })
 
 router.route('/create-multiple').post(async (req, res, next) => {	
+	if (!req.body.requester){
+		console.log("I'm a guest")
+		var id = await check_users(req.body.email)
+		if (id !== "") {req.body.requester = id}
+	}
+
 	var return_data = []
 	var name_temp = req.body.name
 	var num_events = req.body.repeatDates.length + 1
