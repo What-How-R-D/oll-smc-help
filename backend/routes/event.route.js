@@ -13,6 +13,8 @@ const calendarEvent = require("../middleware/calendar_event")
 
 const findRoomData = require("../middleware/find_room")
 const check_users = require("../middleware/check_users")
+const find_lockers = require("../middleware/find_lockers")
+const find_hvacs = require("../middleware/find_hvacs")
 
 const { format } = require('date-fns');
 
@@ -171,6 +173,7 @@ router.route('/update/:id').put(async (req, res, next) => {
   })
 
 router.route('/approve/:id').put(async (req, res, next) => {
+	// Update the event by ID
 	const event_data = await eventSchema.findByIdAndUpdate(
 		req.params.id,
 		{ $set: req.body, },
@@ -184,6 +187,7 @@ router.route('/approve/:id').put(async (req, res, next) => {
 		},
 	  ).clone()
 	
+	// Send the user an email it was approved
 	var startTime = new Date(event_data.startTime).toLocaleString('en-US', { timeZone: 'America/Chicago' })
 	var endTime = new Date(event_data.endTime).toLocaleString('en-US', { timeZone: 'America/Chicago' })
 	var lockStartTime = new Date(event_data.lockStartTime).toLocaleString('en-US', { timeZone: 'America/Chicago' })
@@ -198,12 +202,46 @@ router.route('/approve/:id').put(async (req, res, next) => {
 	Door unlock time: ${format(new Date(lockStartTime), "M/d/yyyy h:mm a")}
 	Door lock time: ${format(new Date(lockEndTime), "M/d/yyyy h:mm a")}
 	`
-
 	sendNotification(event_data.email, subject, body)
 
+	//Update the calendar
 	const gcal_id = await calendarEvent(event_data, "", "update")
 		.then((event) => {return event})
 		.catch((err) => { console.log("Error approving calender event:", err); });
+
+	// Send email to locks that something needs done
+	var lockers = await find_lockers()
+	var subject=`${event_data.name} needs locks to be scheduled`
+	var body=`A new event ${event_data.name} has been approved.\nThe event details are as follows:
+	Room: ${room_data.name}
+	Event start time: ${format(new Date(startTime), "M/d/yyyy h:mm a")}
+	Event end time: ${format(new Date(endTime), "M/d/yyyy h:mm a")}
+	Door unlock time: ${format(new Date(lockStartTime), "M/d/yyyy h:mm a")}
+	Door lock time: ${format(new Date(lockEndTime), "M/d/yyyy h:mm a")}
+	
+	To set the locks as scheduled please go to http://${process.env.REACT_APP_NODE_IP}/locks-hub
+	`
+	for (var idx in lockers){
+		sendNotification(lockers[idx].email, subject, body)
+	}
+	
+	// Send email to hvacs that something needs done
+	var hvacs = await find_hvacs()
+	var subject=`${event_data.name} needs HVAC to be scheduled`
+	var body=`A new event ${event_data.name} has been approved.\nThe event details are as follows:
+	Room: ${room_data.name}
+	Event start time: ${format(new Date(startTime), "M/d/yyyy h:mm a")}
+	Event end time: ${format(new Date(endTime), "M/d/yyyy h:mm a")}
+	Door unlock time: ${format(new Date(lockStartTime), "M/d/yyyy h:mm a")}
+	Door lock time: ${format(new Date(lockEndTime), "M/d/yyyy h:mm a")}
+	
+	To set the HVAC as scheduled please go to http://${process.env.REACT_APP_NODE_IP}/hvac-hub
+	`
+	for (var idx in hvacs){
+		sendNotification(hvacs[idx].email, subject, body)
+	}
+
+	
 });
 
 
