@@ -60,7 +60,8 @@ export default class EditUser extends Component {
           locks: res.data.locks,
           rooms_responsible: res.data.rooms,
           emp_min: res.data.emp_min,
-          payments: res.data.payments
+          payments: res.data.payments,
+          can_spam: res.data.can_spam,
         });
       })
       .catch((error) => {
