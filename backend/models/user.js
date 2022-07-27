@@ -18,6 +18,7 @@ const userSchema = new mongoose.Schema(
 	locks: {type: Boolean, default: false,},
 	payments: {type: Boolean, default: false,},
 	emp_min: {type: Boolean, default: false,},
+	can_spam: {type: Boolean, default: false,},
 	},
  	{ timestamps: true }
 )

@@ -64,6 +64,7 @@ export default class UserList extends Component {
               <th>Building Manager</th>
               <th>HVAC</th>
               <th>Locks</th>
+              <th>Immediate Emails</th>
             </tr>
           </thead>
           <tbody>

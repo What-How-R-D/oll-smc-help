@@ -15,6 +15,7 @@ export default class EditUser extends Component {
     this.onChangeType = this.onChangeType.bind(this);
     this.onChangeBM = this.onChangeBM.bind(this);
     this.onChangeHVAC = this.onChangeHVAC.bind(this);
+    this.onChangeCanSpam = this.onChangeCanSpam.bind(this);
     this.onChangeLocks = this.onChangeLocks.bind(this);
     this.onChangeRooms = this.onChangeRooms.bind(this);
     this.onChangePhone = this.onChangePhone.bind(this);
@@ -35,6 +36,7 @@ export default class EditUser extends Component {
       phone: '',
       emp_min: false,
       payments: false,
+      can_spam: false,
     }
   }
 
@@ -122,6 +124,7 @@ export default class EditUser extends Component {
   onChangeLocks(e) { this.setState(({ locks }) => ({ locks: !locks })) }
   onChangePayments(e) { this.setState(({ payments }) => ({ payments: !payments })) }
   onChangeEmpMin(e) { this.setState(({ emp_min }) => ({ emp_min: !emp_min })) }
+  onChangeCanSpam(e) { this.setState(({ can_spam }) => ({ can_spam: !can_spam })) }
 
   onSubmit(e) {
     e.preventDefault()
@@ -136,7 +139,8 @@ export default class EditUser extends Component {
       locks: this.state.locks,
       rooms: this.state.rooms_responsible,
       emp_min: this.state.emp_min,
-      payments: this.state.payments
+      payments: this.state.payments,
+      can_spam: this.state.can_spam
     };
     
     var url = `http://${process.env.REACT_APP_NODE_IP}:4000/users/update/`
@@ -212,6 +216,14 @@ export default class EditUser extends Component {
           label="Employee/Ministry Lead"
           checked={this.state.emp_min}
           onChange={this.onChangeEmpMin}
+        />
+
+        <Form.Check 
+          type="switch"
+          id="can_spam"
+          label="Receive immediate emails when actions are needed."
+          checked={this.state.can_spam}
+          onChange={this.onChangeCanSpam}
         />
 
         <Form.Check 
