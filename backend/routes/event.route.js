@@ -204,9 +204,51 @@ router.route('/update/:id').put(async (req, res, next) => {
 		.then((event) => {return event})
 		.catch((err) => { console.log("Error approving calender event:", err); });
 	} else if (event_data.status === "Canceled") {
+		//update google calendar
 		const gcal_id = await calendarEvent(event_data, "", "delete")
 		.then((event) => {return event})
 		.catch((err) => { console.log("Error approving calender event:", err); });
+		var room_data = await findRoomData(event_data.room)
+		var startTime = new Date(event_data.startTime).toLocaleString('en-US', { timeZone: 'America/Chicago' })
+		var endTime = new Date(event_data.endTime).toLocaleString('en-US', { timeZone: 'America/Chicago' })
+		var lockStartTime = new Date(event_data.lockStartTime).toLocaleString('en-US', { timeZone: 'America/Chicago' })
+		var lockEndTime = new Date(event_data.lockEndTime).toLocaleString('en-US', { timeZone: 'America/Chicago' })
+
+		if (event_data.locksSet){
+			// Send email to locks that something needs done
+			var lockers = await find_lockers()
+			var subject=`${event_data.name} needs locks to be canceled`
+			var body=`A event ${event_data.name} has been canceled.\nThe event details are as follows:
+			Room: ${room_data.name}
+			Event start time: ${format(new Date(startTime), "M/d/yyyy h:mm a")}
+			Event end time: ${format(new Date(endTime), "M/d/yyyy h:mm a")}
+			Door unlock time: ${format(new Date(lockStartTime), "M/d/yyyy h:mm a")}
+			Door lock time: ${format(new Date(lockEndTime), "M/d/yyyy h:mm a")}
+
+			To set the locks as canceled please go to http://${process.env.REACT_APP_NODE_IP}/locks-hub
+			`
+			for (var idx in lockers){
+				sendNotification(lockers[idx].email, subject, body)
+			}
+		}
+
+		if (event_data.hvacSet){
+			// Send email to hvacs that something needs done
+			var hvacs = await find_hvacs()
+			var subject=`${event_data.name} needs HVAC to be canceled`
+			var body=`A event ${event_data.name} has been canceled.\nThe event details are as follows:
+			Room: ${room_data.name}
+			Event start time: ${format(new Date(startTime), "M/d/yyyy h:mm a")}
+			Event end time: ${format(new Date(endTime), "M/d/yyyy h:mm a")}
+			Door unlock time: ${format(new Date(lockStartTime), "M/d/yyyy h:mm a")}
+			Door lock time: ${format(new Date(lockEndTime), "M/d/yyyy h:mm a")}
+
+			To set the HVAC as canceled please go to http://${process.env.REACT_APP_NODE_IP}/hvac-hub
+			`
+			for (var idx in hvacs){
+				sendNotification(hvacs[idx].email, subject, body)
+			}
+		}
 	}
 
   })
