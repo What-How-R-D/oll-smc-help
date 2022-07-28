@@ -789,10 +789,10 @@ export default class CreateEventRequest extends Component {
         />
         {this.showLocks()}
 
+        {this.Repeater()}
+        
         <div><h4>Notes</h4> (including any audio/video requests*)</div>
         <textarea value={this.state.notes} onChange={this.onChangeNotes} />
-
-        {this.Repeater()}
 
         <Form.Check 
           type="switch"
