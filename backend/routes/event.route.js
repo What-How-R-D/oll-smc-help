@@ -266,6 +266,27 @@ router.route('/reject/:id').put(async (req, res, next) => {
 
 	})
 
+	router.route('/force-cancel/:id').put(async (req, res, next) => {
+		const event_data = await eventSchema.findByIdAndUpdate(
+			req.params.id,
+			{ $set: req.body, },
+			(error, data) => {
+			  if (error) { return next(error)
+			  } else { res.json(data) }
+			},
+		  ).clone()
+
+		var subject=`${event_data.name} has been CANCELED by an admin`
+		var body=`Your event ${event_data.name} building request has been canceled for the following reason: ${req.body.reason}. \nFor more information please contact the parish office.`
+
+		sendNotification(event_data.email, subject, body)
+
+		const gcal_id = await calendarEvent(event_data, "", "delete")
+		.then((event) => {return event})
+		.catch((err) => { console.log("Error force canceling event:", err); });
+
+	})
+
 router.route('/request-update/:id').put(async (req, res, next) => {
 
 	const token = await jwt.sign( { id: "verifieduser" }, req.params.id, { expiresIn: "72h", })

@@ -148,6 +148,16 @@ export default class BMhubList extends Component {
 		})
 	  }
 
+	cancelRequest(id, reason) {
+		var url = `http://${process.env.REACT_APP_NODE_IP}:4000/event/force-cancel/`
+		axios.put(url + id, {status: "Canceled", reason: reason})
+		.then((res) => {
+		  console.log('Event successfully rejected')
+		}).catch((error) => {
+		  console.log(error)
+		})
+	  }
+
 	requestUpdate(id, reason) {
 		var url = `http://${process.env.REACT_APP_NODE_IP}:4000/event/request-update/`
 		axios.put(url + id, {reason: reason})
@@ -184,7 +194,7 @@ export default class BMhubList extends Component {
 				showCancelButton: true,
 				cancelButtonText: `Cancel`,
 				showDenyButton: true,
-				denyButtonText: `Reject`,
+				denyButtonText: `Force Cancel`,
 			})
 			.then((result) => {
 				if (result.isDenied) {
@@ -203,8 +213,8 @@ export default class BMhubList extends Component {
 					})
 					.then((result) => {
 						if (result.isConfirmed) {
-							this.rejectRequest(event.id, result.value)
-							event.status = "Rejected"
+							this.cancelRequest(event.id, result.value)
+							event.status = "Canceled"
 
 							const index = this.state.all_events.findIndex((aEvent) => aEvent.id === event.id);
 							const updated_all_events = update(this.state.all_events, {$splice: [[index, 1]]});

@@ -13,6 +13,7 @@ export default class RoomTableRow extends Component {
       this.approveRequest = this.approveRequest.bind(this);
       this.rejectRequest = this.rejectRequest.bind(this);
       this.requestUpdate = this.requestUpdate.bind(this);
+      this.cancelRequest = this.cancelRequest.bind(this);
 
       this.state = {
         room_name: "",
@@ -93,6 +94,30 @@ export default class RoomTableRow extends Component {
     })
   }
 
+  cancelRequest() {
+    Swal.fire({
+      title: `${this.state.room_name}: ${this.props.obj.name}`,
+      icon: 'warning',
+      html: "Please provide a reason for the forced cancelation",
+      showConfirmButton: true,
+      confirmButtonText: `Reject`,
+      showCancelButton: true,
+      cancelButtonText: `Cancel`,
+      showDenyButton: false,
+      reverseButtons: true,
+      input: "text"
+    })
+    .then((result) => {
+      if (result.isConfirmed) {
+          var url = `http://${process.env.REACT_APP_NODE_IP}:4000/event/force-cancel/`
+          axios.put(url + this.props.obj._id, {status: "Canceled", reason: result.value})
+            .then((res) => { console.log('Event force canceled') })
+            .catch((error) => { console.log(error) })
+          this.props.refresh()
+      }
+    })
+  }
+
   requestUpdate() {
     Swal.fire({
       title: this.props.obj.name,
@@ -117,8 +142,6 @@ export default class RoomTableRow extends Component {
         })
       }
     });
-
-
   }
 
   get_name() {
@@ -140,7 +163,7 @@ export default class RoomTableRow extends Component {
     if (bm_type === "Admin"){
       if (["Approved", "Pending"].includes(this.props.obj.status)) {
         return  <td>
-          <Button type="submit" size="sm" variant="danger" onClick={this.rejectRequest}> Reject </Button>
+          <Button type="submit" size="sm" variant="danger" onClick={this.cancelRequest}> Force Cancel </Button>
           </td>
       }
     } else {
