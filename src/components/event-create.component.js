@@ -789,7 +789,7 @@ export default class CreateEventRequest extends Component {
         />
         {this.showLocks()}
 
-        Notes
+        <div><h4>Notes</h4> (including any audio/video requests*)</div>
         <textarea value={this.state.notes} onChange={this.onChangeNotes} />
 
         {this.Repeater()}
@@ -805,6 +805,7 @@ export default class CreateEventRequest extends Component {
         <Button disabled={!this.state.willBePresent} variant="danger" size="lg" block="block" type="submit" className="mt-4">
           Submit Room Request
         </Button>
+        <div>*Audio/video requests are subject to limited equipment and man power.</div>
       </Form>
     </div>
     return (html);
