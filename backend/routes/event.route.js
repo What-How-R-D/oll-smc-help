@@ -15,23 +15,26 @@ const findRoomData = require("../middleware/find_room")
 const check_users = require("../middleware/check_users")
 const find_lockers = require("../middleware/find_lockers")
 const find_hvacs = require("../middleware/find_hvacs")
+const find_bms = require("../middleware/find_bms")
 
 const { format } = require('date-fns');
 
 router.route('/create').post(async (req, res, next) => {
-
+	// Finding if the email is in the system
 	if (!req.body.requester){
-		console.log("I'm a guest")
 		var id = await check_users(req.body.email)
 		if (id !== "") {req.body.requester = id}
 	}
 
+	// Creating the gcal event and getting the id
 	req.body.event_gcal_id = await calendarEvent(req.body, " - PENDING")
 		.then((event) => {return event})
 		.catch((err) => { console.log("Error Creating Calender Event:", err); });
 	try {
+		// Creating the event in our database
 		var event_data = await eventSchema.create(req.body)
 
+		// Send the user email with update link.
 		const token = await jwt.sign( { id: "verifieduser" }, event_data._id.toString(), { expiresIn: "120h", })
 		event_data = await eventSchema.findByIdAndUpdate(
 			event_data._id,
@@ -56,8 +59,24 @@ router.route('/create').post(async (req, res, next) => {
 		Door unlock time: ${format(new Date(lockStartTime), "M/d/yyyy h:mm a")}
 		Door lock time: ${format(new Date(lockEndTime), "M/d/yyyy h:mm a")}\n\nTo update the event request please login or follow this link: http://${process.env.REACT_APP_NODE_IP}/edit-event/${event_data._id}/${token} \n\n You will be contacted via email upon approval.
 		`
-
 		sendNotification(event_data.email, subject, body)
+
+		// Send BMs email about their new events.
+		var bms = await find_bms(event_data.room)
+		var subject=`${event_data.name} needs approval`
+		var body=`A new event ${event_data.name} has been submitted and needs approved.\nThe event details are as follows:
+		Room: ${room_data.name}
+		Event start time: ${format(new Date(startTime), "M/d/yyyy h:mm a")}
+		Event end time: ${format(new Date(endTime), "M/d/yyyy h:mm a")}
+		Door unlock time: ${format(new Date(lockStartTime), "M/d/yyyy h:mm a")}
+		Door lock time: ${format(new Date(lockEndTime), "M/d/yyyy h:mm a")}
+		
+		To approve the event please go to http://${process.env.REACT_APP_NODE_IP}/bm-hub
+		`
+		for (var idx in bms){
+			sendNotification(bms[idx].email, subject, body)
+		}
+
 	} catch (error) {
 		console.log(`Create error--> ${error}`);
 		return error;
@@ -65,21 +84,24 @@ router.route('/create').post(async (req, res, next) => {
   })
 
 router.route('/create-multiple').post(async (req, res, next) => {	
+	// Check to see if email is in the user database
 	if (!req.body.requester){
-		console.log("I'm a guest")
 		var id = await check_users(req.body.email)
 		if (id !== "") {req.body.requester = id}
 	}
 
+	//Setting up event constants
 	var return_data = []
 	var name_temp = req.body.name
 	var num_events = req.body.repeatDates.length + 1
 	req.body.name = `${name_temp} - (1/${num_events})`
 
+	//Creating the first event in the gcal
 	req.body.event_gcal_id = await calendarEvent(req.body, " - PENDING")
 		.then((event) => {return event})
 		.catch((err) => { console.log("Error Creating Calender Event:", err); });
 	
+	//Creating the first data in our database
 	try {
 		var event_data = await eventSchema.create(req.body)
 	} catch (error) {
@@ -87,6 +109,7 @@ router.route('/create-multiple').post(async (req, res, next) => {
 		return error;
 	}
 
+	// Creating the rest of the events
 	for (var idx in req.body.repeatDates){
 		var dates = req.body.repeatDates[idx]
 		let count = req.body.repeatDates.indexOf(dates) + 2
@@ -112,7 +135,7 @@ router.route('/create-multiple').post(async (req, res, next) => {
 	}
 	res.json(return_data)
 
-
+	// Sending the user a notification that it's been submitted
 	const token = await jwt.sign( { id: "verifieduser" }, event_data._id.toString(), { expiresIn: "120h", })
 	event_data = await eventSchema.findByIdAndUpdate(
 		event_data._id,
@@ -139,6 +162,22 @@ router.route('/create-multiple').post(async (req, res, next) => {
 	`
 
 	sendNotification(event_data.email, subject, body)
+
+	// Send BMs email about their new events.
+	var bms = await find_bms(event_data.room)
+	var subject=`${event_data.name} repeating request needs approval`
+	var body=`A new event ${event_data.name} and all repeats have been requested.\nThe initial event details are as follows:
+	Room: ${room_data.name}
+	Event start time: ${format(new Date(startTime), "M/d/yyyy h:mm a")}
+	Event end time: ${format(new Date(endTime), "M/d/yyyy h:mm a")}
+	Door unlock time: ${format(new Date(lockStartTime), "M/d/yyyy h:mm a")}
+	Door lock time: ${format(new Date(lockEndTime), "M/d/yyyy h:mm a")}
+	
+	To approve the event please go to http://${process.env.REACT_APP_NODE_IP}/bm-hub
+	`
+	for (var idx in bms){
+		sendNotification(bms[idx].email, subject, body)
+	}
   })
 
 
