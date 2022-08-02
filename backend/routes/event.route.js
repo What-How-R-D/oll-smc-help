@@ -347,7 +347,7 @@ router.route('/reject/:id').put(async (req, res, next) => {
 
 	})
 
-	router.route('/force-cancel/:id').put(async (req, res, next) => {
+router.route('/force-cancel/:id').put(async (req, res, next) => {
 		const event_data = await eventSchema.findByIdAndUpdate(
 			req.params.id,
 			{ $set: req.body, },
