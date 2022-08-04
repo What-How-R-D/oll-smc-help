@@ -119,10 +119,12 @@ router.route('/create-multiple').post(async (req, res, next) => {
 
 		var start = new Date(dates[0])
 		var end = new Date(dates[1])
-		var lock_start = new Date(req.body.lockStartTime)
-		var lock_end = new Date(req.body.lockEndTime)
-		req.body.lockStartTime = new Date(start.getFullYear(), start.getMonth(), start.getDate(), lock_start.getHours(), lock_start.getMinutes())
-		req.body.lockEndTime = new Date(end.getFullYear(), end.getMonth(), end.getDate(), lock_end.getHours(), lock_end.getMinutes())
+		if (req.body.lockStartTime !== null) {
+			var lock_start = new Date(req.body.lockStartTime)
+			var lock_end = new Date(req.body.lockEndTime)
+			req.body.lockStartTime = new Date(start.getFullYear(), start.getMonth(), start.getDate(), lock_start.getHours(), lock_start.getMinutes())
+			req.body.lockEndTime = new Date(end.getFullYear(), end.getMonth(), end.getDate(), lock_end.getHours(), lock_end.getMinutes())
+		} 
 		
 		req.body.event_gcal_id = await calendarEvent(req.body, " - PENDING")
 			.then((event) => {return event})
