@@ -251,16 +251,16 @@ router.route('/find-all').get((req, res) => {
 // 	  })
 // 	})
 
-// router.route('/find-room/:id').get((req, res) => {
-// 	eventSchema.find((error, data) => {
-// 		if (error) {
-// 			return next(error)
-// 		} else {
-// 			roomEvent=data.filter(item => item.room === req.params.id)
-// 			res.json(roomEvent)
-// 		}
-// 		})
-// 	})
+router.route('/find-room/:id').get((req, res) => {
+	blackoutSchema.find((error, data) => {
+		if (error) {
+			return next(error)
+		} else {
+			roomBlackouts=data.filter(item => item.room === req.params.id)
+			res.json(roomBlackouts)
+		}
+		})
+	})
   
 
 module.exports = router
