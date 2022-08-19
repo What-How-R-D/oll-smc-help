@@ -54,6 +54,7 @@ export default class CreateEventRequest extends Component {
     this.onChangeNotes = this.onChangeNotes.bind(this);
     this.onChangeOnBehalfOf = this.onChangeOnBehalfOf.bind(this);
     this.onSubmit = this.onSubmit.bind(this);
+    this.GetCalendarEvents = this.GetCalendarEvents.bind(this)
 
     // Setting up state
     this.state = {
@@ -197,87 +198,92 @@ export default class CreateEventRequest extends Component {
 
     var repeats = []
     if (this.state.doesRepeat && this.state.startTime) {        
-        this.setState({ repeatDates: [] })
-        
-        while (this.state.repeatDates.length < this.state.repeatCount) {
-          if (this.state.repeatDates.length !== 0){
-            var prevStart = new Date(this.state.repeatDates[this.state.repeatDates.length-1][0])
-            var prevEnd = new Date(this.state.repeatDates[this.state.repeatDates.length-1][1])
-          } else {
-            prevStart = new Date(this.state.startTime)
-            prevEnd = new Date(this.state.endTime)
-          }
-
-          if (this.state.repeatFrequency === "monthly") {
-            if (this.state.repeatFuzzy === "absolute") {
-              var nextStart = new Date(prevStart.setMonth(prevStart.getMonth()+1))
-              var nextEnd = new Date(prevEnd.setMonth(prevEnd.getMonth()+1))
-            } else if (this.state.repeatFuzzy === "relative") {
-              var dow = new Date(prevStart).getDay()
-              var wom = Math.min((0 | new Date(prevStart).getDate() / 7)+1, 4)
-
-              nextStart = new Date(new Date(prevStart.setMonth(new Date(prevStart).getMonth()+1)).setDate(1))
-              nextEnd = new Date(new Date(prevEnd.setMonth(new Date(prevEnd).getMonth()+1)).setDate(1))
-
-              nextStart = new Date(nextStart.setDate(
-                  nextStart.getDate() + (( 7 + dow - nextStart.getDay()) % 7 ) + ((wom-1)*7)
-                ))
-              nextEnd = new Date(nextEnd.setDate(
-                  nextEnd.getDate() + (( 7 + dow - nextEnd.getDay()) % 7) + ((wom-1)*7)
-                ))
-                
-            } else if (this.state.repeatFuzzy === "last") {
-              dow = new Date(prevStart).getDay()
-              wom = Math.min((0 | new Date(prevStart).getDate() / 7)+1, 4)
-
-              nextStart = new Date(new Date(prevStart.setMonth(new Date(prevStart).getMonth()+2)).setDate(1))
-              nextEnd = new Date(new Date(prevEnd.setMonth(new Date(prevEnd).getMonth()+2)).setDate(1))
-
-              nextStart = new Date(nextStart.setDate(
-                nextStart.getDate() + (( 7 + dow - nextStart.getDay()) % 7 ) - 7
-                ))
-              nextEnd = new Date(nextEnd.setDate(
-                nextEnd.getDate() + (( 7 + dow - nextEnd.getDay()) % 7) - 7
-                ))
-            }
-          } else if (this.state.repeatFrequency === "weekly") {
-            nextStart = new Date(new Date(Number(prevStart)).setDate(prevStart.getDate()+7))
-            nextEnd = new Date(new Date(Number(prevEnd)).setDate(prevEnd.getDate()+7))       
-          } else if (this.state.repeatFrequency === "daily") {
-            nextStart = new Date(new Date(Number(prevStart)).setDate(prevStart.getDate()+1))
-            nextEnd = new Date(new Date(Number(prevEnd)).setDate(prevEnd.getDate()+1))
-          } else if (this.state.repeatFrequency === "weekdays") {
-            if (prevStart.getDay() === 5) {// Friday 
-              nextStart = new Date(new Date(Number(prevStart)).setDate(prevStart.getDate()+3))
-              nextEnd = new Date(new Date(Number(prevEnd)).setDate(prevEnd.getDate()+3))
-            } else if (prevStart.getDay() === 6) {// Saturday
-              nextStart = new Date(new Date(Number(prevStart)).setDate(prevStart.getDate()+2))
-              nextEnd = new Date(new Date(Number(prevEnd)).setDate(prevEnd.getDate()+2))
+        this.setState({ repeatDates: [] }, ()=>{
+          
+          while (this.state.repeatDates.length < this.state.repeatCount) {
+            if (this.state.repeatDates.length !== 0){
+              var prevStart = new Date(this.state.repeatDates[this.state.repeatDates.length-1][0])
+              var prevEnd = new Date(this.state.repeatDates[this.state.repeatDates.length-1][1])
             } else {
+              prevStart = new Date(this.state.startTime)
+              prevEnd = new Date(this.state.endTime)
+            }
+  
+            if (this.state.repeatFrequency === "monthly") {
+              if (this.state.repeatFuzzy === "absolute") {
+                var nextStart = new Date(prevStart.setMonth(prevStart.getMonth()+1))
+                var nextEnd = new Date(prevEnd.setMonth(prevEnd.getMonth()+1))
+              } else if (this.state.repeatFuzzy === "relative") {
+                var dow = new Date(prevStart).getDay()
+                var wom = Math.min((0 | new Date(prevStart).getDate() / 7)+1, 4)
+  
+                nextStart = new Date(new Date(prevStart.setMonth(new Date(prevStart).getMonth()+1)).setDate(1))
+                nextEnd = new Date(new Date(prevEnd.setMonth(new Date(prevEnd).getMonth()+1)).setDate(1))
+  
+                nextStart = new Date(nextStart.setDate(
+                    nextStart.getDate() + (( 7 + dow - nextStart.getDay()) % 7 ) + ((wom-1)*7)
+                  ))
+                nextEnd = new Date(nextEnd.setDate(
+                    nextEnd.getDate() + (( 7 + dow - nextEnd.getDay()) % 7) + ((wom-1)*7)
+                  ))
+                  
+              } else if (this.state.repeatFuzzy === "last") {
+                dow = new Date(prevStart).getDay()
+                wom = Math.min((0 | new Date(prevStart).getDate() / 7)+1, 4)
+  
+                nextStart = new Date(new Date(prevStart.setMonth(new Date(prevStart).getMonth()+2)).setDate(1))
+                nextEnd = new Date(new Date(prevEnd.setMonth(new Date(prevEnd).getMonth()+2)).setDate(1))
+  
+                nextStart = new Date(nextStart.setDate(
+                  nextStart.getDate() + (( 7 + dow - nextStart.getDay()) % 7 ) - 7
+                  ))
+                nextEnd = new Date(nextEnd.setDate(
+                  nextEnd.getDate() + (( 7 + dow - nextEnd.getDay()) % 7) - 7
+                  ))
+              }
+            } else if (this.state.repeatFrequency === "weekly") {
+              nextStart = new Date(new Date(Number(prevStart)).setDate(prevStart.getDate()+7))
+              nextEnd = new Date(new Date(Number(prevEnd)).setDate(prevEnd.getDate()+7))       
+            } else if (this.state.repeatFrequency === "daily") {
               nextStart = new Date(new Date(Number(prevStart)).setDate(prevStart.getDate()+1))
               nextEnd = new Date(new Date(Number(prevEnd)).setDate(prevEnd.getDate()+1))
+            } else if (this.state.repeatFrequency === "weekdays") {
+              if (prevStart.getDay() === 5) {// Friday 
+                nextStart = new Date(new Date(Number(prevStart)).setDate(prevStart.getDate()+3))
+                nextEnd = new Date(new Date(Number(prevEnd)).setDate(prevEnd.getDate()+3))
+              } else if (prevStart.getDay() === 6) {// Saturday
+                nextStart = new Date(new Date(Number(prevStart)).setDate(prevStart.getDate()+2))
+                nextEnd = new Date(new Date(Number(prevEnd)).setDate(prevEnd.getDate()+2))
+              } else {
+                nextStart = new Date(new Date(Number(prevStart)).setDate(prevStart.getDate()+1))
+                nextEnd = new Date(new Date(Number(prevEnd)).setDate(prevEnd.getDate()+1))
+              }
             }
+  
+            this.state.repeatDates.push([nextStart, nextEnd])
           }
+  
+          this.state.repeatDates.forEach((element, idx) => {
+                    repeats.push({
+                      start: element[0],
+                      end: element[1],
+                      title: this.state.name,
+                      description: '',
+                      allDay: false,
+                      color: '#009788'
+                    })
+                })
 
-          this.state.repeatDates.push([nextStart, nextEnd])
-        }
-
-        this.state.repeatDates.forEach((element, idx) => {
-                  repeats.push({
-                    start: element[0],
-                    end: element[1],
-                    title: this.state.name,
-                    description: '',
-                    allDay: false,
-                    color: '#009788'
-                  })
-              })
+        } )
+        
+        this.setState({
+          events: [...events, ...blackouts, ...repeats]
+        });
+    } else {
+      this.setState({
+        events: [...events, ...blackouts, ...repeats]
+      });
     }
-
-    this.setState({
-      events: [...events, ...blackouts, ...repeats]
-    });
-
   }
 
   handleCalendarSelect = (event, e) => {
@@ -412,7 +418,7 @@ export default class CreateEventRequest extends Component {
   onChangeRequesterEmail(e) { this.setState({ requesterEmail: e.target.value }) }
   onChangeRequesterPhone(e) { this.setState({ requesterPhone: e.target.value }) }
   onChangeNotes(e) { this.setState({ notes: e.target.value }) }
-  onChangeWillBePresent(e) { this.setState(({ willBePresent }) => ({ willBePresent: !willBePresent })) }
+  onChangeWillBePresent(e) { this.setState(({ willBePresent }) => ({ willBePresent: !willBePresent })); console.log(this.state.repeatDates)}
   onChangeOnBehalfOf(e) { this.setState(({ onBehalfOf }) => ({ onBehalfOf: !onBehalfOf })) }
   onChangeNeedLocks(e) { this.setState(({ needLocks }) => ({ needLocks: !needLocks })) }
   onChangeName(e) { this.setState({ name: e.target.value }) }
@@ -492,20 +498,20 @@ export default class CreateEventRequest extends Component {
   }
 
   onChangeDoesRepeat(e) { 
-    this.setState(({ doesRepeat }) => ({ doesRepeat: !doesRepeat }));
-    this.GetCalendarEvents()
+    this.setState(({ doesRepeat }) => ({ doesRepeat: !doesRepeat }), );
+    this.GetCalendarEvents();
    }
   onChangeFrequency(e) { 
-    this.setState({ repeatFrequency: e.target.value });
-    this.GetCalendarEvents()
+    this.setState({ repeatFrequency: e.target.value }, this.GetCalendarEvents);
+    this.GetCalendarEvents();
   }
   onChangeFuzzy(e) { 
-    this.setState({ repeatFuzzy: e.target.value });
-    this.GetCalendarEvents()
+    this.setState({ repeatFuzzy: e.target.value },);
+     this.GetCalendarEvents();
   }
-  onChangeRepeatCount(e) { 
-    this.setState({ repeatCount: e.target.value-1 }); 
-    this.GetCalendarEvents() 
+  async onChangeRepeatCount(e) { 
+    this.setState({ repeatCount: e.target.value-1 }, this.GetCalendarEvents);
+    console.log(this.state.repeatDates)
   }
 
 
@@ -657,6 +663,8 @@ export default class CreateEventRequest extends Component {
   }
 
   async onSubmit(e) {
+    console.log(this.state.repeatCount)
+    console.log(this.state.repeatDates)
     e.preventDefault()
     var eventRequestObject = {}
     eventRequestObject = {
