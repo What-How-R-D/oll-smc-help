@@ -122,8 +122,7 @@ export default class CreateEventRequest extends Component {
         return  this.state.rooms[0]._id
       })
       .catch((error) => { console.log(error); })
-    this.setState({ room: first_room })
-    this.GetCalendarEvents()
+    this.setState({ room: first_room }, this.GetCalendarEvents)
   }
 
   OptionList() {
@@ -419,17 +418,12 @@ export default class CreateEventRequest extends Component {
   onChangeName(e) { this.setState({ name: e.target.value }) }
 
   async onChangeAttendance(e) {
-    this.setState({ attendance: e.target.value })
-
-    var first_room = this.state.rooms.filter(item => item.occupancy > this.state.attendance)[0]._id
-    this.setState({ room: first_room  })
-    this.setState({ events: [] })
-    this.GetCalendarEvents()
+    var first_room = this.state.rooms.filter(item => item.occupancy > e.target.value)[0]._id
+    this.setState({ attendance: e.target.value, room: first_room, events: []  }, this.GetCalendarEvents)
   }
 
   onChangeRoom(e) {
-    this.setState({ room: e.target.value })
-    this.GetCalendarEvents()
+    this.setState({ room: e.target.value }, this.GetCalendarEvents)
   }
 
   onChangeLockStartTime(e) { this.setState({ lockStartTime: e }) }
