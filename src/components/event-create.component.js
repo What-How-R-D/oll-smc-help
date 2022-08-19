@@ -72,6 +72,8 @@ export default class CreateEventRequest extends Component {
       notes: '',
       //
       events: [],
+      database_events: [],
+      database_blackouts: [],
       defaultView: "week",
       defaultDate: "",
       user_id: "",
@@ -92,7 +94,9 @@ export default class CreateEventRequest extends Component {
     }
   }
 
-  async componentDidMount() {  
+  async componentDidMount() { 
+    this.PullEvents()
+
     if (await checkLogin()){
       this.setState({ loggedIn: true })
     } else {
@@ -130,46 +134,55 @@ export default class CreateEventRequest extends Component {
     })
   }
 
-  async GetCalendarEvents(date, view) {
-    // let start, end;
-    // start = moment(date).startOf('month')._d
-    // end = moment(date).endOf('month')._d
-    
+  async PullEvents(){
     var url = `http://${process.env.REACT_APP_NODE_IP}:4000/event/find-all`
-    var events = await axios.get(url)
+     var events = await axios.get(url)
       .then(res => {
-        var room_events = res.data.filter(item => !["Rejected", "Canceled"].includes(item.status)).filter(item => item.room === this.state.room)
+        var room_events = res.data.filter(item => !["Rejected", "Canceled"].includes(item.status))
 
         return room_events.map(
-          ({ startTime, endTime, name}) => ({
+          ({ startTime, endTime, name, room}) => ({
             start: new Date(Math.max(new Date(startTime).addHours(-2), new Date(endTime).setHours(0,0,0,1))),
             end: new Date(Math.min(new Date(endTime).addHours(2), new Date(endTime).setHours(23,59,59,999))),
             title: "Reserved",
             description: '',
             allDay: false,
+            room: room,
           })) 
       })
       .catch((error) => {
         console.log(error);
-      });
+      })
+    this.setState({ database_events: events})
 
     url = `http://${process.env.REACT_APP_NODE_IP}:4000/blackout/find-all`
     var blackouts = await axios.get(url)
         .then(res => {
-          var room_blackouts = res.data.filter(item => item.rooms.includes(this.state.room))
+          var room_blackouts = res.data
           
           return room_blackouts.map(
-            ({ startTime, endTime, name}) => ({
+            ({ startTime, endTime, name, rooms}) => ({
               start: new Date(startTime),
               end: new Date(endTime),
               title: "Reserved",
               description: '',
               allDay: false,
+              rooms: rooms,
             })) 
         })
         .catch((error) => {
           console.log(error);
-        });
+        })
+    this.setState({ database_blackouts: blackouts })
+  }
+
+  async GetCalendarEvents(date, view) {
+    // let start, end;
+    // start = moment(date).startOf('month')._d
+    // end = moment(date).endOf('month')._d
+    
+    var events = this.state.database_events.filter(item => item.room === this.state.room)
+    var blackouts = this.state.database_blackouts.filter(item => item.rooms.includes(this.state.room))
 
     if (this.state.startTime) {
       events.push({
