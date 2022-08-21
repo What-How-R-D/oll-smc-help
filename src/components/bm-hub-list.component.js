@@ -41,13 +41,15 @@ export default class BMhubList extends Component {
 			await axios.get(url)
 			.then(res => {
 				var new_events = res.data
+				console.log(res.data)
 				all_events.push(...new_events)
 			})
 				.catch((error) => {
 				console.log(error);
 			})
 		}
-
+		console.log(all_events)
+		
 		var pending_events = all_events.filter(event => event.status === "Pending")
 		pending_events.sort((a, b) => new Date(a.startTime).getTime() > new Date(b.startTime).getTime() ? 1 : -1 )
 		

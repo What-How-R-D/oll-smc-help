@@ -23,29 +23,29 @@ export default class RoomTableRow extends Component {
 
 
 
-  async componentDidMount() {
-    var url = `http://${process.env.REACT_APP_NODE_IP}:4000/users/find-id/${this.props.obj.requester}`
-    await axios.get(url)
-      .then(res => {
-        this.setState({
-          user: {name:res.data.name, email:res.data.email, phone:res.data.phone, type: res.data.type}
-        });
-      })
-      .catch((error) => {
-        console.log(error);
-      })
+  // async componentDidMount() {
+  //   var url = `http://${process.env.REACT_APP_NODE_IP}:4000/users/find-id/${this.props.obj.requester}`
+  //   await axios.get(url)
+  //     .then(res => {
+  //       this.setState({
+  //         user: {name:res.data.name, email:res.data.email, phone:res.data.phone, type: res.data.type}
+  //       });
+  //     })
+  //     .catch((error) => {
+  //       console.log(error);
+  //     })
 
-    url = `http://${process.env.REACT_APP_NODE_IP}:4000/room/find-id/${this.props.obj.room}`
-    await axios.get(url)
-      .then(res => {
-        this.setState({
-          room_name: res.data.name
-        });
-      })
-      .catch((error) => {
-        console.log(error);
-      })
-  }
+  //   url = `http://${process.env.REACT_APP_NODE_IP}:4000/room/find-id/${this.props.obj.room}`
+  //   await axios.get(url)
+  //     .then(res => {
+  //       this.setState({
+  //         room_name: res.data.name
+  //       });
+  //     })
+  //     .catch((error) => {
+  //       console.log(error);
+  //     })
+  // }
 
   async approveRequest() {
       Swal.fire({
@@ -181,10 +181,10 @@ export default class RoomTableRow extends Component {
     return (
       <tr>
         <td>{this.props.obj.name}</td>
-        {this.get_name()}
-        {this.get_email()}
-        {this.get_phone()}
-        <td>{this.state.room_name}</td>
+        <td>{this.props.obj.contact}</td>
+        <td>{this.props.obj.email}</td>
+        <td>{this.props.obj.phone}</td>
+        <td>{this.props.obj.room}</td>
         <td>{format(new Date(this.props.obj.startTime), "M/d/yyyy h:mm a")}</td>
         <td>{format(new Date(this.props.obj.endTime), "M/d/yyyy h:mm a")}</td>
         <td>{this.props.obj.attendance}</td>

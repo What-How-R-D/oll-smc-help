@@ -13,6 +13,7 @@ const calendarEvent = require("../middleware/calendar_event")
 
 const findRoomData = require("../middleware/find_room")
 const check_users = require("../middleware/check_users")
+const find_user = require("../middleware/find_user")
 const find_lockers = require("../middleware/find_lockers")
 const find_hvacs = require("../middleware/find_hvacs")
 const find_bms = require("../middleware/find_bms")
@@ -524,8 +525,8 @@ router.route('/find-bm-cal/:id').get((req, res) => {
 		})
 	})
 
-router.route('/find-bm-list/:id/:limit').get((req, res) => {
-	eventSchema.find((error, data) => {
+router.route('/find-bm-list/:id/:limit').get(async (req, res) => {
+	eventSchema.find(async (error, data) => {
 		if (error) {
 			res.status(400).json({ error: error, })
 		} else {
@@ -534,7 +535,22 @@ router.route('/find-bm-list/:id/:limit').get((req, res) => {
 			var needs_work = data.filter(item => item.room === req.params.id).filter(item => ["Pending"].includes(item.status)).filter(event => new Date(event.endTime).getTime() > new Date())
 			var done = data.filter(item => item.room === req.params.id).filter(item => !["Pending"].includes(item.status)).sort((a, b) => new Date(a.startTime).getTime() > new Date(b.startTime).getTime() ? 1 : -1 ).slice(0, req.params.limit).filter(event => new Date(event.endTime).getTime() > new Date())
 
-			res.json([...needs_work, ...done])
+			var all_events = [...needs_work, ...done]
+
+			for (var ev_idx in all_events){
+				event = all_events[ev_idx]
+				var room_data = await findRoomData(event.room)
+				event.room = room_data.name
+				if (event.requester){
+					var user = await find_user(event.requester);
+					// console.log(user)
+					event.email = user.email;
+					event.contact = user.name;
+					event.phone = user.phone;
+				}
+			}
+			
+			res.json(all_events)
 		}
 		})
 	})
