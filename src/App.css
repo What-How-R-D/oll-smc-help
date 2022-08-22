@@ -15,6 +15,14 @@ body h4 {
   color: #ffffff;
 }
 
+.colored-nav {
+  background-color: #014686ff;
+}
+
+.nav-link {
+  color: white !important;
+}
+
 .form-wrapper,
 .table-wrapper {
   max-width: 750px;

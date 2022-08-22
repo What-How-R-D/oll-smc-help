@@ -67,10 +67,10 @@ function App() {
     <div className="App">
       <Router>
         <header className="App-header">
-          <Navbar bg="dark" variant="dark">
+          <Navbar className="colored-nav" variant="dark">
             <Container>
               <Navbar.Brand>
-                <Link to={'/'} className="nav-link"> OLL SMC </Link>
+                <Link to={'/'} className="nav-link"> OLL/SMC Room Reservations </Link>
               </Navbar.Brand>
 
               <Nav className="justify-content-end">
