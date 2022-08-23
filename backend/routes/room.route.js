@@ -5,7 +5,7 @@ let mongoose = require('mongoose'),
 let roomSchema = require('../models/room')
 
 router.route('/create').post((req, res, next) => {
-	roomSchema.create(req.body, (error, data) => {
+	roomSchema.create(req.body, (error, data, next) => {
 	  if (error) {
 		return next(error)
 	  } else {
@@ -16,7 +16,7 @@ router.route('/create').post((req, res, next) => {
   })
 
 router.route('/find-all/:emp_min').get((req, res) => {
-	roomSchema.find((error, data) => {
+	roomSchema.find((error, data, next) => {
 	  if (error) {
 		return next(error)
 	  } else {
@@ -31,7 +31,7 @@ router.route('/find-all/:emp_min').get((req, res) => {
   })
 
 router.route('/find-id/:id').get((req, res) => {
-	roomSchema.findById(req.params.id, (error, data) => {
+	roomSchema.findById(req.params.id, (error, data, next) => {
 	  if (error) {
 		return next(error)
 	  } else {
