@@ -161,6 +161,8 @@ router.route('/newpassword').post(async (req, res) => {
   })
 
 router.route('/find-id/:id').get((req, res) => {
+	console.log("Finding user by id of ", req.params.id)
+	console.log("All parameters of, ", req.params)
 	userSchema.findById(req.params.id, (error, data) => {
 		if (error) {
 			console.log(error)

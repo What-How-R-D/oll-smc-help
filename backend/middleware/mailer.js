@@ -23,7 +23,7 @@ module.exports = function (recipient, subject, content) {
 	if (error) {
 		console.log(error);
 	} else {
-		console.log('Email sent: ' + info.response);
+		console.log('Email sent to: ' + recipient + " wrt "+ subject);
 	}
 	});
 
