@@ -101,7 +101,7 @@ router.route('/validate').post(async (req, res) => {
   })
 
 router.route('/find-all', requireLogin).get((req, res) => {
-	console.log("Finding all users "+ req)
+	console.log("Finding all users "+ req.body)
 	userSchema.find((error, data) => {
 	  if (error) {
 		return next(error)
