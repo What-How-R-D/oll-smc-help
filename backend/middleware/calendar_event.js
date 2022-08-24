@@ -39,6 +39,7 @@ module.exports = async function (event_data, status, kind="create") {
 		var req_email = event_data.email
 		var req_phone = event_data.phone
 	}
+	console.log("Found event details for google calendar")
 
 	const user_data = await findUserData(event_data.requester)
 	var lock_time = new Date(event_data.lockStartTime).toLocaleString('en-US', { timeZone: 'America/Chicago' })
@@ -65,7 +66,7 @@ module.exports = async function (event_data, status, kind="create") {
 			eventId: event_data.event_gcal_id,
 			resource: event,
 			}
-		).then((event) => {return event.data.id})
+		).then((event) => {console.log("GCalender event updated:", event.data); return event.data.id})
 		.catch((err) => { console.log("Error Updating Calender Event:", err); });
 	} else if (kind==='create') {
 		var gcal_id = await calendar.events.insert({
@@ -73,7 +74,7 @@ module.exports = async function (event_data, status, kind="create") {
 			calendarId: room_data.calendar_id,
 			resource: event,
 		}
-		).then((event) => {return event.data.id})
+		).then((event) => {console.log("GCalender event created:", event.data); return event.data.id})
 		.catch((err) => { console.log("Error Creating Calender Event:", err); });
 	} else if (kind==='delete') {
 		var gcal_id = await calendar.events.delete({
@@ -81,7 +82,7 @@ module.exports = async function (event_data, status, kind="create") {
 			calendarId: room_data.calendar_id,
 			eventId: event_data.event_gcal_id,
 		}
-		).then((event) => {return event.data.id})
+		).then((event) => {console.log("GCalender event deleted:", event.data); return event.data.id})
 		.catch((err) => { console.log("Error Deleting Calender Event:", err); });
 	}
 

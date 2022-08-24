@@ -32,8 +32,10 @@ router.post("/login", async (req, res) => {
 	  }
 	  const isMatched = await bcrypt.compare(password, user.password)
 	  if (!isMatched) {
+		console.log("Invalid creds for " + user.name)
 		return res.status(403).json({ error: "Invalid Credentials" })
 	  }
+	  console.log("Logged in user " + user.name)
 	  const token = await jwt.sign({ _id: user._id }, process.env.JWT_SECRET, {
 		expiresIn: "24h",
 	  })
@@ -89,7 +91,7 @@ router.route('/validate').post(async (req, res) => {
 				if (error) {return next(error)
 				} else {
 				  res.json(data)
-				  console.log('User password updated successfully !')
+				  console.log('Password updated successfully for ' + data.name)
 				}
 			  },
 		  )
@@ -99,6 +101,7 @@ router.route('/validate').post(async (req, res) => {
   })
 
 router.route('/find-all', requireLogin).get((req, res) => {
+	console.log("Finding all users "+ req)
 	userSchema.find((error, data) => {
 	  if (error) {
 		return next(error)

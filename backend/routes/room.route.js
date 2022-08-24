@@ -16,6 +16,7 @@ router.route('/create').post((req, res, next) => {
   })
 
 router.route('/find-all/:emp_min').get((req, res) => {
+	console.log("Finding all rooms ", req.params)
 	roomSchema.find((error, data, next) => {
 	  if (error) {
 		return next(error)
