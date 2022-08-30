@@ -185,19 +185,18 @@ router.route('/create-multiple').post(async (req, res, next) => {
 
 
 router.route('/update/:id').put(async (req, res, next) => {
-	const event_data = await eventSchema.findByIdAndUpdate(
-	  req.params.id,
-	  { $set: req.body, },
-	  (error, data) => {
-		if (error) {
-		  return next(error)
-		} else {
-		  res.json(data)
-		  return data
-		}
-	  },
-	).clone()
+	console.log("Updating event with parameters: " + JSON.stringify(req.body))
+	
+	await eventSchema.findByIdAndUpdate( 
+			req.params.id, 
+			{ $set: req.body, }
+		).catch((error) => {console.log("Update error: " + error)})
 
+	const event_data = await eventSchema.findById(req.params.id)
+		.catch((error) => {console.log("Error requesting updated event: " + error)})
+
+	console.log("Updated event details: " + event_data)
+	
 	if (event_data.status === "Pending") {
 		const gcal_id = await calendarEvent(event_data, " - PENDING", "update")
 		.then((event) => {return event})
