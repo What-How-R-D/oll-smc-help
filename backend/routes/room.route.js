@@ -32,8 +32,8 @@ router.route('/find-all/:emp_min').get((req, res) => {
   })
 
 router.route('/find-id/:id').get((req, res) => {
-	console.log("Finding room by id of ", req.params.id)
-	console.log("All parameters of, ", req.params)
+	// console.log("Finding room by id of ", req.params.id)
+	// console.log("All parameters of, ", req.params)
 	roomSchema.findById(req.params.id, (error, data, next) => {
 	  if (error) {
 		return next(error)
