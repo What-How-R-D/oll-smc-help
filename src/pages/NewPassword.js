@@ -52,7 +52,7 @@ export default class Register extends Component {
     <h4>Reset password</h4>
 		<Form onSubmit={this.onSubmit}>
 			<Form.Group controlId="Password">
-				<Form.Label>Password</Form.Label>
+				<Form.Label>New Password</Form.Label>
 				<Form.Control type="password" value={this.state.password} onChange={this.onChangePassword} />
 			</Form.Group>
   
