@@ -4,8 +4,8 @@ import Form from 'react-bootstrap/Form'
 
 import {checkLogin} from "../api/user"
 
-import BMhubList from './bm-hub-list.component.js'
-import BMhubCalendar from './bm-hub-calendar.component.js'
+import BMhubList from '../components/bm-hub-list.component.js'
+import BMhubCalendar from '../components/bm-hub-calendar.component.js'
 
 export default class BMhub extends Component {
 	constructor(props) {

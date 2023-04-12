@@ -2,16 +2,16 @@ import React, { Component } from "react";
 import { Link } from "react-router-dom"
 import axios from 'axios';
 import Table from 'react-bootstrap/Table';
-import UserTableRow from './UserTableRow';
+import BlackoutTableRow from '../components/BlackoutTableRow';
 
-import {findUser, checkLogin} from "../api/user"
+import {checkLogin} from "../api/user"
 
-export default class UserList extends Component {
+export default class BlackoutList extends Component {
 
   constructor(props) {
     super(props)
     this.state = {
-      users: [],
+      blackouts: [],
       loggedIn: false,
     };
   }
@@ -23,19 +23,11 @@ export default class UserList extends Component {
       this.setState({ loggedIn: false })
     }
 
-    const user = await findUser()
-
-    if (user['error'] === "Unauthorized") {
-      this.setState({ loggedIn: false })
-		} else {
-      this.setState({ loggedIn: true })
-		}
-
-    var url = `http://${process.env.REACT_APP_NODE_IP}:4000/users/find-all`
+    var url = `http://${process.env.REACT_APP_NODE_IP}:4000/blackout/find-all`
     axios.get(url)
       .then(res => {
         this.setState({
-          users: res.data
+          blackouts: res.data
         });
       })
       .catch((error) => {
@@ -44,8 +36,8 @@ export default class UserList extends Component {
   }
 
   DataTable() {
-    return this.state.users.map((res, i) => {
-      return <UserTableRow obj={res} key={i} />;
+    return this.state.blackouts.map((res, i) => {
+      return <BlackoutTableRow obj={res} key={i} />;
     });
   }
 
@@ -54,17 +46,14 @@ export default class UserList extends Component {
     let html
     if (this.state.loggedIn) {
       html = <div className="table-wrapper">
-        <Table striped bordered>
+        <Link to="/create-blackout">Create new blackout</Link>
+        <Table striped bordered hover>
           <thead>
             <tr>
               <th>Name</th>
-              <th>Email</th>
-              <th>Emp/Min</th>
-              <th>Account Type</th>
-              <th>Building Manager</th>
-              <th>HVAC</th>
-              <th>Locks</th>
-              <th>Immediate Emails</th>
+              <th>Rooms</th>
+              <th>Start time</th>
+              <th>End Time</th>
             </tr>
           </thead>
           <tbody>

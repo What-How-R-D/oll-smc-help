@@ -2,16 +2,16 @@ import React, { Component } from "react";
 import { Link } from "react-router-dom"
 import axios from 'axios';
 import Table from 'react-bootstrap/Table';
-import RoomTableRow from './RoomTableRow';
+import UserTableRow from '../components/UserTableRow';
 
-import {checkLogin} from "../api/user"
+import {findUser, checkLogin} from "../api/user"
 
-export default class RoomList extends Component {
+export default class UserList extends Component {
 
   constructor(props) {
     super(props)
     this.state = {
-      rooms: [],
+      users: [],
       loggedIn: false,
     };
   }
@@ -23,11 +23,19 @@ export default class RoomList extends Component {
       this.setState({ loggedIn: false })
     }
 
-    var url = `http://${process.env.REACT_APP_NODE_IP}:4000/room/find-all/true`
+    const user = await findUser()
+
+    if (user['error'] === "Unauthorized") {
+      this.setState({ loggedIn: false })
+		} else {
+      this.setState({ loggedIn: true })
+		}
+
+    var url = `http://${process.env.REACT_APP_NODE_IP}:4000/users/find-all`
     axios.get(url)
       .then(res => {
         this.setState({
-          rooms: res.data
+          users: res.data
         });
       })
       .catch((error) => {
@@ -36,8 +44,8 @@ export default class RoomList extends Component {
   }
 
   DataTable() {
-    return this.state.rooms.map((res, i) => {
-      return <RoomTableRow obj={res} key={i} />;
+    return this.state.users.map((res, i) => {
+      return <UserTableRow obj={res} key={i} />;
     });
   }
 
@@ -46,20 +54,23 @@ export default class RoomList extends Component {
     let html
     if (this.state.loggedIn) {
       html = <div className="table-wrapper">
-        <Table striped bordered hover>
+        <Table striped bordered>
           <thead>
             <tr>
               <th>Name</th>
-              <th>Building</th>
-              <th>Occupancy</th>
-              <th>Emp/Min Only</th>
+              <th>Email</th>
+              <th>Emp/Min</th>
+              <th>Account Type</th>
+              <th>Building Manager</th>
+              <th>HVAC</th>
+              <th>Locks</th>
+              <th>Immediate Emails</th>
             </tr>
           </thead>
           <tbody>
             {this.DataTable()}
           </tbody>
         </Table>
-        <Link to="/create-room">Create new room</Link>
       </div>
       } else {
         html = <div>

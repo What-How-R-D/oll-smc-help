@@ -1,7 +1,7 @@
 import React from "react"
 
-import CreateEventRequest from "./event-create.component"
-import MyEvents from "./event-list-user.component"
+import CreateEventRequest from "../components/event-create.component"
+import MyEvents from "../components/event-list-user.component"
 
 
 const Home = (props) => {

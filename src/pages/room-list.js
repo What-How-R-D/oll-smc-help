@@ -2,16 +2,16 @@ import React, { Component } from "react";
 import { Link } from "react-router-dom"
 import axios from 'axios';
 import Table from 'react-bootstrap/Table';
-import BlackoutTableRow from './BlackoutTableRow';
+import RoomTableRow from '../components/RoomTableRow';
 
 import {checkLogin} from "../api/user"
 
-export default class BlackoutList extends Component {
+export default class RoomList extends Component {
 
   constructor(props) {
     super(props)
     this.state = {
-      blackouts: [],
+      rooms: [],
       loggedIn: false,
     };
   }
@@ -23,11 +23,11 @@ export default class BlackoutList extends Component {
       this.setState({ loggedIn: false })
     }
 
-    var url = `http://${process.env.REACT_APP_NODE_IP}:4000/blackout/find-all`
+    var url = `http://${process.env.REACT_APP_NODE_IP}:4000/room/find-all/true`
     axios.get(url)
       .then(res => {
         this.setState({
-          blackouts: res.data
+          rooms: res.data
         });
       })
       .catch((error) => {
@@ -36,8 +36,8 @@ export default class BlackoutList extends Component {
   }
 
   DataTable() {
-    return this.state.blackouts.map((res, i) => {
-      return <BlackoutTableRow obj={res} key={i} />;
+    return this.state.rooms.map((res, i) => {
+      return <RoomTableRow obj={res} key={i} />;
     });
   }
 
@@ -46,20 +46,20 @@ export default class BlackoutList extends Component {
     let html
     if (this.state.loggedIn) {
       html = <div className="table-wrapper">
-        <Link to="/create-blackout">Create new blackout</Link>
         <Table striped bordered hover>
           <thead>
             <tr>
               <th>Name</th>
-              <th>Rooms</th>
-              <th>Start time</th>
-              <th>End Time</th>
+              <th>Building</th>
+              <th>Occupancy</th>
+              <th>Emp/Min Only</th>
             </tr>
           </thead>
           <tbody>
             {this.DataTable()}
           </tbody>
         </Table>
+        <Link to="/create-room">Create new room</Link>
       </div>
       } else {
         html = <div>

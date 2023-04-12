@@ -12,33 +12,33 @@ import { BrowserRouter as Router, Switch, Route, Link } from 'react-router-dom'
 
 import Help from "./components/help.component"
 
-import Register from "./components/Register"
-import Validate from "./components/Validate"
-import ResetPassword from "./components/ResetPassword"
-import NewPassword from "./components/NewPassword"
-import Login from "./components/Login"
-import Logout from "./components/Logout"
-import Home from "./components/Home"
+import Register from "./pages/Register"
+import Validate from "./pages/Validate"
+import ResetPassword from "./pages/ResetPassword"
+import NewPassword from "./pages/NewPassword"
+import Login from "./pages/Login"
+import Logout from "./pages/Logout"
+import Home from "./pages/Home"
 
-import UserList from './components/user-list.component'
-import EditUser from './components/user-edit.component'
+import UserList from './pages/user-list'
+import EditUser from './pages/user-edit'
 
-import RoomList from './components/room-list.component'
-import CreateRoom from './components/room-create.component'
-import EditRoom from './components/room-edit.component'
+import RoomList from './pages/room-list'
+import CreateRoom from './pages/room-create'
+import EditRoom from './pages/room-edit'
 
-import BMhub from './components/bm-hub.component'
+import BMhub from './pages/bm-hub'
 
-import HVAChub from './components/hvac-hub.component'
+import HVAChub from './pages/hvac-hub'
 
-import LocksHub from './components/locks-hub.component'
+import LocksHub from './pages/locks-hub'
 
-import PaymentsHub from './components/payments-hub.component'
+import PaymentsHub from './pages/payments-hub.'
 
-import BlackoutList from './components/blackout-list.component'
-import CreateBlackout from './components/blackout-create.component'
+import BlackoutList from './pages/blackout-list'
+import CreateBlackout from './pages/blackout-create'
 
-import EditEvent from "./components/event-edit.component"
+import EditEvent from "./pages/event-edit"
 
 require('dotenv').config()
 

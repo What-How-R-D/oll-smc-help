@@ -5,7 +5,7 @@ import Table from 'react-bootstrap/Table';
 
 import {checkLogin} from "../api/user"
 
-import EventPaymentsTableRow from './EventPaymentsTableRow.js'
+import EventPaymentsTableRow from '../components/EventPaymentsTableRow.js'
 
 export default class PaymentsHub extends Component {
 	constructor(props) {
