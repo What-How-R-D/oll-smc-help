@@ -1,6 +1,6 @@
 import React from "react"
 
-import CreateEventRequest from "../components/event-create.component"
+import EventRequest from "../components/event-details.component"
 import MyEvents from "../components/event-list-user.component"
 
 
@@ -9,7 +9,9 @@ const Home = (props) => {
   return (
     <div>
       <MyEvents/>
-      <CreateEventRequest {...props} /> 
+      <h1> Create a new event request </h1>
+
+      <EventRequest {...props} /> 
     </div>
   )
 }

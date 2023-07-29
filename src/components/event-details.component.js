@@ -14,6 +14,7 @@ import Swal from 'sweetalert2';
 import {findUser, checkLogin} from "../api/user"
 
 var crypto = require("crypto");
+const jwt = require("jsonwebtoken")
 
 /*eslint no-extend-native: ["error", { "exceptions": ["Date"] }]*/
 Date.prototype.addHours = function(h) {
@@ -60,6 +61,7 @@ export default class CreateEventRequest extends Component {
     this.state = {
       rooms: [],
       //
+      id: '',
       name: '',
       room: '',
       attendance: 0,
@@ -96,6 +98,13 @@ export default class CreateEventRequest extends Component {
   }
 
   async componentDidMount() { 
+    console.log(this.props)
+    console.log(this.props.id)
+
+    console.log(this.state.id)
+    if (this.props.edit) {
+      await this.PullID(this.props.id)
+    }
     this.PullEvents()
 
     if (await checkLogin()){
@@ -134,12 +143,88 @@ export default class CreateEventRequest extends Component {
     })
   }
 
+  async PullID(id) {
+    this.setState({  id: id })
+    var url = `http://${process.env.REACT_APP_NODE_IP}:4000/event/find-id/${id}`
+    var event = await axios.get(url)
+      .then(res => {
+        this.setState({
+          name: res.data.name,
+          room: res.data.room,
+          status: res.data.status,
+          attendance: res.data.attendance,
+          startTime: new Date(res.data.startTime),
+          endTime: new Date(res.data.endTime),
+          lockStartTime: res.data.lockStartTime,
+          lockEndTime: res.data.lockEndTime,
+          requester: res.data.requester,
+          requesterName: res.data.requesterName,
+          requesterEmail: res.data.requesterEmail,
+          requesterPhone: res.data.requesterPhone,
+          defaultDate: new Date(res.data.startTime),
+          token: res.data.token,
+          notes: res.data.notes,
+        })
+        return res.data
+      })
+      .catch((error) => { console.log(error); });
+    
+    var valid_user = false
+    var user = await findUser()
+    if (user['error'] !== "Unauthorized") {
+      this.setState({ 
+        loggedIn: true, 
+        user_id: user._id, 
+        user_email: user.email,
+        user_type: user.type,
+        user_emp_min: user.emp_min,
+      })
+      if (this.state.user_id.toString() === this.state.requester) { valid_user = true }
+    }
+
+    try { if (await jwt.verify(this.props.match.params.token, this.state.id)) { valid_user = true } } 
+    catch (e) { console.log("token failed"); }
+
+    if (!valid_user) {
+        await Swal.fire({
+          title: "Unauthenticated",
+          icon: 'warning',
+          html: "You do not have permission to edit this event.",
+          showConfirmButton: false,
+          showCancelButton: true,
+          cancelButtonText: `Return to home`,
+          showDenyButton: false,
+        }).then(
+          this.props.history.push("/")
+        )
+      }
+    
+    if (event.status !== "Pending") {
+      await Swal.fire({
+        title: "Error",
+        icon: 'warning',
+        html: "Only pending events can be updated.",
+        showConfirmButton: false,
+        showCancelButton: true,
+        cancelButtonText: `Return to home`,
+        showDenyButton: false,
+      }).then(
+        this.props.history.push("/")
+      )
+    }
+  }
+
   async PullEvents(){
     var url = `http://${process.env.REACT_APP_NODE_IP}:4000/event/find-all`
      var events = await axios.get(url)
       .then(res => {
-        var room_events = res.data.filter(item => !["Rejected", "Canceled"].includes(item.status))
 
+        if (this.props.edit) {
+          var room_events = res.data.filter(item => !["Rejected", "Canceled"].includes(item.status)).filter(item => item._id !== this.state.id)
+        } else {
+          var room_events = res.data.filter(item => !["Rejected", "Canceled"].includes(item.status))
+        }
+        
         return room_events.map(
           ({ startTime, endTime, name, room}) => ({
             start: new Date(Math.max(new Date(startTime).addHours(-2), new Date(endTime).setHours(0,0,0,1))),
@@ -403,7 +488,7 @@ export default class CreateEventRequest extends Component {
   }
 
   onBehalfSwitch() {
-    if (this.state.loggedIn) {
+    if (this.state.loggedIn && !this.props.edit) {
     return <Form.Check 
         type="switch"
         id="onBehalfOf"
@@ -702,7 +787,11 @@ export default class CreateEventRequest extends Component {
         eventRequestObject.lockEndTime = null;
     }
 
-    if (this.state.doesRepeat) {
+    if (this.props.edit) {
+      var url = `http://${process.env.REACT_APP_NODE_IP}:4000/event/update/${this.state.id}`
+      await axios.put(url, eventRequestObject)
+        .then(res => console.log(res.data));
+    } else if (this.state.doesRepeat) {
       eventRequestObject.repeat = crypto.randomBytes(20).toString('hex');
       eventRequestObject.repeatDates = this.state.repeatDates;
       var url = `http://${process.env.REACT_APP_NODE_IP}:4000/event/create-multiple`
@@ -728,7 +817,6 @@ export default class CreateEventRequest extends Component {
   render() {
     let html
     html = <div className="form-wrapper">
-      <h1> Create a new event request </h1>
       <Form onSubmit={this.onSubmit}>
         {this.onBehalfSwitch()}
 
