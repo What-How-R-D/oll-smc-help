@@ -12,6 +12,7 @@ import DateTimePicker from 'react-datetime-picker';
 import Swal from 'sweetalert2';
 
 import {findUser, checkLogin} from "../api/user"
+import { dateTimeOptions } from './dateTimeFormat'; 
 
 var crypto = require("crypto");
 const jwt = require("jsonwebtoken")
@@ -767,79 +768,132 @@ export default class CreateEventRequest extends Component {
     console.log(this.state.repeatCount)
     console.log(this.state.repeatDates)
     e.preventDefault()
-    var eventRequestObject = {}
-    eventRequestObject = {
-      name: this.state.name,
-      room: this.state.room,
-      attendance: this.state.attendance,
-      startTime: this.state.startTime,
-      endTime: this.state.endTime,
-      lockStartTime: this.state.lockStartTime,
-      lockEndTime: this.state.lockEndTime,
-      paid: false,
-      notes: this.state.notes,
-      locksSet: false,
-      hvacSet: false,
-    };
+    
+    const formattedStart = this.state.startTime.toLocaleString('en-US', dateTimeOptions);
+    const formattedEnd = this.state.endTime.toLocaleString('en-US', dateTimeOptions);
+    var room_name = this.state.rooms.filter(item => item._id == this.state.room)[0].name
+    var confirm_text = `Event Name: ${this.state.name}<br>Room: ${room_name}<br><br>Start Time: ${formattedStart}<br>End Time: ${formattedEnd}`
+    if (this.state.needLocks) {
+      const formattedUnlock = this.state.lockStartTime.toLocaleString('en-US', dateTimeOptions);
+      const formattedEnd = this.state.lockEndTime.toLocaleString('en-US', dateTimeOptions);
 
-    if ( this.state.loggedIn && !this.state.onBehalfOf ) {
-      var paid = false
-      if (this.state.user_emp_min && !this.state.onBehalfOf) { paid=true }
-      // eventRequestObject.push({
-      eventRequestObject.requester = this.state.user_id;
-      eventRequestObject.email = this.state.user_email;
-      eventRequestObject.paid = paid;
-      // });
-    } else {
-      // eventRequestObject.push{(
-      eventRequestObject.contact = this.state.requesterName;
-      eventRequestObject.email = this.state.requesterEmail;
-      eventRequestObject.phone = this.state.requesterPhone;
-      // )};
-    };
-
-    if (!this.state.needLocks) {
-        eventRequestObject.lockStartTime = null;
-        eventRequestObject.lockEndTime = null;
+      confirm_text += `<br>Doors Unlock Time: ${formattedUnlock}<br>Doors Re-lock Time: ${formattedEnd}<br>`
+    }
+    if (this.state.doesRepeat) {
+      if (this.state.repeatFrequency === "monthly") {
+        if (this.state.repeatFuzzy === "absolute") {
+          var date = this.state.startTime.getDate()
+          var date_suffix = this.state.suffix_map[date-1]
+          confirm_text += `<br>Repeats: Monthly on the ${date}${date_suffix} for a total of ${this.state.repeatCount+1} events.<br>`
+        } else if (this.state.repeatFuzzy === "relative") {
+          var dow = this.state.days_map[this.state.startTime.getDay()]
+          var wom = Math.min((0 | this.state.startTime.getDate() / 7)+1, 4)
+          var wom_suffix = this.state.suffix_map[wom-1]
+          confirm_text += `<br>Repeats: On ${wom}${wom_suffix} ${dow} of each month for a total of ${this.state.repeatCount+1} events.<br>`
+        } else if (this.state.repeatFuzzy === "last") {
+          var dow = this.state.days_map[this.state.startTime.getDay()]
+          confirm_text += `<br>Repeats: On the last ${dow} of each month for a total of ${this.state.repeatCount+1} events.<br>`
+        }
+      } else if (this.state.repeatFrequency === "weekly") {
+        confirm_text += `<br>Repeats: Weekly for a total of ${this.state.repeatCount+1} events.<br>`
+      } else if (this.state.repeatFrequency === "daily") {
+        confirm_text += `<br>Repeats: Daily for a total of ${this.state.repeatCount+1} events.<br>`
+      } else if (this.state.repeatFrequency === "weekdays") {
+        confirm_text += `<br>Repeats: Daily, excluding weekends, for a total of ${this.state.repeatCount+1} events.<br>`
+      }
+    }
+    if (this.state.notes != "") {
+      confirm_text += `<br>Notes: ${this.state.notes}<br>`
     }
 
-    if (this.props.edit) {
-      var url = `http://${process.env.REACT_APP_NODE_IP}:4000/event/update/${this.state.id}`
-      axios.put(url, eventRequestObject)
-        .then(res => console.log(res.data));
-    } else if (this.state.doesRepeat) {
-      eventRequestObject.repeat = crypto.randomBytes(20).toString('hex');
-      eventRequestObject.repeatDates = this.state.repeatDates;
-      var url = `http://${process.env.REACT_APP_NODE_IP}:4000/event/create-multiple`
-        axios.post(url, eventRequestObject)
-          .then(res => console.log(res.data));
-    } else {
-      url = `http://${process.env.REACT_APP_NODE_IP}:4000/event/create`
-        axios.post(url, eventRequestObject)
-          .then(res => console.log(res.data));
-    }
+    Swal.fire({
+      icon: 'question',
+      title: 'Confirm your event details',
+      html: confirm_text,
+      showConfirmButton: true,
+      showCancelButton: true,
+      confirmButtonText: 'Confirm',
+      cancelButtonText: 'Cancel'
+    }).then((result) => {
+      if (result.isConfirmed) { 
+        var eventRequestObject = {}
+        eventRequestObject = {
+          name: this.state.name,
+          room: this.state.room,
+          attendance: this.state.attendance,
+          startTime: this.state.startTime,
+          endTime: this.state.endTime,
+          lockStartTime: this.state.lockStartTime,
+          lockEndTime: this.state.lockEndTime,
+          paid: false,
+          notes: this.state.notes,
+          locksSet: false,
+          hvacSet: false,
+        };
 
-    if (this.props.edit) {
-      Swal.fire({
-        icon: 'success',
-        title: 'Event request successfully updated',
-        html: 'You will receive an email when the building manager approves or rejects your request(s)',
-        showConfirmButton: false,
-        timer: 5000,
-      }).then((result) => {
-        if (result.isDismissed) { window.location.href = '/';}
-      })
-    } else {
-        Swal.fire({
-        icon: 'success',
-        title: 'Event request successfully created',
-        html: 'You will receive an email when the building manager approves or rejects your request(s)',
-        showConfirmButton: false,
-        timer: 5000,
-      }).then((result) => {
-        if (result.isDismissed) {window.location.reload(true);}
-      })    
-    }
+        if ( this.state.loggedIn && !this.state.onBehalfOf ) {
+          var paid = false
+          if (this.state.user_emp_min && !this.state.onBehalfOf) { paid=true }
+          // eventRequestObject.push({
+          eventRequestObject.requester = this.state.user_id;
+          eventRequestObject.email = this.state.user_email;
+          eventRequestObject.paid = paid;
+          // });
+        } else {
+          // eventRequestObject.push{(
+          eventRequestObject.contact = this.state.requesterName;
+          eventRequestObject.email = this.state.requesterEmail;
+          eventRequestObject.phone = this.state.requesterPhone;
+          // )};
+        };
+
+        if (!this.state.needLocks) {
+            eventRequestObject.lockStartTime = null;
+            eventRequestObject.lockEndTime = null;
+        }
+
+        if (this.props.edit) {
+          var url = `http://${process.env.REACT_APP_NODE_IP}:4000/event/update/${this.state.id}`
+          axios.put(url, eventRequestObject)
+            .then(res => console.log(res.data));
+        } else if (this.state.doesRepeat) {
+          eventRequestObject.repeat = crypto.randomBytes(20).toString('hex');
+          eventRequestObject.repeatDates = this.state.repeatDates;
+          var url = `http://${process.env.REACT_APP_NODE_IP}:4000/event/create-multiple`
+            axios.post(url, eventRequestObject)
+              .then(res => console.log(res.data));
+        } else {
+          url = `http://${process.env.REACT_APP_NODE_IP}:4000/event/create`
+            axios.post(url, eventRequestObject)
+              .then(res => console.log(res.data));
+        }
+
+        if (this.props.edit) {
+          Swal.fire({
+            icon: 'success',
+            title: 'Event request successfully updated',
+            html: 'You will receive an email when the building manager approves or rejects your request(s)',
+            showConfirmButton: false,
+            timer: 5000,
+          }).then((result) => {
+            if (result.isDismissed) { window.location.href = '/';}
+          })
+        } else {
+            Swal.fire({
+            icon: 'success',
+            title: 'Event request successfully created',
+            html: 'You will receive an email when the building manager approves or rejects your request(s)',
+            showConfirmButton: false,
+            timer: 5000,
+          }).then((result) => {
+            if (result.isDismissed) {window.location.reload(true);}
+          })    
+        }
+      }
+    })
+
+
+
 
   }
 
