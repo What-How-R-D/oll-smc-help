@@ -51,10 +51,13 @@ export default class BMhubList extends Component {
 
 		var all_events = []
 		var all_blackouts = []
+		var eventPromises = [];
+		var blackoutPromises = [];
+
 		for (let room in user.rooms) {
 			let room_id = user.rooms[room]
 			url = `http://${process.env.REACT_APP_NODE_IP}:4000/event/find-bm-cal/`
-			await axios.get(url + room_id)
+			const eventPromise = axios.get(url + room_id)
 			.then(res => {
 				var new_events = res.data
 				all_events.push(...new_events)
@@ -62,9 +65,11 @@ export default class BMhubList extends Component {
 				.catch((error) => {
 				console.log(error);
 			})
-			
+			eventPromises.push(eventPromise);
+
+
 			url = `http://${process.env.REACT_APP_NODE_IP}:4000/blackout/find-all`
-			await axios.get(url)
+			const blackoutPromise = axios.get(url)
 				.then(res => {
 					var room_blackouts = res.data.filter(item => item.rooms.includes(room_id))
 					all_blackouts.push(...room_blackouts)
@@ -72,40 +77,49 @@ export default class BMhubList extends Component {
 				.catch((error) => {
 					console.log(error);
 				});
-		}
+			blackoutPromises.push(blackoutPromise);
 
-		var filtered_blackouts = all_blackouts.map(e => e["_id"])
-			// store the keys of the unique objects
-			.map((e, i, final) => final.indexOf(e) === i && i)
-			// eliminate the dead keys & store unique objects
-			.filter(e => all_blackouts[e]).map(e => all_blackouts[e]);
-			
-		this.setState({
-			all_events: [...all_events.map(
-				({ startTime, endTime, name, room, status, _id, requester, notes, contact, email, phone}) => ({
-				  start: new Date(startTime),
-				  end: new Date(endTime),
-				  title: rooms_map.get(room) + ": " + name,
-				  status: status,
-				  allDay: false,
-				  id: _id,
-				  requester: requester,
-				  notes: notes,
-				  contact: contact,
-				  email: email,
-				  phone: phone
-				})), 
-				...filtered_blackouts.map(
-					({ startTime, endTime, name, rooms, status, _id, requester, notes}) => ({
-					  start: new Date(startTime),
-					  end: new Date(endTime),
-					  title: "ADMIN RESERVED - " + this.mapBlackoutRooms(rooms_map, rooms) + ": " + name,
-					  status: "Blackout",
-					  allDay: false,
-					  requester: requester,
-					  notes: notes,
-				})) ]
-		});
+		}
+		Promise.all([...eventPromises, ...blackoutPromises])
+			.then(() => {
+				
+				var filtered_blackouts = all_blackouts.map(e => e["_id"])
+				// store the keys of the unique objects
+				.map((e, i, final) => final.indexOf(e) === i && i)
+				// eliminate the dead keys & store unique objects
+				.filter(e => all_blackouts[e]).map(e => all_blackouts[e]);
+					
+				this.setState({
+					all_events: [...all_events.map(
+						({ startTime, endTime, name, room, status, _id, requester, notes, contact, email, phone}) => ({
+						start: new Date(startTime),
+						end: new Date(endTime),
+						title: rooms_map.get(room) + ": " + name,
+						status: status,
+						allDay: false,
+						id: _id,
+						requester: requester,
+						notes: notes,
+						contact: contact,
+						email: email,
+						phone: phone
+						})), 
+						...filtered_blackouts.map(
+							({ startTime, endTime, name, rooms, status, _id, requester, notes}) => ({
+							start: new Date(startTime),
+							end: new Date(endTime),
+							title: "ADMIN RESERVED - " + this.mapBlackoutRooms(rooms_map, rooms) + ": " + name,
+							status: "Blackout",
+							allDay: false,
+							requester: requester,
+							notes: notes,
+						})) ]
+				});
+
+			})
+			.catch((error) => {
+				console.log("An error occurred during requests:", error);
+			});
 	}
 
 	mapBlackoutRooms(map, rooms){		

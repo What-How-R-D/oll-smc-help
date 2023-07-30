@@ -35,31 +35,39 @@ export default class BMhubList extends Component {
 
 	async getEvents() {
 		var all_events = []
+		var eventPromises = [];
+
 		for (let room in this.state.user.rooms) {
 			var room_id = this.state.user.rooms[room]
 			var url = `http://${process.env.REACT_APP_NODE_IP}:4000/event/find-bm-list/${room_id}/20`
-			await axios.get(url)
+			const eventPromise = axios.get(url)
 			.then(res => {
 				var new_events = res.data
-				console.log(res.data)
 				all_events.push(...new_events)
 			})
-				.catch((error) => {
+			.catch((error) => {
 				console.log(error);
 			})
+			eventPromises.push(eventPromise);
 		}
-		console.log(all_events)
-		
-		var pending_events = all_events.filter(event => event.status === "Pending")
-		pending_events.sort((a, b) => new Date(a.startTime).getTime() > new Date(b.startTime).getTime() ? 1 : -1 )
-		
-		var complete_events = all_events.filter(event => event.status !== "Pending")
-		complete_events.sort((a, b) => new Date(a.startTime).getTime() > new Date(b.startTime).getTime() ? 1 : -1 )
-		
-		this.setState({
-			pending_events: pending_events,
-			events: complete_events
+		Promise.all([...eventPromises])
+		.then(() => {			
+			var pending_events = all_events.filter(event => event.status === "Pending")
+			pending_events.sort((a, b) => new Date(a.startTime).getTime() > new Date(b.startTime).getTime() ? 1 : -1 )
+			
+			var complete_events = all_events.filter(event => event.status !== "Pending")
+			complete_events.sort((a, b) => new Date(a.startTime).getTime() > new Date(b.startTime).getTime() ? 1 : -1 )
+			
+			this.setState({
+				pending_events: pending_events,
+				events: complete_events
+			});
+		})
+		.catch((error) => {
+			console.log("An error occurred during requests:", error);
 		});
+		console.log(all_events)
+
 	}
   
 	DataTable(kind) {
