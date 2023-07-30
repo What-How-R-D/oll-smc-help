@@ -509,8 +509,24 @@ export default class CreateEventRequest extends Component {
   onChangeName(e) { this.setState({ name: e.target.value }) }
 
   async onChangeAttendance(e) {
-    var first_room = this.state.rooms.filter(item => item.occupancy > e.target.value)[0]._id
-    this.setState({ attendance: e.target.value, room: first_room, events: []  }, this.GetCalendarEvents)
+    var current_room_occ = this.state.rooms.filter(item => item._id == this.state.room)[0].occupancy
+    if (current_room_occ > e.target.value) {
+      this.setState({ attendance: e.target.value})
+    } else {
+      var first_room = this.state.rooms.filter(item => item.occupancy > e.target.value)[0]._id
+      if (this.state.room != first_room) {
+        var first_room_name = this.state.rooms.filter(item => item._id == first_room)[0].name
+        console.log(first_room_name)
+          Swal.fire({
+            icon: 'info',
+            title: 'Room changed based on attendance',
+            html: `The room has been set to: ${first_room_name}`,
+            showConfirmButton: false,
+            timer: 1750,
+        }) 
+      }
+      this.setState({ attendance: e.target.value, room: first_room, events: []  }, this.GetCalendarEvents)
+    }
   }
 
   onChangeRoom(e) {
