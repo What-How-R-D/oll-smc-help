@@ -789,7 +789,7 @@ export default class CreateEventRequest extends Component {
 
     if (this.props.edit) {
       var url = `http://${process.env.REACT_APP_NODE_IP}:4000/event/update/${this.state.id}`
-      await axios.put(url, eventRequestObject)
+      axios.put(url, eventRequestObject)
         .then(res => console.log(res.data));
     } else if (this.state.doesRepeat) {
       eventRequestObject.repeat = crypto.randomBytes(20).toString('hex');
@@ -803,15 +803,28 @@ export default class CreateEventRequest extends Component {
           .then(res => console.log(res.data));
     }
 
-    Swal.fire({
-      icon: 'success',
-      title: 'Event request successfully created',
-      html: 'You will receive an email when the building manager approves or rejects your request(s)',
-      showConfirmButton: false,
-      timer: 5000,
-    }).then((result) => {
-      if (result.isDismissed) {window.location.reload(true);}
-    })
+    if (this.props.edit) {
+      Swal.fire({
+        icon: 'success',
+        title: 'Event request successfully updated',
+        html: 'You will receive an email when the building manager approves or rejects your request(s)',
+        showConfirmButton: false,
+        timer: 5000,
+      }).then((result) => {
+        if (result.isDismissed) { window.location.href = '/';}
+      })
+    } else {
+        Swal.fire({
+        icon: 'success',
+        title: 'Event request successfully created',
+        html: 'You will receive an email when the building manager approves or rejects your request(s)',
+        showConfirmButton: false,
+        timer: 5000,
+      }).then((result) => {
+        if (result.isDismissed) {window.location.reload(true);}
+      })    
+    }
+
   }
 
   render() {
