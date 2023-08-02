@@ -134,6 +134,7 @@ router.route('/resetpwd/:email').get(async (req, res) => {
 		var subject=`OLL-SMC help password reset`
 		var body=`To reset your password follow this link http://${process.env.REACT_APP_NODE_IP}/newpassword/${user_data._id}/${token}`
 		sendNotification(user_data.email, subject, body)
+		res.status(200).json({ msg: "Reset email sent" })
 	} else {
 		res.status(401).json({ error: "Email does not exist" })
 	}
