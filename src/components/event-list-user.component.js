@@ -2,6 +2,7 @@ import React, { Component } from "react";
 import { Link } from "react-router-dom"
 import axios from 'axios';
 import Table from 'react-bootstrap/Table';
+import { ColorRing } from 'react-loader-spinner'
 
 import {findUser, checkLogin} from "../api/user"
 
@@ -9,6 +10,7 @@ import EventUserTableRow from './EventUserTableRow.js'
 
 
 export default class EventList extends Component {
+
   constructor(props) {
     super(props)    
     this.state = {
@@ -16,10 +18,13 @@ export default class EventList extends Component {
       pending_events: [],
       canceled_events: [],
       loggedIn: checkLogin(),
+      isLoading: true,
     };
   }
   
   async componentDidMount() {
+    this.setState({ isLoading: true })
+
     const isLoggedIn = await checkLogin()
     if (isLoggedIn){
       this.setState({ loggedIn: true })
@@ -53,14 +58,8 @@ export default class EventList extends Component {
         canceled_events: canceled_events,
       });
 
-
+    this.setState({ isLoading: false })
   }
-
-  // DataTable() {
-  //   return this.state.events.map((res, i) => {
-  //     return <EventUserTableRow obj={res} key={i} />;
-  //   });
-  // }
 
   DataTable(kind) {
     if (kind === "pending") {
@@ -80,31 +79,22 @@ export default class EventList extends Component {
 
 
   pendingTable(){
-    if (this.state.pending_events.length !== 0 ) {
-      return <div><h1> Your upcoming pending event requests </h1>
-       <Table striped bordered hover>
-         <thead>
-           <tr>
-             <th>Name</th>
-             <th>Room</th>
-             <th>Start Time</th>
-             <th>End Time</th>
-             <th>Status</th>
-           </tr>
-         </thead>
-         <tbody>
-           {this.DataTable("pending")}
-         </tbody>
-       </Table>
-      </div>
-    } else{
-      return <h2> You have no pending requests </h2>
-    }
-  }
-
-  upcomingTable() {
-    if (this.state.approved_events.length !== 0 ) {
-      return <div><h1> Your upcoming approved event requests  </h1>
+    if (this.state.isLoading) {
+      return <div class="myList"><h1> Your upcoming pending event requests </h1>
+      <div style={{display: 'flex', justifyContent: 'center'}}>
+        <ColorRing
+          visible={true}
+          height="80"
+          width="80"
+          ariaLabel="blocks-loading"
+          wrapperStyle={{}}
+          wrapperClass="blocks-wrapper"
+          colors={['#014686ff', '#FFFFFF', '#014686ff', '#FFFFFF', '#014686ff']}
+        />
+        </div></div>
+    } else {
+      if (this.state.pending_events.length !== 0 ) {
+        return <div class="myList"><h1> Your upcoming pending event requests </h1>
         <Table striped bordered hover>
           <thead>
             <tr>
@@ -116,46 +106,104 @@ export default class EventList extends Component {
             </tr>
           </thead>
           <tbody>
-            {this.DataTable("approved")}
+            {this.DataTable("pending")}
           </tbody>
         </Table>
-      </div>
-    } else{
-      return <h2> You have no upcoming approved requests </h2>
+        </div>
+      } else {
+        return <div class="myList"><h2> You have no pending requests </h2></div>
+      }
+    }
+  }
+
+  upcomingTable() {
+    if (this.state.isLoading) {
+      return <div class="myList"><h1> Your upcoming approved event requests </h1>
+      <div style={{display: 'flex', justifyContent: 'center'}}>
+        <ColorRing
+          visible={true}
+          height="80"
+          width="80"
+          ariaLabel="blocks-loading"
+          wrapperStyle={{}}
+          wrapperClass="blocks-wrapper"
+          colors={['#014686ff', '#FFFFFF', '#014686ff', '#FFFFFF', '#014686ff']}
+        />
+        </div></div>
+    } else {
+      if (this.state.approved_events.length !== 0 ) {
+        return <div class="myList"><h1> Your upcoming approved event requests  </h1>
+          <Table striped bordered hover>
+            <thead>
+              <tr>
+                <th>Name</th>
+                <th>Room</th>
+                <th>Start Time</th>
+                <th>End Time</th>
+                <th>Status</th>
+              </tr>
+            </thead>
+            <tbody>
+              {this.DataTable("approved")}
+            </tbody>
+          </Table>
+        </div>
+      } else{
+        return <div class="myList">
+          <h2> You have no upcoming approved requests </h2>
+          </div>
+      }
     }
   }
 
   canceledTable() {
-    if (this.state.canceled_events.length !== 0 ) {
-      return <div><h1> Your upcoming canceled/rejected event requests  </h1>
-      <Table striped bordered hover>
-        <thead>
-          <tr>
-            <th>Name</th>
-            <th>Room</th>
-            <th>Start Time</th>
-            <th>End Time</th>
-            <th>Status</th>
-          </tr>
-        </thead>
-        <tbody>
-          {this.DataTable("canceled")}
-        </tbody>
-      </Table>
-      </div>
+    if (this.state.isLoading) {
+      return <div class="myList"><h1> Your upcoming canceled/rejected event requests </h1>
+      <div style={{display: 'flex', justifyContent: 'center'}}>
+        <ColorRing
+          visible={true}
+          height="80"
+          width="80"
+          ariaLabel="blocks-loading"
+          wrapperStyle={{}}
+          wrapperClass="blocks-wrapper"
+          colors={['#014686ff', '#FFFFFF', '#014686ff', '#FFFFFF', '#014686ff']}
+        />
+        </div></div>
     } else {
-      return <h2> You have no upcoming canceled/rejected requests </h2>
+      if (this.state.canceled_events.length !== 0 ) {
+        return <div class="myList"><h1> Your upcoming canceled/rejected event requests  </h1>
+        <Table striped bordered hover>
+          <thead>
+            <tr>
+              <th>Name</th>
+              <th>Room</th>
+              <th>Start Time</th>
+              <th>End Time</th>
+              <th>Status</th>
+            </tr>
+          </thead>
+          <tbody>
+            {this.DataTable("canceled")}
+          </tbody>
+        </Table>
+        </div>
+      } else {
+        return <div class="myList">
+            <h2> You have no upcoming canceled/rejected requests </h2>
+          </div>
+      }
     }
   }
 
   render() {
     let html
     if (this.state.loggedIn) {
-      html = <div className="table-wrapper">
-        {this.pendingTable()}
-        {this.upcomingTable()}
-        {this.canceledTable()}
-      </div>
+        html = <div className="table-wrapper">
+          {this.pendingTable()}
+          {this.upcomingTable()}
+          {this.canceledTable()}
+        </div>
       } else {
         html = <div>
             <Link to="/login">Login for more functionality</Link>

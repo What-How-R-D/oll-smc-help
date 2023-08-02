@@ -3,6 +3,7 @@ import Form from 'react-bootstrap/Form'
 import Button from 'react-bootstrap/Button';
 import axios from 'axios';
 import { format } from "date-fns";
+import { ColorRing } from 'react-loader-spinner'
 
 import { Calendar, momentLocalizer } from 'react-big-calendar'
 import moment from 'moment'
@@ -57,9 +58,13 @@ export default class CreateEventRequest extends Component {
     this.onChangeOnBehalfOf = this.onChangeOnBehalfOf.bind(this);
     this.onSubmit = this.onSubmit.bind(this);
     this.GetCalendarEvents = this.GetCalendarEvents.bind(this)
-
+    
+    this.onChangeLoading = this.onChangeLoading.bind(this)
+    
     // Setting up state
     this.state = {
+      isLoading: true,
+      //
       rooms: [],
       //
       id: '',
@@ -100,6 +105,8 @@ export default class CreateEventRequest extends Component {
   }
 
   async componentDidMount() { 
+    this.onChangeLoading(true)
+
     console.log(this.props)
     console.log(this.props.id)
 
@@ -107,7 +114,7 @@ export default class CreateEventRequest extends Component {
     if (this.props.edit) {
       await this.PullID(this.props.id)
     }
-    this.PullEvents()
+    await this.PullEvents()
 
     if (await checkLogin()){
       this.setState({ loggedIn: true })
@@ -137,6 +144,7 @@ export default class CreateEventRequest extends Component {
       })
       .catch((error) => { console.log(error); })
     this.setState({ room: first_room }, this.GetCalendarEvents)
+    this.onChangeLoading(false)
   }
 
   OptionList() {
@@ -270,7 +278,7 @@ export default class CreateEventRequest extends Component {
     // let start, end;
     // start = moment(date).startOf('month')._d
     // end = moment(date).endOf('month')._d
-    
+
     var events = this.state.database_events.filter(item => item.room === this.state.room)
     var blackouts = this.state.database_blackouts.filter(item => item.rooms.includes(this.state.room))
 
@@ -449,26 +457,43 @@ export default class CreateEventRequest extends Component {
   Scheduler() {
     const localizer = momentLocalizer(moment);
     const DnDCalendar = withDragAndDrop(Calendar);
+    // 
 
-    return <DnDCalendar
-          localizer={localizer}
-          selectable={true}
-          events={this.state.events}
-          defaultDate={this.state.defaultDate}
-          startAccessor="start"
-          endAccessor="end"
-          defaultView={this.state.defaultView}
-          style={{ height: '85vh' }}
-          onSelectSlot={this.handleCalendarSelect}
-          onNavigate={this.handleOnNavigate}
-          onView={this.handleChangeView}
-          views={['month', 'week', 'day']}
-          eventPropGetter={(event) => ({
-            style: {
-              backgroundColor: event.title === "Reserved" ? '#FF0000' : '#3174ad',
-            },
-          })}
-          />
+    if (this.state.isLoading) {
+      return <div style={{display: 'flex', justifyContent: 'center'}}>
+              <ColorRing
+                  visible={true}
+                  height='85vh'
+                  width='85vw'
+                  ariaLabel="blocks-loading"
+                  wrapperStyle={{}}
+                  wrapperClass="blocks-wrapper"
+                  colors={['#014686ff', '#FFFFFF', '#014686ff', '#FFFFFF', '#014686ff']}
+                />
+              </div>
+    } else {
+      return <div>
+         <DnDCalendar
+            localizer={localizer}
+            selectable={true}
+            events={this.state.events}
+            defaultDate={this.state.defaultDate}
+            startAccessor="start"
+            endAccessor="end"
+            defaultView={this.state.defaultView}
+            style={{ height: '85vh' }}
+            onSelectSlot={this.handleCalendarSelect}
+            onNavigate={this.handleOnNavigate}
+            onView={this.handleChangeView}
+            views={['month', 'week', 'day']}
+            eventPropGetter={(event) => ({
+              style: {
+                backgroundColor: event.title === "Reserved" ? '#FF0000' : '#3174ad',
+              },
+            })}
+            />
+          </div>
+    }
   }
 
   guest(){
@@ -618,6 +643,9 @@ export default class CreateEventRequest extends Component {
   async onChangeRepeatCount(e) { 
     this.setState({ repeatCount: e.target.value-1 }, this.GetCalendarEvents);
     console.log(this.state.repeatDates)
+  }
+  onChangeLoading(newState) {
+    this.setState({ isLoading: newState})
   }
 
 

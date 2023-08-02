@@ -33,6 +33,11 @@ body h4 {
   max-width: 700px;
 }
 
+.myList {
+  margin-top: 30px;
+  margin-bottom: 40px;
+}
+
 .edit-link {
   padding: 7px 10px;
   font-size: 0.875rem;
@@ -73,3 +78,4 @@ body h4 {
   border: 1px solid rgba(0,0,0,.2);
   border-radius: .3rem;
 }
+
