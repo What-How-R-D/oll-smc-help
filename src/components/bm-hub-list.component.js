@@ -3,6 +3,8 @@ import { Link } from "react-router-dom"
 import axios from 'axios';
 import Table from 'react-bootstrap/Table';
 
+import { ColorRing } from 'react-loader-spinner'
+
 import {findUser, checkLogin} from "../api/user"
 
 import EventBMTableRow from './EventBMTableRow.js'
@@ -18,10 +20,13 @@ export default class BMhubList extends Component {
 		events: [],
 		pending_events: [],
 		loggedIn: false,
+		isLoading: true
 	  };
 	}
 
 	async componentDidMount() {
+		this.setState({ isLoading: true })
+
 		if (await checkLogin()){
 			this.setState({ loggedIn: true })
 		  } else {
@@ -30,7 +35,9 @@ export default class BMhubList extends Component {
 
 		var user = await findUser()
 		this.setState({ user: user })
-		this.getEvents()
+		await this.getEvents()
+
+		this.setState({ isLoading: false })
 	}
 
 	async getEvents() {
@@ -50,19 +57,19 @@ export default class BMhubList extends Component {
 			})
 			eventPromises.push(eventPromise);
 		}
-		Promise.all([...eventPromises])
-		.then(() => {			
-			var pending_events = all_events.filter(event => event.status === "Pending")
-			pending_events.sort((a, b) => new Date(a.startTime).getTime() > new Date(b.startTime).getTime() ? 1 : -1 )
-			
-			var complete_events = all_events.filter(event => event.status !== "Pending")
-			complete_events.sort((a, b) => new Date(a.startTime).getTime() > new Date(b.startTime).getTime() ? 1 : -1 )
-			
-			this.setState({
-				pending_events: pending_events,
-				events: complete_events
-			});
-		})
+		await Promise.all([...eventPromises])
+			.then(() => {
+				var pending_events = all_events.filter(event => event.status === "Pending")
+				pending_events.sort((a, b) => new Date(a.startTime).getTime() > new Date(b.startTime).getTime() ? 1 : -1 )
+				
+				var complete_events = all_events.filter(event => event.status !== "Pending")
+				complete_events.sort((a, b) => new Date(a.startTime).getTime() > new Date(b.startTime).getTime() ? 1 : -1 )
+				
+				this.setState({
+					pending_events: pending_events,
+					events: complete_events
+				});
+			})
 		.catch((error) => {
 			console.log("An error occurred during requests:", error);
 		});
@@ -87,48 +94,62 @@ export default class BMhubList extends Component {
 	  let html
 	//   if (this.state.reload) {this.setState( {reload: false} ); console.log("refreshing")}
 	  if (this.state.loggedIn && !this.state.reload) {
-		html = <div className="table-wrapper">
-			<h1> Pending Requests </h1>
-		  <Table striped bordered hover>
-			<thead>
-			  <tr>
-				<th>Event Name</th>
-				<th>Requester</th>
-				<th>Email</th>
-				<th>Phone</th>
-				<th>Room</th>
-				<th>Start Time</th>
-				<th>End Time</th>
-				<th>Attendance</th>
-				<th>Status</th>
-				<th>Notes</th>
-			  </tr>
-			</thead>
-			<tbody>
-			  {this.DataTable("pending")}
-			</tbody>
-		  </Table>
-			<h1> Completed Requests </h1>
-		 	<Table striped bordered hover>
-		 	<thead>
-		 		<tr>
-				<th>Event Name</th>
-				<th>Requester</th>
-				<th>Email</th>
-				<th>Phone</th>
-				<th>Room</th>
-				<th>Start Time</th>
-				<th>End Time</th>
-				<th>Attendance</th>
-				<th>Status</th>
-				<th>Notes</th>
-		 		</tr>
-		 	</thead>
-		 	<tbody>
-		 		{this.DataTable("completed")}
-		 	</tbody>
-		 	</Table>
-		 </div>
+		if (this.state.isLoading){
+			html = <div style={{display: 'flex', justifyContent: 'center'}}>
+				<ColorRing
+					visible={true}
+					height='85vh'
+					width='85vw'
+					ariaLabel="blocks-loading"
+					wrapperStyle={{}}
+					wrapperClass="blocks-wrapper"
+					colors={['#014686ff', '#FFFFFF', '#014686ff', '#FFFFFF', '#014686ff']}
+					/>
+				</div>
+		} else {
+			html = <div className="table-wrapper">
+				<h1> Pending Requests </h1>
+			<Table striped bordered hover>
+				<thead>
+				<tr>
+					<th>Event Name</th>
+					<th>Requester</th>
+					<th>Email</th>
+					<th>Phone</th>
+					<th>Room</th>
+					<th>Start Time</th>
+					<th>End Time</th>
+					<th>Attendance</th>
+					<th>Status</th>
+					<th>Notes</th>
+				</tr>
+				</thead>
+				<tbody>
+				{this.DataTable("pending")}
+				</tbody>
+			</Table>
+				<h1> Completed Requests </h1>
+				<Table striped bordered hover>
+				<thead>
+					<tr>
+					<th>Event Name</th>
+					<th>Requester</th>
+					<th>Email</th>
+					<th>Phone</th>
+					<th>Room</th>
+					<th>Start Time</th>
+					<th>End Time</th>
+					<th>Attendance</th>
+					<th>Status</th>
+					<th>Notes</th>
+					</tr>
+				</thead>
+				<tbody>
+					{this.DataTable("completed")}
+				</tbody>
+				</Table>
+			</div>
+		}
 		} else if (this.state.reload) {
 			this.setState( {reload: false} ); console.log("refreshing")
 		} else {

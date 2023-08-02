@@ -3,6 +3,8 @@ import { Link } from "react-router-dom"
 import axios from 'axios';
 import update from 'immutability-helper';
 
+import { ColorRing } from 'react-loader-spinner'
+
 import { Calendar, momentLocalizer } from 'react-big-calendar'
 import moment from 'moment'
 import "react-big-calendar/lib/css/react-big-calendar.css";
@@ -27,10 +29,12 @@ export default class BMhubList extends Component {
 		defaultView: "week",
      	defaultDate: "",
 		user: {},
+		isLoading: true,
 	  };
 	}
   
 	async componentDidMount() {
+		this.setState({isLoading: true})
 		if (await checkLogin()){
 			this.setState({ loggedIn: true })
 		  } else {
@@ -63,7 +67,7 @@ export default class BMhubList extends Component {
 				all_events.push(...new_events)
 			})
 				.catch((error) => {
-				console.log(error);
+					console.log(error);
 			})
 			eventPromises.push(eventPromise);
 
@@ -80,7 +84,7 @@ export default class BMhubList extends Component {
 			blackoutPromises.push(blackoutPromise);
 
 		}
-		Promise.all([...eventPromises, ...blackoutPromises])
+		await Promise.all([...eventPromises, ...blackoutPromises])
 			.then(() => {
 				
 				var filtered_blackouts = all_blackouts.map(e => e["_id"])
@@ -120,6 +124,7 @@ export default class BMhubList extends Component {
 			.catch((error) => {
 				console.log("An error occurred during requests:", error);
 			});
+		this.setState({isLoading: false})
 	}
 
 	mapBlackoutRooms(map, rooms){		
@@ -369,7 +374,21 @@ export default class BMhubList extends Component {
 	render() {
 	  let html
 	  if (this.state.loggedIn) {
-			html = <div> {this.Scheduler()} </div>
+			if (this.state.isLoading){
+				html = <div style={{display: 'flex', justifyContent: 'center'}}>
+					<ColorRing
+						visible={true}
+						height='85vh'
+						width='85vw'
+						ariaLabel="blocks-loading"
+						wrapperStyle={{}}
+						wrapperClass="blocks-wrapper"
+						colors={['#014686ff', '#FFFFFF', '#014686ff', '#FFFFFF', '#014686ff']}
+						/>
+					</div>
+			} else {
+				html = <div> {this.Scheduler()} </div>
+			}
 		} else {
 		  html = <div>
 			  <Link to="/login">Login for more functionality</Link>

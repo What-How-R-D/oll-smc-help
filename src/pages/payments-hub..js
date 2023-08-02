@@ -5,6 +5,8 @@ import Table from 'react-bootstrap/Table';
 
 import {checkLogin} from "../api/user"
 
+import { ColorRing } from 'react-loader-spinner'
+
 import EventPaymentsTableRow from '../components/EventPaymentsTableRow.js'
 
 export default class PaymentsHub extends Component {
@@ -17,16 +19,19 @@ export default class PaymentsHub extends Component {
 		paid_events: [],
 		unpaid_events: [],
 		loggedIn: false,
+		isLoading: true,
 	  };
 	}
   
 	async componentDidMount() {
+		this.setState({ isLoading: true })
 		if (await checkLogin()){
 			this.setState({ loggedIn: true })
 		  } else {
 			this.setState({ loggedIn: false })
 		  }
-		this.getEvents()
+		await this.getEvents()
+		this.setState({ isLoading: false })
 	}
 	
 	async getEvents() {
@@ -61,42 +66,56 @@ export default class PaymentsHub extends Component {
 	render() {
 	  let html
 	  if (this.state.loggedIn) {
-		html = <div className="table-wrapper">
-		<h1> Unpaid Requests </h1>
-			<Table striped bordered hover>
-				<thead>
-				<tr>
-					<th>Name</th>
-					<th>Room</th>
-					<th>Start Time</th>
-					<th>End Time</th>
-					<th>Requester</th>
-					<th>Email</th>
-					<th>Phone</th>
-				</tr>
-				</thead>
-				<tbody>
-				{this.DataTable("unpaid")}
-				</tbody>
-			</Table>
-		<h1> Paid Requests </h1>
-			<Table striped bordered hover>
-				<thead>
-				<tr>
-					<th>Name</th>
-					<th>Room</th>
-					<th>Start Time</th>
-					<th>End Time</th>
-					<th>Requester</th>
-					<th>Email</th>
-					<th>Phone</th>
-				</tr>
-				</thead>
-				<tbody>
-				{this.DataTable("paid")}
-				</tbody>
-			</Table>
-		 </div>
+		if (this.state.isLoading) {
+            html = <div style={{display: 'flex', justifyContent: 'center'}}>
+                <ColorRing
+                  visible={true}
+                  height="80"
+                  width="80"
+                  ariaLabel="blocks-loading"
+                  wrapperStyle={{}}
+                  wrapperClass="blocks-wrapper"
+                  colors={['#014686ff', '#FFFFFF', '#014686ff', '#FFFFFF', '#014686ff']}
+                />
+                </div>
+        } else {
+			html = <div className="table-wrapper">
+			<h1> Unpaid Requests </h1>
+				<Table striped bordered hover>
+					<thead>
+					<tr>
+						<th>Name</th>
+						<th>Room</th>
+						<th>Start Time</th>
+						<th>End Time</th>
+						<th>Requester</th>
+						<th>Email</th>
+						<th>Phone</th>
+					</tr>
+					</thead>
+					<tbody>
+					{this.DataTable("unpaid")}
+					</tbody>
+				</Table>
+			<h1> Paid Requests </h1>
+				<Table striped bordered hover>
+					<thead>
+					<tr>
+						<th>Name</th>
+						<th>Room</th>
+						<th>Start Time</th>
+						<th>End Time</th>
+						<th>Requester</th>
+						<th>Email</th>
+						<th>Phone</th>
+					</tr>
+					</thead>
+					<tbody>
+					{this.DataTable("paid")}
+					</tbody>
+				</Table>
+			</div>
+		}
 		} else {
 		  html = <div>
 			  <Link to="/login">Login for more functionality</Link>

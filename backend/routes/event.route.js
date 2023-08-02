@@ -529,23 +529,35 @@ router.route('/find-bm-list/:id/:limit').get(async (req, res) => {
 		if (error) {
 			res.status(400).json({ error: error, })
 		} else {
-			// var all_events = []
-
-			var needs_work = data.filter(item => item.room === req.params.id).filter(item => ["Pending"].includes(item.status)).filter(event => new Date(event.endTime).getTime() > new Date())
-			var done = data.filter(item => item.room === req.params.id).filter(item => !["Pending"].includes(item.status)).sort((a, b) => new Date(a.startTime).getTime() > new Date(b.startTime).getTime() ? 1 : -1 ).slice(0, req.params.limit).filter(event => new Date(event.endTime).getTime() > new Date())
-
+			var needs_work = data.filter(item => 
+					item.room === req.params.id)
+				.filter(item => 
+					["Pending"].includes(item.status))
+				.filter(event => 
+					new Date(event.endTime).getTime() > new Date()
+				)
+			var done = data.filter(
+					item => item.room === req.params.id)
+				.filter(
+					item => !["Pending"].includes(item.status))
+				.sort(
+					(a, b) => new Date(a.startTime).getTime() > new Date(b.startTime).getTime() ? 1 : -1 )
+				.filter(
+					event => new Date(event.endTime).getTime() > new Date())
+				.slice(
+					0, req.params.limit)
+			
 			var all_events = [...needs_work, ...done]
-
+			
 			for (var ev_idx in all_events){
-				event = all_events[ev_idx]
-				var room_data = await findRoomData(event.room)
-				event.room = room_data.name
-				if (event.requester){
-					var user = await find_user(event.requester);
-					// console.log(user)
-					event.email = user.email;
-					event.contact = user.name;
-					event.phone = user.phone;
+				event_dets = all_events[ev_idx]
+				var room_data = await findRoomData(event_dets.room)
+				event_dets.room = room_data.name
+				if (event_dets.requester){
+					var user = await find_user(event_dets.requester);
+					event_dets.email = user.email;
+					event_dets.contact = user.name;
+					event_dets.phone = user.phone;
 				}
 			}
 			

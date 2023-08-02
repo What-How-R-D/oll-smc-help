@@ -4,6 +4,8 @@ import axios from 'axios';
 import Table from 'react-bootstrap/Table';
 import BlackoutTableRow from '../components/BlackoutTableRow';
 
+import { ColorRing } from 'react-loader-spinner'
+
 import {checkLogin} from "../api/user"
 
 export default class BlackoutList extends Component {
@@ -13,10 +15,12 @@ export default class BlackoutList extends Component {
     this.state = {
       blackouts: [],
       loggedIn: false,
+      isLoading: true,
     };
   }
 
   async componentDidMount() {
+    this.setState({ isLoading: true})
     if (await checkLogin()){
       this.setState({ loggedIn: true })
     } else {
@@ -24,7 +28,7 @@ export default class BlackoutList extends Component {
     }
 
     var url = `http://${process.env.REACT_APP_NODE_IP}:4000/blackout/find-all`
-    axios.get(url)
+    await axios.get(url)
       .then(res => {
         this.setState({
           blackouts: res.data
@@ -33,6 +37,7 @@ export default class BlackoutList extends Component {
       .catch((error) => {
         console.log(error);
       })
+    this.setState({ isLoading: false})
   }
 
   DataTable() {
@@ -45,22 +50,36 @@ export default class BlackoutList extends Component {
   render() {
     let html
     if (this.state.loggedIn) {
-      html = <div className="table-wrapper">
-        <Link to="/create-blackout">Create new blackout</Link>
-        <Table striped bordered hover>
-          <thead>
-            <tr>
-              <th>Name</th>
-              <th>Rooms</th>
-              <th>Start time</th>
-              <th>End Time</th>
-            </tr>
-          </thead>
-          <tbody>
-            {this.DataTable()}
-          </tbody>
-        </Table>
-      </div>
+      if (this.state.isLoading) {
+            html = <div style={{display: 'flex', justifyContent: 'center'}}>
+                <ColorRing
+                  visible={true}
+                  height="80"
+                  width="80"
+                  ariaLabel="blocks-loading"
+                  wrapperStyle={{}}
+                  wrapperClass="blocks-wrapper"
+                  colors={['#014686ff', '#FFFFFF', '#014686ff', '#FFFFFF', '#014686ff']}
+                />
+                </div>
+        } else {
+            html = <div className="table-wrapper">
+              <Link to="/create-blackout">Create new blackout</Link>
+              <Table striped bordered hover>
+                <thead>
+                  <tr>
+                    <th>Name</th>
+                    <th>Rooms</th>
+                    <th>Start time</th>
+                    <th>End Time</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {this.DataTable()}
+                </tbody>
+              </Table>
+            </div>
+        }
       } else {
         html = <div>
             <p> Please login</p>

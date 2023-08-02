@@ -1,6 +1,9 @@
 import React, { Component } from "react";
 import { Link } from "react-router-dom"
 import axios from 'axios';
+
+import { ColorRing } from 'react-loader-spinner'
+
 import Table from 'react-bootstrap/Table';
 import UserTableRow from '../components/UserTableRow';
 
@@ -13,10 +16,12 @@ export default class UserList extends Component {
     this.state = {
       users: [],
       loggedIn: false,
+      isLoading: true,
     };
   }
 
   async componentDidMount() {
+    this.setState({isLoading: true})
     if (await checkLogin()){
       this.setState({ loggedIn: true })
     } else {
@@ -41,6 +46,8 @@ export default class UserList extends Component {
       .catch((error) => {
         console.log(error);
       })
+    
+    this.setState({isLoading: false})
   }
 
   DataTable() {
@@ -53,26 +60,40 @@ export default class UserList extends Component {
   render() {
     let html
     if (this.state.loggedIn) {
-      html = <div className="table-wrapper">
-        <Table striped bordered>
-          <thead>
-            <tr>
-              <th>Name</th>
-              <th>Email</th>
-              <th>Emp/Min</th>
-              <th>Account Type</th>
-              <th>Building Manager</th>
-              <th>HVAC</th>
-              <th>Locks</th>
-              <th>Immediate Emails</th>
-              <th>Can Overlap Events</th>
-            </tr>
-          </thead>
-          <tbody>
-            {this.DataTable()}
-          </tbody>
-        </Table>
-      </div>
+        if (this.state.isLoading) {
+            html = <div style={{display: 'flex', justifyContent: 'center'}}>
+                <ColorRing
+                  visible={true}
+                  height="80"
+                  width="80"
+                  ariaLabel="blocks-loading"
+                  wrapperStyle={{}}
+                  wrapperClass="blocks-wrapper"
+                  colors={['#014686ff', '#FFFFFF', '#014686ff', '#FFFFFF', '#014686ff']}
+                />
+                </div>
+        } else {
+          html = <div className="table-wrapper">
+            <Table striped bordered>
+              <thead>
+                <tr>
+                  <th>Name</th>
+                  <th>Email</th>
+                  <th>Emp/Min</th>
+                  <th>Account Type</th>
+                  <th>Building Manager</th>
+                  <th>HVAC</th>
+                  <th>Locks</th>
+                  <th>Immediate Emails</th>
+                  <th>Can Overlap Events</th>
+                </tr>
+              </thead>
+              <tbody>
+                {this.DataTable()}
+              </tbody>
+            </Table>
+          </div>
+        }
       } else {
         html = <div>
             <p> Please login</p>
