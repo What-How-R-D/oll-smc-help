@@ -65,6 +65,7 @@ export default class UserList extends Component {
               <th>HVAC</th>
               <th>Locks</th>
               <th>Immediate Emails</th>
+              <th>Can Overlap Events</th>
             </tr>
           </thead>
           <tbody>

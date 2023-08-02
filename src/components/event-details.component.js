@@ -84,6 +84,7 @@ export default class CreateEventRequest extends Component {
       user_type: "Basic",
       user_email: "",
       user_emp_min: false,
+      user_can_overlap: false,
       loggedIn: false,
       willBePresent: false,
       onBehalfOf: false,
@@ -117,12 +118,14 @@ export default class CreateEventRequest extends Component {
     var user = await findUser()
     
     if (user['error'] !== "Unauthorized") {
+      console.log(user)
       this.setState({ 
         loggedIn: true, 
         user_id: user._id, 
         user_email: user.email,
         user_type: user.type,
         user_emp_min: user.emp_min,
+        user_can_overlap: user.can_overlap,
       })
 		}
 
@@ -179,6 +182,7 @@ export default class CreateEventRequest extends Component {
         user_email: user.email,
         user_type: user.type,
         user_emp_min: user.emp_min,
+        user_can_overlap: user.can_overlap,
       })
       if (this.state.user_id.toString() === this.state.requester) { valid_user = true }
     }
@@ -384,7 +388,7 @@ export default class CreateEventRequest extends Component {
       )
     
     if (valid_events.length !== 0){
-      if (this.state.user_type !== "Admin") {
+      if (!this.state.user_can_overlap) {
         var blackout_start = valid_events.sort((a, b) => new Date(a.startTime).getTime() > new Date(b.startTime).getTime() ? -1 : 1 )[0].start
         var blackout_end = valid_events.sort((a, b) => new Date(a.endTime).getTime() > new Date(b.endTime).getTime() ? 1 : -1 )[0].end
         

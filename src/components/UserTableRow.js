@@ -47,6 +47,7 @@ export default class UserTableRow extends Component {
         <td>{this.props.obj.hvac.toString()}</td>
         <td>{this.props.obj.locks.toString()}</td>
         <td>{this.props.obj.can_spam.toString()}</td>
+        <td>{this.props.obj.can_overlap.toString()}</td>
         <td>
           <Link className="edit-link" path={"edit-user/:id"} to={'/edit-user/' + this.props.obj._id} > Edit </Link>
         </td>

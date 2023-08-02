@@ -19,6 +19,7 @@ const userSchema = new mongoose.Schema(
 	payments: {type: Boolean, default: false,},
 	emp_min: {type: Boolean, default: false,},
 	can_spam: {type: Boolean, default: false,},
+	can_overlap: {type: Boolean, default: false,},
 	},
  	{ timestamps: true }
 )

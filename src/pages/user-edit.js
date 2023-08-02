@@ -21,6 +21,7 @@ export default class EditUser extends Component {
     this.onChangePhone = this.onChangePhone.bind(this);
     this.onChangeEmpMin = this.onChangeEmpMin.bind(this);
     this.onChangePayments = this.onChangePayments.bind(this);
+    this.onChangeCanOverlap = this.onChangeCanOverlap.bind(this);
     this.onSubmit = this.onSubmit.bind(this);
 
     // State
@@ -37,6 +38,7 @@ export default class EditUser extends Component {
       emp_min: false,
       payments: false,
       can_spam: false,
+      can_overlap: false,
     }
   }
 
@@ -62,6 +64,7 @@ export default class EditUser extends Component {
           emp_min: res.data.emp_min,
           payments: res.data.payments,
           can_spam: res.data.can_spam,
+          can_overlap: res.data.can_overlap
         });
       })
       .catch((error) => {
@@ -126,6 +129,7 @@ export default class EditUser extends Component {
   onChangePayments(e) { this.setState(({ payments }) => ({ payments: !payments })) }
   onChangeEmpMin(e) { this.setState(({ emp_min }) => ({ emp_min: !emp_min })) }
   onChangeCanSpam(e) { this.setState(({ can_spam }) => ({ can_spam: !can_spam })) }
+  onChangeCanOverlap(e) { this.setState(({ can_overlap }) => ({ can_overlap: !can_overlap })) }
 
   onSubmit(e) {
     e.preventDefault()
@@ -141,7 +145,8 @@ export default class EditUser extends Component {
       rooms: this.state.rooms_responsible,
       emp_min: this.state.emp_min,
       payments: this.state.payments,
-      can_spam: this.state.can_spam
+      can_spam: this.state.can_spam,
+      can_overlap: this.state.can_overlap,
     };
     
     var url = `http://${process.env.REACT_APP_NODE_IP}:4000/users/update/`
@@ -225,6 +230,14 @@ export default class EditUser extends Component {
           label="Receive immediate emails when actions are needed."
           checked={this.state.can_spam}
           onChange={this.onChangeCanSpam}
+        />
+
+        <Form.Check 
+          type="switch"
+          id="can_overlap"
+          label="Can Create Overlapping Events"
+          checked={this.state.can_overlap}
+          onChange={this.onChangeCanOverlap}
         />
 
         <Form.Check 
