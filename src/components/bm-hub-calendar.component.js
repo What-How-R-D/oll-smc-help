@@ -10,7 +10,7 @@ import moment from 'moment'
 import "react-big-calendar/lib/css/react-big-calendar.css";
 
 import Swal from 'sweetalert2';
-
+import { dateTimeOptions } from './dateTimeFormat'; 
 
 import {findUser, checkLogin} from "../api/user"
 
@@ -95,7 +95,7 @@ export default class BMhubList extends Component {
 					
 				this.setState({
 					all_events: [...all_events.map(
-						({ startTime, endTime, name, room, status, _id, requester, notes, contact, email, phone}) => ({
+						({ startTime, endTime, name, room, status, _id, requester, notes, contact, email, phone, lockStartTime, lockEndTime }) => ({
 						start: new Date(startTime),
 						end: new Date(endTime),
 						title: rooms_map.get(room) + ": " + name,
@@ -106,7 +106,9 @@ export default class BMhubList extends Component {
 						notes: notes,
 						contact: contact,
 						email: email,
-						phone: phone
+						phone: phone,
+						locksStartTime: new Date(lockStartTime),
+						lockEndTime: new Date(lockEndTime)
 						})), 
 						...filtered_blackouts.map(
 							({ startTime, endTime, name, rooms, status, _id, requester, notes}) => ({
@@ -189,6 +191,10 @@ export default class BMhubList extends Component {
 
 
 	swalTrigger = async (event) => {
+		
+		console.log("hi there duded")
+		console.log(event)
+
 		if (event.status !== "Blackout") {
 			if (event.requester){ 
 				var url = `http://${process.env.REACT_APP_NODE_IP}:4000/users/find-id/`
@@ -199,10 +205,19 @@ export default class BMhubList extends Component {
 				.catch((error) => {
 					console.log(error);
 				})
-				var text = `requester: ${user.name}<br>Email: ${user.email}<br>Phone: ${user.phone}<br>Requester notes: ${event.notes}`
+				var text = `Requester: ${user.name}<br>Email: ${user.email}<br>Phone: ${user.phone}`
 			} else {
-				text = `Requester: ${event.contact}<br>Email: ${event.email}<br>Phone: ${event.phone}<br>Requester notes: ${event.notes}`
+				text = `Requester: ${event.contact}<br>Email: ${event.email}<br>Phone: ${event.phone}`
 			}
+			
+			const formattedStart = event.start.toLocaleString('en-US', dateTimeOptions);
+			const formattedEnd = event.end.toLocaleString('en-US', dateTimeOptions);
+			text += `<br><br>Start Time: ${formattedStart}<br>End Time: ${formattedEnd}`
+			
+			const formattedUnlock = event.locksStartTime.toLocaleString('en-US', dateTimeOptions);
+			const formattedLock = event.lockEndTime.toLocaleString('en-US', dateTimeOptions);
+			text += `<br>Doors Unlock Time: ${formattedUnlock}<br>Doors Re-lock Time: ${formattedLock}<br>`
+			text += `<br><br>Requester notes: ${event.notes}`
 		}
 		
 		if (event.status === "Approved" && this.state.user.type === "Admin") {
