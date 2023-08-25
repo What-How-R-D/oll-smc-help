@@ -35,12 +35,34 @@ export default class BMhubList extends Component {
 
 		var user = await findUser()
 		this.setState({ user: user })
+
 		await this.getEvents()
 
 		this.setState({ isLoading: false })
 	}
 
 	async getEvents() {
+
+		var url = `http://${process.env.REACT_APP_NODE_IP}:4000/room/find-all/true`
+		var rooms_map = await axios.get(url)
+		  .then(res => {
+			return new Map(res.data.map(i => [i._id, i.name]))
+		  })
+		  .catch((error) => {
+			console.log(error);
+		  })
+
+		var url = `http://${process.env.REACT_APP_NODE_IP}:4000/users/find-all`
+		var [user_name_map, user_phone_map] = await axios.get(url)
+			.then(res => {
+				return [new Map(res.data.map(i => [i._id, i.name])), new Map(res.data.map(i => [i._id, i.phone]))]
+			})
+			.catch((error) => {
+				console.log(error);
+			})
+
+
+
 		var all_events = []
 		var eventPromises = [];
 
@@ -49,7 +71,25 @@ export default class BMhubList extends Component {
 			var url = `http://${process.env.REACT_APP_NODE_IP}:4000/event/find-bm-list/${room_id}/20`
 			const eventPromise = axios.get(url)
 			.then(res => {
-				var new_events = res.data
+				var new_events = res.data.map(item => {
+						var contact = ""
+						var phone = ""
+						if (item.contact) {
+							contact=item.contact
+							phone = item.phone
+						} else {
+							contact=user_name_map.get(item.requester)
+							phone = user_phone_map.get(item.requester)
+						}
+					
+						return { 
+							...item, 
+							room: rooms_map.get(item.room),
+							contact: contact,
+							phone: phone
+						}
+					})
+
 				all_events.push(...new_events)
 			})
 			.catch((error) => {
@@ -84,7 +124,7 @@ export default class BMhubList extends Component {
 			});
 		} else if (kind === "completed"){
 			return this.state.events.map((res, i) => {
-				return <EventBMTableRow obj={res} key={i} bm_type={this.state.user.type} refresh={this.getEvents}/>;
+				return <EventBMTableRow obj={res} key={i} bm_type={this.state.user.type} refresh={this.getEvents} />;
 			});
 		}
 	}

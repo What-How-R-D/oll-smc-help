@@ -19,6 +19,8 @@ export default class RoomTableRow extends Component {
         room_name: "",
         user: {name:"", email:"", phone:""},
       };
+
+      console.log(this.props)
     }
 
 

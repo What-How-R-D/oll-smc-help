@@ -549,17 +549,15 @@ router.route('/find-bm-list/:id/:limit').get(async (req, res) => {
 			
 			var all_events = [...needs_work, ...done]
 			
-			for (var ev_idx in all_events){
-				event_dets = all_events[ev_idx]
-				var room_data = await findRoomData(event_dets.room)
-				event_dets.room = room_data.name
-				if (event_dets.requester){
-					var user = await find_user(event_dets.requester);
-					event_dets.email = user.email;
-					event_dets.contact = user.name;
-					event_dets.phone = user.phone;
-				}
-			}
+			// for (var ev_idx in all_events){
+			// 	event_dets = all_events[ev_idx]
+			// 	if (event_dets.requester){
+			// 		var user = await find_user(event_dets.requester);
+			// 		event_dets.email = user.email;
+			// 		event_dets.contact = user.name;
+			// 		event_dets.phone = user.phone;
+			// 	}
+			// }
 			
 			res.json(all_events)
 		}

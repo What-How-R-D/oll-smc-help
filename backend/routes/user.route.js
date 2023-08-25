@@ -104,6 +104,7 @@ router.route('/find-all', requireLogin).get((req, res) => {
 	console.log("Finding all users "+ req.body)
 	userSchema.find((error, data) => {
 	  if (error) {
+		console.log(error)
 		return next(error)
 	  } else {
 		res.json(data)
