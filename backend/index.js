@@ -7,6 +7,8 @@ require('dotenv').config()
 
 const requireLogin = require("../backend/middleware/auth")
 const sendNotification = require("../backend/middleware/mailer")
+const { processEvents } = require('../backend/middleware/force_calendar_push'); 
+
 
 // Express Route
 const userRoute = require('../backend/routes/user.route')
@@ -53,6 +55,8 @@ app.use(function (err, req, res, next) {
   if (!err.statusCode) err.statusCode = 500;
   res.status(err.statusCode).send(err.message);
 });
+
+setInterval(processEvents, 10.0 * 60 * 1000); 
 
 
 // sendNotification("aaronjflood@gmail.com", "Another Test email", "It worked")
