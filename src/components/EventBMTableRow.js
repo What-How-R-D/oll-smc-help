@@ -51,7 +51,7 @@ export default class RoomTableRow extends Component {
 
   async approveRequest() {
       Swal.fire({
-        title: `${this.state.room_name}: ${this.props.obj.name}`,
+        title: `${this.props.obj.room}: ${this.props.obj.name}`,
         icon: 'warning',
         html: "Verify event approval",
         showConfirmButton: true,
@@ -74,7 +74,7 @@ export default class RoomTableRow extends Component {
 
   rejectRequest() {
     Swal.fire({
-      title: `${this.state.room_name}: ${this.props.obj.name}`,
+      title: `${this.props.obj.room}: ${this.props.obj.name}`,
       icon: 'warning',
       html: "Please provide a reason for the rejection",
       showConfirmButton: true,
@@ -98,7 +98,7 @@ export default class RoomTableRow extends Component {
 
   cancelRequest() {
     Swal.fire({
-      title: `${this.state.room_name}: ${this.props.obj.name}`,
+      title: `${this.props.obj.room}: ${this.props.obj.name}`,
       icon: 'warning',
       html: "Please provide a reason for the forced cancelation",
       showConfirmButton: true,
@@ -146,21 +146,6 @@ export default class RoomTableRow extends Component {
     });
   }
 
-  get_name() {
-    if (this.props.obj.requester){ return <td>{this.state.user.name}</td>}
-    else { return <td>{this.props.obj.contact}</td>}
-  }
-
-  get_email(){
-    if (this.props.obj.requester){ return <td>{this.state.user.email}</td>}
-    else { return <td>{this.props.obj.email}</td>}
-  }
-
-  get_phone(){
-    if (this.props.obj.requester){ return <td>{this.state.user.phone}</td>}
-    else { return <td>{this.props.obj.phone}</td>}
-  }
-
   buttons(bm_type) {
     if (bm_type === "Admin"){
       if (["Approved", "Pending"].includes(this.props.obj.status)) {
@@ -183,6 +168,7 @@ export default class RoomTableRow extends Component {
     return (
       <tr>
         <td>{this.props.obj.name}</td>
+        <td>{this.props.obj.requester}</td>
         <td>{this.props.obj.contact}</td>
         <td>{this.props.obj.email}</td>
         <td>{this.props.obj.phone}</td>

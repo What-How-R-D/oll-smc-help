@@ -191,11 +191,11 @@ export default class BMhubList extends Component {
 
 
 	swalTrigger = async (event) => {
-		
-		console.log("hi there duded")
-		console.log(event)
-
 		if (event.status !== "Blackout") {
+			var req_owner = ""
+			var contact = ""
+			var email = ""
+			var phone = ""
 			if (event.requester){ 
 				var url = `http://${process.env.REACT_APP_NODE_IP}:4000/users/find-id/`
 				var user = await axios.get(url + event.requester)
@@ -205,11 +205,21 @@ export default class BMhubList extends Component {
 				.catch((error) => {
 					console.log(error);
 				})
-				var text = `Requester: ${user.name}<br>Email: ${user.email}<br>Phone: ${user.phone}`
+				req_owner = user.name
+				contact = user.name
+				email = user.email
+				phone = user.phone
 			} else {
-				text = `Requester: ${event.contact}<br>Email: ${event.email}<br>Phone: ${event.phone}`
+				req_owner = "Guest"
 			}
-			
+			if (event.contact) {
+				contact = event.contact
+				email = event.email
+				phone = event.phone
+			}
+
+			var text = `Requester: ${req_owner}<br>Event Contact: ${contact}<br>Email: ${email}<br>Phone: ${phone}`
+
 			const formattedStart = event.start.toLocaleString('en-US', dateTimeOptions);
 			const formattedEnd = event.end.toLocaleString('en-US', dateTimeOptions);
 			text += `<br><br>Start Time: ${formattedStart}<br>End Time: ${formattedEnd}`

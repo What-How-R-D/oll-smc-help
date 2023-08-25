@@ -862,21 +862,19 @@ export default class CreateEventRequest extends Component {
           locksSet: false,
           hvacSet: false,
         };
-
-        if ( this.state.loggedIn && !this.state.onBehalfOf ) {
-          var paid = false
-          if (this.state.user_emp_min && !this.state.onBehalfOf) { paid=true }
-          // eventRequestObject.push({
+        
+        if ( this.state.loggedIn ) {
           eventRequestObject.requester = this.state.user_id;
           eventRequestObject.email = this.state.user_email;
+          
+          var paid = false
+          if (this.state.user_emp_min && !this.state.onBehalfOf) { paid=true }
           eventRequestObject.paid = paid;
-          // });
-        } else {
-          // eventRequestObject.push{(
+        }
+        if (this.state.onBehalfOf ) {
           eventRequestObject.contact = this.state.requesterName;
           eventRequestObject.email = this.state.requesterEmail;
           eventRequestObject.phone = this.state.requesterPhone;
-          // )};
         };
 
         if (!this.state.needLocks) {

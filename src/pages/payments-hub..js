@@ -105,7 +105,7 @@ export default class PaymentsHub extends Component {
 						<th>Room</th>
 						<th>Start Time</th>
 						<th>End Time</th>
-						<th>Requester</th>
+						<th>Event Contact</th>
 						<th>Email</th>
 						<th>Phone</th>
 					</tr>

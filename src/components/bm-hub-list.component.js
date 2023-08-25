@@ -71,14 +71,15 @@ export default class BMhubList extends Component {
 			var url = `http://${process.env.REACT_APP_NODE_IP}:4000/event/find-bm-list/${room_id}/20`
 			const eventPromise = axios.get(url)
 			.then(res => {
+				console.log(res.data)
 				var new_events = res.data.map(item => {
 						var contact = ""
 						var phone = ""
 						if (item.contact) {
-							contact=item.contact
+							contact = item.contact
 							phone = item.phone
 						} else {
-							contact=user_name_map.get(item.requester)
+							contact = user_name_map.get(item.requester)
 							phone = user_phone_map.get(item.requester)
 						}
 					
@@ -86,7 +87,8 @@ export default class BMhubList extends Component {
 							...item, 
 							room: rooms_map.get(item.room),
 							contact: contact,
-							phone: phone
+							phone: phone,
+							requester: user_name_map.get(item.requester)
 						}
 					})
 
@@ -154,6 +156,7 @@ export default class BMhubList extends Component {
 				<tr>
 					<th>Event Name</th>
 					<th>Requester</th>
+					<th>Event Contact</th>
 					<th>Email</th>
 					<th>Phone</th>
 					<th>Room</th>
@@ -174,6 +177,7 @@ export default class BMhubList extends Component {
 					<tr>
 					<th>Event Name</th>
 					<th>Requester</th>
+					<th>Event Contact</th>
 					<th>Email</th>
 					<th>Phone</th>
 					<th>Room</th>
