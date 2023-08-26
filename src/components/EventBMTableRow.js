@@ -50,6 +50,35 @@ export default class RoomTableRow extends Component {
   // }
 
   async approveRequest() {
+    if (this.props.obj.repeat){
+        Swal.fire({
+          title: `${this.props.obj.room}: ${this.props.obj.name}`,
+          icon: 'warning',
+          html: "Verify event approval",
+          showConfirmButton: true,
+          confirmButtonText: `Approve all repeating events`,
+          showCancelButton: true,
+          cancelButtonText: `Cancel`,
+          showDenyButton: true,
+          denyButtonText: 'Approve this event',
+          reverseButtons: true,
+        })
+        .then((result) => {
+          if (result.isDenied) {
+            var url = `http://${process.env.REACT_APP_NODE_IP}:4000/event/approve/`
+            axios.put(url + this.props.obj._id, {status: "Approved"})
+              .then((res) => { console.log('Event approved') })
+              .catch((error) => { console.log(error) })  
+            this.props.refresh()
+          } else if (result.isConfirmed) {
+            var url = `http://${process.env.REACT_APP_NODE_IP}:4000/event/approve-repeating/`
+            axios.put(url + this.props.obj.repeat, {status: "Approved"})
+              .then((res) => { console.log('Events approved') })
+              .catch((error) => { console.log(error) })  
+            this.props.refresh()
+          }
+        });
+    } else {
       Swal.fire({
         title: `${this.props.obj.room}: ${this.props.obj.name}`,
         icon: 'warning',
@@ -70,6 +99,8 @@ export default class RoomTableRow extends Component {
           this.props.refresh()
         }
       });
+    }
+
   }
 
   rejectRequest() {

@@ -95,7 +95,7 @@ export default class BMhubList extends Component {
 					
 				this.setState({
 					all_events: [...all_events.map(
-						({ startTime, endTime, name, room, status, _id, requester, notes, contact, email, phone, lockStartTime, lockEndTime }) => ({
+						({ startTime, endTime, name, room, status, _id, requester, notes, contact, email, phone, lockStartTime, lockEndTime, repeat }) => ({
 						start: new Date(startTime),
 						end: new Date(endTime),
 						title: rooms_map.get(room) + ": " + name,
@@ -108,7 +108,8 @@ export default class BMhubList extends Component {
 						email: email,
 						phone: phone,
 						locksStartTime: new Date(lockStartTime),
-						lockEndTime: new Date(lockEndTime)
+						lockEndTime: new Date(lockEndTime),
+						repeat:repeat,
 						})), 
 						...filtered_blackouts.map(
 							({ startTime, endTime, name, rooms, status, _id, requester, notes}) => ({
@@ -154,6 +155,16 @@ export default class BMhubList extends Component {
 		axios.put(url + id, {status: "Approved"})
 		  .then((res) => {
 			console.log('Event successfully approved')
+		  }).catch((error) => {
+			console.log(error)
+		  })
+	  }
+
+	approveRepeatingRequest(id) {
+		var url = `http://${process.env.REACT_APP_NODE_IP}:4000/event/approve-repeating/`
+		axios.put(url + id, {status: "Approved"})
+		  .then((res) => {
+			console.log('Events successfully approved')
 		  }).catch((error) => {
 			console.log(error)
 		  })
@@ -296,19 +307,22 @@ export default class BMhubList extends Component {
 			})
 			.then((result) => {
 				if (result.isConfirmed) {
-					Swal.fire({
-						title: event.title,
-						icon: 'warning',
-						html: "Verify event approval",
-						showConfirmButton: true,
-						confirmButtonText: `Approve`,
-						showCancelButton: true,
-						cancelButtonText: `Cancel`,
-						showDenyButton: false,
-						reverseButtons: true,
-					})
-					.then((result) => {
-						if (result.isConfirmed) {
+					console.log(event)
+					if (event.repeat){
+						Swal.fire({
+							title: event.title,	
+							icon: 'warning',
+							html: "Verify event approval",
+							showConfirmButton: true,
+							confirmButtonText: `Approve all repeating events`,
+							showCancelButton: true,
+							cancelButtonText: `Cancel`,
+							showDenyButton: true,
+							denyButtonText: 'Approve this event',
+							reverseButtons: true,
+						})
+						.then((result) => {
+						  if (result.isDenied) {
 							this.approveRequest(event.id)
 							event.status = "Approved"
 
@@ -316,8 +330,35 @@ export default class BMhubList extends Component {
 
 							const updated_all_events = update(this.state.all_events, {$splice: [[index, 1, event]]});
 							this.setState({all_events: updated_all_events});
-						}
-					});
+						  } else if (result.isConfirmed) {
+							this.approveRepeatingRequest(event.repeat)
+							window.location.reload()
+						  }
+						});
+					} else {
+						Swal.fire({
+							title: event.title,
+							icon: 'warning',
+							html: "Verify event approval",
+							showConfirmButton: true,
+							confirmButtonText: `Approve`,
+							showCancelButton: true,
+							cancelButtonText: `Cancel`,
+							showDenyButton: false,
+							reverseButtons: true,
+						})
+						.then((result) => {
+							if (result.isConfirmed) {
+								this.approveRequest(event.id)
+								event.status = "Approved"
+	
+								const index = this.state.all_events.findIndex((aEvent) => aEvent.id === event.id);
+	
+								const updated_all_events = update(this.state.all_events, {$splice: [[index, 1, event]]});
+								this.setState({all_events: updated_all_events});
+							}
+						});
+					}
 				} else if (result.isDenied) {
 					Swal.fire({
 						title: event.title,

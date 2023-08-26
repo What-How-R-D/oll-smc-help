@@ -327,6 +327,81 @@ router.route('/approve/:id').put(async (req, res, next) => {
 	
 });
 
+router.route('/approve-repeating/:id').put(async (req, res, next) => {
+	var notificationSent = false 
+	eventSchema.find({ repeat:req.params.id })
+		.then( async events => {
+			events.map( async event_data => {
+				event_data.status = "Approved"
+				event_data.save()
+
+				// Send the user an email it was approved
+				var startTime = new Date(event_data.startTime).toLocaleString('en-US', { timeZone: 'America/Chicago' })
+				var endTime = new Date(event_data.endTime).toLocaleString('en-US', { timeZone: 'America/Chicago' })
+				var lockStartTime = new Date(event_data.lockStartTime).toLocaleString('en-US', { timeZone: 'America/Chicago' })
+				var lockEndTime = new Date(event_data.lockEndTime).toLocaleString('en-US', { timeZone: 'America/Chicago' })
+
+				var room_data = await findRoomData(event_data.room)
+				var subject=`${event_data.name} has been APPROVED`
+				var body=`Your repeating event ${event_data.name} has been approved.\nOne of the events details are as follows:
+				Room: ${room_data.name}
+				Event start time: ${format(new Date(startTime), "M/d/yyyy h:mm a")}
+				Event end time: ${format(new Date(endTime), "M/d/yyyy h:mm a")}
+				Door unlock time: ${format(new Date(lockStartTime), "M/d/yyyy h:mm a")}
+				Door lock time: ${format(new Date(lockEndTime), "M/d/yyyy h:mm a")}
+				`
+
+				//Update the calendar
+				const gcal_id = await calendarEvent(event_data, "", "update")
+					.then((event) => {return event})
+					.catch((err) => { console.log("Error approving calender event:", err); });
+
+				// Send email to locks that something needs done
+				var lockers = await find_lockers()
+				var subject=`${event_data.name} needs locks to be scheduled`
+				var body=`A new event repeating ${event_data.name} has been approved.\nOne of the events details are as follows:
+				Room: ${room_data.name}
+				Event start time: ${format(new Date(startTime), "M/d/yyyy h:mm a")}
+				Event end time: ${format(new Date(endTime), "M/d/yyyy h:mm a")}
+				Door unlock time: ${format(new Date(lockStartTime), "M/d/yyyy h:mm a")}
+				Door lock time: ${format(new Date(lockEndTime), "M/d/yyyy h:mm a")}
+				
+				To set the locks as scheduled please go to http://${process.env.REACT_APP_NODE_IP}/locks-hub
+				`
+
+				// Send email to hvacs that something needs done
+				var hvacs = await find_hvacs()
+				var subject=`${event_data.name} needs HVAC to be scheduled`
+				var body=`A new repeating event ${event_data.name} has been approved.\nOne of the events details are as follows:
+				Room: ${room_data.name}
+				Event start time: ${format(new Date(startTime), "M/d/yyyy h:mm a")}
+				Event end time: ${format(new Date(endTime), "M/d/yyyy h:mm a")}
+				Door unlock time: ${format(new Date(lockStartTime), "M/d/yyyy h:mm a")}
+				Door lock time: ${format(new Date(lockEndTime), "M/d/yyyy h:mm a")}
+				
+				To set the HVAC as scheduled please go to http://${process.env.REACT_APP_NODE_IP}/hvac-hub
+				`
+
+				if (!notificationSent) {
+					sendNotification(event_data.email, subject, body)
+					for (var idx in lockers){
+						sendNotification(lockers[idx].email, subject, body)
+					}	
+					for (var idx in hvacs){
+						sendNotification(hvacs[idx].email, subject, body)
+					}
+					notificationSent = true
+				}
+
+
+			})
+			
+		})
+		.catch(error => {
+			console.error('Error finding events:', error);
+		});
+});
+
 
 router.route('/reject/:id').put(async (req, res, next) => {
 		const event_data = await eventSchema.findByIdAndUpdate(
