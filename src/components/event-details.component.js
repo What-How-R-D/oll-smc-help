@@ -365,57 +365,71 @@ export default class CreateEventRequest extends Component {
   handleCalendarSelect = (event, e) => {
     var { start, end } = event;
     
-    var valid_events = this.state.events.filter(
-        item => new Date(item.end).getTime() > new Date(start).getTime()
-      ).filter(
-        item => new Date(item.start).getTime() < new Date(end).getTime()
-      ).filter(
-        item => item.title === "Reserved"
-      )
-    
-    if (valid_events.length !== 0){
-      if (!this.state.user_can_overlap) {
-        var blackout_start = valid_events.sort((a, b) => new Date(a.startTime).getTime() > new Date(b.startTime).getTime() ? -1 : 1 )[0].start
-        var blackout_end = valid_events.sort((a, b) => new Date(a.endTime).getTime() > new Date(b.endTime).getTime() ? 1 : -1 )[0].end
-        
-        var start_ok = false
-        if (new Date(start).getTime() < new Date(blackout_start).getTime()) {
-          start_ok = true
-        } else {
-          start = new Date(blackout_end)
-        }
+    var rightNow = new Date();
+    var differenceInMilliseconds = start - rightNow;
+    var hours_to_start = differenceInMilliseconds / (1000 * 60 * 60);
 
-        if (new Date(end).getTime() > new Date(blackout_end).getTime()) {
-          if (start_ok) { end = new Date(blackout_start) }
-        } else {
-          end = new Date(blackout_start)
-        }
+    if (hours_to_start > 48 || this.state.user_type === "Admin") {
+      var valid_events = this.state.events.filter(
+          item => new Date(item.end).getTime() > new Date(start).getTime()
+        ).filter(
+          item => new Date(item.start).getTime() < new Date(end).getTime()
+        ).filter(
+          item => item.title === "Reserved"
+        )
+      console.log("hi there dude")
+      if (valid_events.length !== 0){
+        if (!this.state.user_can_overlap) {
+          var blackout_start = valid_events.sort((a, b) => new Date(a.startTime).getTime() > new Date(b.startTime).getTime() ? -1 : 1 )[0].start
+          var blackout_end = valid_events.sort((a, b) => new Date(a.endTime).getTime() > new Date(b.endTime).getTime() ? 1 : -1 )[0].end
+          
+          var start_ok = false
+          if (new Date(start).getTime() < new Date(blackout_start).getTime()) {
+            start_ok = true
+          } else {
+            start = new Date(blackout_end)
+          }
 
+          if (new Date(end).getTime() > new Date(blackout_end).getTime()) {
+            if (start_ok) { end = new Date(blackout_start) }
+          } else {
+            end = new Date(blackout_start)
+          }
+
+          Swal.fire({
+            icon: 'warning',
+            title: 'Event conflict detected',
+            html: `Due to scheduling conflicts you event has been changed to:<br> Event Start: ${format(new Date(start), "M/d/yyyy h:mm a")}<br> Event End: ${format(new Date(end), "M/d/yyyy h:mm a")}`,
+            showConfirmButton: false,
+            timer: 3500,
+          })
+        } else {
+          Swal.fire({
+            icon: 'warning',
+            title: 'Event conflict detected',
+            html: `Be careful creating overlapping events.`,
+            showConfirmButton: false,
+            timer: 3500,
+          })
+        }
+      } 
+
+      this.setState({ startTime: start })
+      this.setState({ endTime: end })
+      
+      this.setState({ lockStartTime: new Date(start).addMins(-15) })
+      this.setState({ lockEndTime: end })
+      
+      this.GetCalendarEvents()
+    } else {
         Swal.fire({
           icon: 'warning',
-          title: 'Event conflict detected',
-          html: `Due to scheduling conflicts you event has been changed to:<br> Event Start: ${format(new Date(start), "M/d/yyyy h:mm a")}<br> Event End: ${format(new Date(end), "M/d/yyyy h:mm a")}`,
+          title: 'Events must be scheduled 48 hours in advance',
+          html: `If an event must be scheduled within the 48 hour window, please reach out to the parish office.`,
           showConfirmButton: false,
-          timer: 3500,
-        })
-      } else {
-        Swal.fire({
-          icon: 'warning',
-          title: 'Event conflict detected',
-          html: `Be careful creating overlapping events.`,
-          showConfirmButton: false,
-          timer: 3500,
-        })
-      }
-    } 
-
-    this.setState({ startTime: start })
-    this.setState({ endTime: end })
-    
-    this.setState({ lockStartTime: new Date(start).addMins(-15) })
-    this.setState({ lockEndTime: end })
-
-    this.GetCalendarEvents()
+          timer: 7500,
+      })
+    }
   };
   
   handleChangeView = (view, date) => {
@@ -586,6 +600,11 @@ export default class CreateEventRequest extends Component {
       forcedEnd.setDate(e.getDate())
       forcedEnd.setHours(this.state.endTime.getHours())
       forcedEnd.setMinutes(this.state.endTime.getMinutes())
+
+      var rightNow = new Date();
+      var differenceInMilliseconds = rightNow - this.state.startTime;
+      var hours_to_start = differenceInMilliseconds / (1000 * 60 * 60);
+      console.log(hours_to_start)
       if (
         (this.state.endTime.getFullYear() !== e.getFullYear()) || 
         (this.state.endTime.getMonth() !== e.getMonth()) || 
@@ -597,6 +616,14 @@ export default class CreateEventRequest extends Component {
             showConfirmButton: false,
             timer: 3500,
         })
+      } else if (this.state.user_type !== "Admin" &  hours_to_start < 48) {
+        Swal.fire({
+          icon: 'warning',
+          title: 'Events must be scheduled 48 hours in advance',
+          html: `If an event must be scheduled within the 48 hour window, please reach out to the parish office.`,
+          showConfirmButton: false,
+          timer: 3500,
+      })
       }
 
       this.setState({endTime: forcedEnd})
