@@ -1,4 +1,5 @@
 import React, { Component } from 'react'
+import { Link } from 'react-router-dom'
 import axios from 'axios'
 import Button from 'react-bootstrap/Button'
 import { format } from "date-fns";
@@ -178,10 +179,19 @@ export default class RoomTableRow extends Component {
   }
 
   buttons(bm_type) {
+    console.log(bm_type)
     if (bm_type === "Admin"){
-      if (["Approved", "Pending"].includes(this.props.obj.status)) {
+      if (["Approved"].includes(this.props.obj.status)) {
         return  <td>
+          <Link className="edit-link" path={"edit-event/:id/:token"} to={`/edit-event/${this.props.obj._id}/token`} > Edit Event </Link> 
           <Button type="submit" size="sm" variant="danger" onClick={this.cancelRequest}> Force Cancel </Button>
+          </td>
+      } else if (["Pending"].includes(this.props.obj.status)) {
+        return  <td>
+          <Link className="edit-link" path={"edit-event/:id/:token"} to={`/edit-event/${this.props.obj._id}/token`} > Edit Event </Link> 
+          <Button type="submit" size="sm" onClick={this.approveRequest}> Approve </Button>
+          <Button type="submit" size="sm" variant="success" onClick={this.requestUpdate}> Request Update </Button>
+          <Button type="submit" size="sm" variant="danger" onClick={this.rejectRequest}> Reject </Button>
           </td>
       }
     } else {

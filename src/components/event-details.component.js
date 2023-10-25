@@ -65,11 +65,14 @@ export default class CreateEventRequest extends Component {
     this.state = {
       isLoading: true,
       //
+      valid_user: false,
+      //
       rooms: [],
       //
       id: '',
       name: '',
       room: '',
+      status: "Pending",
       attendance: 0,
       startTime: '',
       endTime: '',
@@ -181,7 +184,7 @@ export default class CreateEventRequest extends Component {
       })
       .catch((error) => { console.log(error); });
     
-    var valid_user = false
+    // var valid_user = false
     var user = await findUser()
     if (user['error'] !== "Unauthorized") {
       this.setState({ 
@@ -192,39 +195,13 @@ export default class CreateEventRequest extends Component {
         user_emp_min: user.emp_min,
         user_can_overlap: user.can_overlap,
       })
-      if (this.state.user_id.toString() === this.state.requester) { valid_user = true }
+      if (this.state.user_id.toString() === this.state.requester) { this.setState({valid_user:true}) }
+      if (this.state.user_type === "Admin" ) { this.setState({valid_user:true}) }
     }
 
-    try { if (await jwt.verify(this.props.match.params.token, this.state.id)) { valid_user = true } } 
+    try { if (await jwt.verify(this.props.match.params.token, this.state.id)) { this.setState({valid_user:true}) } } 
     catch (e) { console.log("token failed"); }
 
-    if (!valid_user) {
-        await Swal.fire({
-          title: "Unauthenticated",
-          icon: 'warning',
-          html: "You do not have permission to edit this event.",
-          showConfirmButton: false,
-          showCancelButton: true,
-          cancelButtonText: `Return to home`,
-          showDenyButton: false,
-        }).then(
-          this.props.history.push("/")
-        )
-      }
-    
-    if (event.status !== "Pending") {
-      await Swal.fire({
-        title: "Error",
-        icon: 'warning',
-        html: "Only pending events can be updated.",
-        showConfirmButton: false,
-        showCancelButton: true,
-        cancelButtonText: `Return to home`,
-        showDenyButton: false,
-      }).then(
-        this.props.history.push("/")
-      )
-    }
   }
 
   async PullEvents(){
@@ -472,6 +449,36 @@ export default class CreateEventRequest extends Component {
                 />
               </div>
     } else {
+
+      if (!this.state.valid_user) {
+        Swal.fire({
+          title: "Unauthenticated",
+          icon: 'warning',
+          html: "You do not have permission to edit this event.",
+          showConfirmButton: false,
+          showCancelButton: true,
+          cancelButtonText: `Return to home`,
+          showDenyButton: false,
+        }).then(() => {
+          this.props.history.push("/")
+        })
+      }
+      
+      if (this.state.status !== "Pending") {
+        Swal.fire({
+          title: "Error",
+          icon: 'warning',
+          html: "Only pending events can be updated.",
+          showConfirmButton: false,
+          showCancelButton: true,
+          cancelButtonText: `Return to home`,
+          showDenyButton: false,
+        }).then(() => {
+          this.props.history.push("/")
+        })
+      }
+
+
       return <div>
          <DnDCalendar
             localizer={localizer}

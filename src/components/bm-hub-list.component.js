@@ -122,7 +122,7 @@ export default class BMhubList extends Component {
 	DataTable(kind) {
 		if (kind === "pending") {
 			return this.state.pending_events.map((res, i) => {
-				return <EventBMTableRow obj={res} key={i} bm_type={"Basic"} refresh={this.getEvents} />;
+				return <EventBMTableRow obj={res} key={i} bm_type={this.state.user.type} refresh={this.getEvents} />;
 			});
 		} else if (kind === "completed"){
 			return this.state.events.map((res, i) => {
