@@ -466,7 +466,7 @@ export default class CreateEventRequest extends Component {
         })
       }
       
-      if (this.state.status !== "Pending") {
+      if (this.state.status !== "Pending" & this.state.user_type !== "Admin") {
         Swal.fire({
           title: "Error",
           icon: 'warning',
