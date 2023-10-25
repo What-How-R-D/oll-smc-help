@@ -304,13 +304,15 @@ export default class BMhubList extends Component {
 				showDenyButton: false,
 			})
 		} else {
+			var cancelTxt = "Request Update"
+			if (this.state.user.type === "Admin") {  cancelTxt += "/Edit" }
 			Swal.fire({
 				title: event.title,
 				html: text,
 				showConfirmButton: true,
 				confirmButtonText: `Approve`,
 				showCancelButton: true,
-				cancelButtonText: `Request Update`,
+				cancelButtonText: cancelTxt,
 				showDenyButton: true,
 				denyButtonText: `Reject`,
 			})
@@ -393,23 +395,61 @@ export default class BMhubList extends Component {
 						}
 					});
 				} else if (result.isDismissed && result.dismiss==="cancel") {
-					Swal.fire({
-						title: event.title,
-						icon: 'warning',
-						html: "What kind of update would you like made?",
-						showConfirmButton: true,
-						confirmButtonText: `Request Update`,
-						showCancelButton: true,
-						cancelButtonText: `Cancel`,
-						showDenyButton: false,
-						reverseButtons: true,
-						input: "text",
-					})
-					.then((result) => {
-						if (result.isConfirmed) {
-							this.requestUpdate(event.id, result.value)
-						}
-					});
+					if (this.state.user.type === "Admin") {
+						Swal.fire({
+							title: event.title,
+							// icon: 'warning',
+							html: "Request update or edit?",
+							showConfirmButton: true,
+							confirmButtonText: `Request Update`,
+							showCancelButton: false,
+							denyButtonText: `Edit`,
+							showDenyButton: true,
+							reverseButtons: true,
+						})
+						.then((result) => {
+							console.log(result)
+							if (result.isConfirmed) {
+								Swal.fire({
+									title: event.title,
+									icon: 'warning',
+									html: "What kind of update would you like made?",
+									showConfirmButton: true,
+									confirmButtonText: `Request Update`,
+									showCancelButton: true,
+									cancelButtonText: `Cancel`,
+									showDenyButton: false,
+									reverseButtons: true,
+									input: "text",
+								})
+								.then((result) => {
+									if (result.isConfirmed) {
+										this.requestUpdate(event.id, result.value)
+									}
+								});
+							} else if (result.isDenied) {
+								window.location.href = `/edit-event/${event.id}/token`;
+							}
+						});
+					 } else {
+						Swal.fire({
+							title: event.title,
+							icon: 'warning',
+							html: "What kind of update would you like made?",
+							showConfirmButton: true,
+							confirmButtonText: `Request Update`,
+							showCancelButton: true,
+							cancelButtonText: `Cancel`,
+							showDenyButton: false,
+							reverseButtons: true,
+							input: "text",
+						})
+						.then((result) => {
+							if (result.isConfirmed) {
+								this.requestUpdate(event.id, result.value)
+							}
+						});
+					}
 				}
 			});
 		}
