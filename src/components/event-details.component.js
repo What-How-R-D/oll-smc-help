@@ -179,6 +179,7 @@ export default class CreateEventRequest extends Component {
           defaultDate: new Date(res.data.startTime),
           token: res.data.token,
           notes: res.data.notes,
+          paid: res.data.paid,
         })
         return res.data
       })
@@ -450,7 +451,7 @@ export default class CreateEventRequest extends Component {
               </div>
     } else {
 
-      if (!this.state.valid_user) {
+      if (!this.state.valid_user & this.props.edit) {
         Swal.fire({
           title: "Unauthenticated",
           icon: 'warning',
@@ -460,7 +461,8 @@ export default class CreateEventRequest extends Component {
           cancelButtonText: `Return to home`,
           showDenyButton: false,
         }).then(() => {
-          this.props.history.push("/")
+          window.location.href = "/";
+          // this.props.history.push("/")
         })
       }
       
@@ -474,7 +476,8 @@ export default class CreateEventRequest extends Component {
           cancelButtonText: `Return to home`,
           showDenyButton: false,
         }).then(() => {
-          this.props.history.push("/")
+          window.location.href = "/";
+          // this.props.history.push("/")
         })
       }
 
@@ -878,7 +881,12 @@ export default class CreateEventRequest extends Component {
           if (this.state.user_emp_min && !this.state.onBehalfOf) { paid=true }
           eventRequestObject.paid = paid;
         }
-        if (this.state.onBehalfOf ) {
+        if ( this.props.edit ) {
+          eventRequestObject.requester = this.state.requester;
+          eventRequestObject.email = this.state.requesterEmail;
+          eventRequestObject.paid = this.state.paid;
+        }
+        if (this.state.onBehalfOf) {
           eventRequestObject.contact = this.state.requesterName;
           eventRequestObject.email = this.state.requesterEmail;
           eventRequestObject.phone = this.state.requesterPhone;
