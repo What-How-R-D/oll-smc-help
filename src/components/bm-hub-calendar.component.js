@@ -235,9 +235,14 @@ export default class BMhubList extends Component {
 			const formattedEnd = event.end.toLocaleString('en-US', dateTimeOptions);
 			text += `<br><br>Start Time: ${formattedStart}<br>End Time: ${formattedEnd}`
 			
-			const formattedUnlock = event.locksStartTime.toLocaleString('en-US', dateTimeOptions);
-			const formattedLock = event.lockEndTime.toLocaleString('en-US', dateTimeOptions);
-			text += `<br>Doors Unlock Time: ${formattedUnlock}<br>Doors Re-lock Time: ${formattedLock}<br>`
+			if (event.lockStartTime) {
+				const formattedUnlock = event.locksStartTime.toLocaleString('en-US', dateTimeOptions);
+				const formattedLock = event.lockEndTime.toLocaleString('en-US', dateTimeOptions);
+				text += `<br>Doors Unlock Time: ${formattedUnlock}<br>Doors Re-lock Time: ${formattedLock}<br>`
+			} else {
+				text += '<br><br>No locks requested'
+			}
+
 			text += `<br><br>Requester notes: ${event.notes}`
 		}
 		
@@ -245,7 +250,8 @@ export default class BMhubList extends Component {
 			Swal.fire({
 				title: event.title,
 				html: text,
-				showConfirmButton: false,
+				showConfirmButton: true,
+				confirmButtonText: "Edit",
 				showCancelButton: true,
 				cancelButtonText: `Cancel`,
 				showDenyButton: true,
@@ -276,7 +282,10 @@ export default class BMhubList extends Component {
 							this.setState({all_events: updated_all_events});
 						}
 					});
-				}})
+				} else if (result.isConfirmed) {
+					window.location.href = `/edit-event/${event.id}/token`;
+				}
+				})
 		} else if (event.status === "Approved") {
 				Swal.fire({
 					title: event.title,
