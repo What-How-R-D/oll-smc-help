@@ -19,6 +19,7 @@ const find_hvacs = require("../middleware/find_hvacs")
 const find_bms = require("../middleware/find_bms")
 
 const { format } = require('date-fns');
+const event = require('../models/event');
 
 router.route('/create').post(async (req, res, next) => {
 	// Finding if the email is in the system
@@ -48,32 +49,57 @@ router.route('/create').post(async (req, res, next) => {
 
 		var startTime = new Date(event_data.startTime).toLocaleString('en-US', { timeZone: 'America/Chicago' })
 		var endTime = new Date(event_data.endTime).toLocaleString('en-US', { timeZone: 'America/Chicago' })
+
 		var lockStartTime = new Date(event_data.lockStartTime).toLocaleString('en-US', { timeZone: 'America/Chicago' })
 		var lockEndTime = new Date(event_data.lockEndTime).toLocaleString('en-US', { timeZone: 'America/Chicago' })
 
 		var room_data = await findRoomData(event_data.room)
 		var subject=`${event_data.name} request has been received`
-		var body=`Your event ${event_data.name} has been received.\nThe event details are as follows:
-		Room: ${room_data.name}
-		Event start time: ${format(new Date(startTime), "M/d/yyyy h:mm a")}
-		Event end time: ${format(new Date(endTime), "M/d/yyyy h:mm a")}
-		Door unlock time: ${format(new Date(lockStartTime), "M/d/yyyy h:mm a")}
-		Door lock time: ${format(new Date(lockEndTime), "M/d/yyyy h:mm a")}\n\nTo update the event request please login or follow this link: http://${process.env.REACT_APP_NODE_IP}/edit-event/${event_data._id}/${token} \n\n You will be contacted via email upon approval.
-		`
+
+		if (event_data.lockStartTime) {
+			var body=`Your event ${event_data.name} has been received.\nThe event details are as follows:
+			Room: ${room_data.name}
+			Event start time: ${format(new Date(startTime), "M/d/yyyy h:mm a")}
+			Event end time: ${format(new Date(endTime), "M/d/yyyy h:mm a")}
+			Door unlock time: ${format(new Date(lockStartTime), "M/d/yyyy h:mm a")}
+			Door lock time: ${format(new Date(lockEndTime), "M/d/yyyy h:mm a")}\n\nTo update the event request please login or follow this link: http://${process.env.REACT_APP_NODE_IP}/edit-event/${event_data._id}/${token} \n\n You will be contacted via email upon approval.
+			`
+		} else {
+			var body=`Your event ${event_data.name} has been received.\nThe event details are as follows:
+			Room: ${room_data.name}
+			Event start time: ${format(new Date(startTime), "M/d/yyyy h:mm a")}
+			Event end time: ${format(new Date(endTime), "M/d/yyyy h:mm a")}\nTHE DOORS WILL NOT BE UNLOCKED AND THE REQUESTER WILL NEED TO HAVE THEIR OWN KEY\n
+			\n\nTo update the event request please login or follow this link: http://${process.env.REACT_APP_NODE_IP}/edit-event/${event_data._id}/${token} \n\n You will be contacted via email upon approval.
+			`
+		}
+
 		sendNotification(event_data.email, subject, body)
 
 		// Send BMs email about their new events.
 		var bms = await find_bms(event_data.room)
 		var subject=`${event_data.name} needs approval`
-		var body=`A new event ${event_data.name} has been submitted and needs approved.\nThe event details are as follows:
-		Room: ${room_data.name}
-		Event start time: ${format(new Date(startTime), "M/d/yyyy h:mm a")}
-		Event end time: ${format(new Date(endTime), "M/d/yyyy h:mm a")}
-		Door unlock time: ${format(new Date(lockStartTime), "M/d/yyyy h:mm a")}
-		Door lock time: ${format(new Date(lockEndTime), "M/d/yyyy h:mm a")}
-		
-		To approve the event please go to http://${process.env.REACT_APP_NODE_IP}/bm-hub
-		`
+
+		if (event_data.lockStartTime) {
+			var body=`A new event ${event_data.name} has been submitted and needs approved.\nThe event details are as follows:
+			Room: ${room_data.name}
+			Event start time: ${format(new Date(startTime), "M/d/yyyy h:mm a")}
+			Event end time: ${format(new Date(endTime), "M/d/yyyy h:mm a")}
+			Door unlock time: ${format(new Date(lockStartTime), "M/d/yyyy h:mm a")}
+			Door lock time: ${format(new Date(lockEndTime), "M/d/yyyy h:mm a")}
+			
+			To approve the event please go to http://${process.env.REACT_APP_NODE_IP}/bm-hub
+			`
+		} else {
+			var body=`A new event ${event_data.name} has been submitted and needs approved.\nThe event details are as follows:
+			Room: ${room_data.name}
+			Event start time: ${format(new Date(startTime), "M/d/yyyy h:mm a")}
+			Event end time: ${format(new Date(endTime), "M/d/yyyy h:mm a")}
+			
+			The doors were not requested to be unlocked for this event.
+			
+			To approve the event please go to http://${process.env.REACT_APP_NODE_IP}/bm-hub
+			`
+		}
 		for (var idx in bms){
 			sendNotification(bms[idx].email, subject, body)
 		}
@@ -156,28 +182,49 @@ router.route('/create-multiple').post(async (req, res, next) => {
 
 	var room_data = await findRoomData(event_data.room)
 	var subject=`${event_data.name} repeating request has been received`
-	var body=`Your event ${event_data.name} and all repeats have been received.\nThe initial event details are as follows:
-	Room: ${room_data.name}
-	Event start time: ${format(new Date(startTime), "M/d/yyyy h:mm a")}
-	Event end time: ${format(new Date(endTime), "M/d/yyyy h:mm a")}
-	Door unlock time: ${format(new Date(lockStartTime), "M/d/yyyy h:mm a")}
-	Door lock time: ${format(new Date(lockEndTime), "M/d/yyyy h:mm a")}\n\nTo update the event request please login or follow this link: http://${process.env.REACT_APP_NODE_IP}/edit-event/${event_data._id}/${token} \n\n You will be contacted via email upon approval.
-	`
+
+	if (event_data.lockStartTime) {
+		var body=`Your event ${event_data.name} and all repeats have been received.\nThe initial event details are as follows:
+		Room: ${room_data.name}
+		Event start time: ${format(new Date(startTime), "M/d/yyyy h:mm a")}
+		Event end time: ${format(new Date(endTime), "M/d/yyyy h:mm a")}
+		Door unlock time: ${format(new Date(lockStartTime), "M/d/yyyy h:mm a")}
+		Door lock time: ${format(new Date(lockEndTime), "M/d/yyyy h:mm a")}\n\nTo update the event request please login or follow this link: http://${process.env.REACT_APP_NODE_IP}/edit-event/${event_data._id}/${token} \n\n You will be contacted via email upon approval.
+		`
+	} else {
+		var body=`Your event ${event_data.name} and all repeats have been received.\nThe initial event details are as follows:
+		Room: ${room_data.name}
+		Event start time: ${format(new Date(startTime), "M/d/yyyy h:mm a")}
+		Event end time: ${format(new Date(endTime), "M/d/yyyy h:mm a")}\nTHE DOORS WILL NOT BE UNLOCKED AND THE REQUESTER WILL NEED TO HAVE THEIR OWN KEY\n\n\nTo update the event request please login or follow this link: http://${process.env.REACT_APP_NODE_IP}/edit-event/${event_data._id}/${token} \n\n You will be contacted via email upon approval.
+		`
+	}
 
 	sendNotification(event_data.email, subject, body)
 
 	// Send BMs email about their new events.
 	var bms = await find_bms(event_data.room)
 	var subject=`${event_data.name} repeating request needs approval`
-	var body=`A new event ${event_data.name} and all repeats have been requested.\nThe initial event details are as follows:
-	Room: ${room_data.name}
-	Event start time: ${format(new Date(startTime), "M/d/yyyy h:mm a")}
-	Event end time: ${format(new Date(endTime), "M/d/yyyy h:mm a")}
-	Door unlock time: ${format(new Date(lockStartTime), "M/d/yyyy h:mm a")}
-	Door lock time: ${format(new Date(lockEndTime), "M/d/yyyy h:mm a")}
-	
-	To approve the event please go to http://${process.env.REACT_APP_NODE_IP}/bm-hub
-	`
+	if (event_data.lockStartTime) {
+		var body=`A new event ${event_data.name} and all repeats have been requested.\nThe initial event details are as follows:
+		Room: ${room_data.name}
+		Event start time: ${format(new Date(startTime), "M/d/yyyy h:mm a")}
+		Event end time: ${format(new Date(endTime), "M/d/yyyy h:mm a")}
+		Door unlock time: ${format(new Date(lockStartTime), "M/d/yyyy h:mm a")}
+		Door lock time: ${format(new Date(lockEndTime), "M/d/yyyy h:mm a")}
+		
+		To approve the event please go to http://${process.env.REACT_APP_NODE_IP}/bm-hub
+		`
+	} else {
+		var body=`A new event ${event_data.name} and all repeats have been requested.\nThe initial event details are as follows:
+		Room: ${room_data.name}
+		Event start time: ${format(new Date(startTime), "M/d/yyyy h:mm a")}
+		Event end time: ${format(new Date(endTime), "M/d/yyyy h:mm a")}
+		
+		The doors were not requested to be unlocked for this event.
+		
+		To approve the event please go to http://${process.env.REACT_APP_NODE_IP}/bm-hub
+		`
+	}
 	for (var idx in bms){
 		sendNotification(bms[idx].email, subject, body)
 	}
@@ -216,7 +263,7 @@ router.route('/update/:id').put(async (req, res, next) => {
 		var lockStartTime = new Date(event_data.lockStartTime).toLocaleString('en-US', { timeZone: 'America/Chicago' })
 		var lockEndTime = new Date(event_data.lockEndTime).toLocaleString('en-US', { timeZone: 'America/Chicago' })
 
-		if (event_data.locksSet){
+		if (event_data.locksSet & event_data.lockStartTime){
 			// Send email to locks that something needs done
 			var lockers = await find_lockers()
 			var subject=`${event_data.name} needs locks to be canceled`
@@ -278,13 +325,22 @@ router.route('/approve/:id').put(async (req, res, next) => {
 
 	var room_data = await findRoomData(event_data.room)
 	var subject=`${event_data.name} has been APPROVED`
-	var body=`Your event ${event_data.name} has been approved.\nThe event details are as follows:
-	Room: ${room_data.name}
-	Event start time: ${format(new Date(startTime), "M/d/yyyy h:mm a")}
-	Event end time: ${format(new Date(endTime), "M/d/yyyy h:mm a")}
-	Door unlock time: ${format(new Date(lockStartTime), "M/d/yyyy h:mm a")}
-	Door lock time: ${format(new Date(lockEndTime), "M/d/yyyy h:mm a")}
-	`
+	if (event.lockStartTime) {
+		var body=`Your event ${event_data.name} has been approved.\nThe event details are as follows:
+		Room: ${room_data.name}
+		Event start time: ${format(new Date(startTime), "M/d/yyyy h:mm a")}
+		Event end time: ${format(new Date(endTime), "M/d/yyyy h:mm a")}
+		Door unlock time: ${format(new Date(lockStartTime), "M/d/yyyy h:mm a")}
+		Door lock time: ${format(new Date(lockEndTime), "M/d/yyyy h:mm a")}
+		`
+	} else {
+		var body=`Your event ${event_data.name} has been approved.\nThe event details are as follows:
+		Room: ${room_data.name}
+		Event start time: ${format(new Date(startTime), "M/d/yyyy h:mm a")}
+		Event end time: ${format(new Date(endTime), "M/d/yyyy h:mm a")}\nTHE DOORS WILL NOT BE UNLOCKED FOR THIS EVENT.
+		`
+	}
+
 	sendNotification(event_data.email, subject, body)
 
 	//Update the calendar
@@ -294,20 +350,22 @@ router.route('/approve/:id').put(async (req, res, next) => {
 
 	// Send email to locks that something needs done
 	var lockers = await find_lockers()
-	var subject=`${event_data.name} needs locks to be scheduled`
-	var body=`A new event ${event_data.name} has been approved.\nThe event details are as follows:
-	Room: ${room_data.name}
-	Event start time: ${format(new Date(startTime), "M/d/yyyy h:mm a")}
-	Event end time: ${format(new Date(endTime), "M/d/yyyy h:mm a")}
-	Door unlock time: ${format(new Date(lockStartTime), "M/d/yyyy h:mm a")}
-	Door lock time: ${format(new Date(lockEndTime), "M/d/yyyy h:mm a")}
-	
-	To set the locks as scheduled please go to http://${process.env.REACT_APP_NODE_IP}/locks-hub
-	`
-	for (var idx in lockers){
-		sendNotification(lockers[idx].email, subject, body)
+	if (event.lockStartTime) {
+		var subject=`${event_data.name} needs locks to be scheduled`
+		var body=`A new event ${event_data.name} has been approved.\nThe event details are as follows:
+		Room: ${room_data.name}
+		Event start time: ${format(new Date(startTime), "M/d/yyyy h:mm a")}
+		Event end time: ${format(new Date(endTime), "M/d/yyyy h:mm a")}
+		Door unlock time: ${format(new Date(lockStartTime), "M/d/yyyy h:mm a")}
+		Door lock time: ${format(new Date(lockEndTime), "M/d/yyyy h:mm a")}
+		
+		To set the locks as scheduled please go to http://${process.env.REACT_APP_NODE_IP}/locks-hub
+		`
+		for (var idx in lockers){
+			sendNotification(lockers[idx].email, subject, body)
+		}
 	}
-	
+
 	// Send email to hvacs that something needs done
 	var hvacs = await find_hvacs()
 	var subject=`${event_data.name} needs HVAC to be scheduled`
@@ -343,13 +401,22 @@ router.route('/approve-repeating/:id').put(async (req, res, next) => {
 
 				var room_data = await findRoomData(event_data.room)
 				var subject=`${event_data.name} has been APPROVED`
-				var body=`Your repeating event ${event_data.name} has been approved.\nOne of the events details are as follows:
-				Room: ${room_data.name}
-				Event start time: ${format(new Date(startTime), "M/d/yyyy h:mm a")}
-				Event end time: ${format(new Date(endTime), "M/d/yyyy h:mm a")}
-				Door unlock time: ${format(new Date(lockStartTime), "M/d/yyyy h:mm a")}
-				Door lock time: ${format(new Date(lockEndTime), "M/d/yyyy h:mm a")}
-				`
+				if (event_data.lockStartTime) {
+					var body=`Your repeating event ${event_data.name} has been approved.\nOne of the events details are as follows:
+					Room: ${room_data.name}
+					Event start time: ${format(new Date(startTime), "M/d/yyyy h:mm a")}
+					Event end time: ${format(new Date(endTime), "M/d/yyyy h:mm a")}
+					Door unlock time: ${format(new Date(lockStartTime), "M/d/yyyy h:mm a")}
+					Door lock time: ${format(new Date(lockEndTime), "M/d/yyyy h:mm a")}
+					`
+				} else {
+					var body=`Your repeating event ${event_data.name} has been approved.\nOne of the events details are as follows:
+					Room: ${room_data.name}
+					Event start time: ${format(new Date(startTime), "M/d/yyyy h:mm a")}
+					Event end time: ${format(new Date(endTime), "M/d/yyyy h:mm a")}\nTHE DOORS WILL BE LOCKED FOR THIS EVENT.
+					`
+				}
+
 
 				//Update the calendar
 				const gcal_id = await calendarEvent(event_data, "", "update")
@@ -369,6 +436,7 @@ router.route('/approve-repeating/:id').put(async (req, res, next) => {
 				To set the locks as scheduled please go to http://${process.env.REACT_APP_NODE_IP}/locks-hub
 				`
 
+
 				// Send email to hvacs that something needs done
 				var hvacs = await find_hvacs()
 				var subject=`${event_data.name} needs HVAC to be scheduled`
@@ -384,9 +452,11 @@ router.route('/approve-repeating/:id').put(async (req, res, next) => {
 
 				if (!notificationSent) {
 					sendNotification(event_data.email, subject, body)
-					for (var idx in lockers){
-						sendNotification(lockers[idx].email, subject, body)
-					}	
+					if (event_data.lockStartTime){
+						for (var idx in lockers){
+							sendNotification(lockers[idx].email, subject, body)
+						}	
+					}
 					for (var idx in hvacs){
 						sendNotification(hvacs[idx].email, subject, body)
 					}
