@@ -73,4 +73,4 @@ This section has moved here: [https://facebook.github.io/create-react-app/docs/t
 
 
 systemctl restart oll-smc-help
-journalctl -u oll-smc-help.service --since "12 hour ago
+journalctl -u oll-smc-help.service --since "12 hour ago"
