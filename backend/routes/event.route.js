@@ -325,7 +325,7 @@ router.route('/approve/:id').put(async (req, res, next) => {
 
 	var room_data = await findRoomData(event_data.room)
 	var subject=`${event_data.name} has been APPROVED`
-	if (event.lockStartTime) {
+	if (event_data.lockStartTime) {
 		var body=`Your event ${event_data.name} has been approved.\nThe event details are as follows:
 		Room: ${room_data.name}
 		Event start time: ${format(new Date(startTime), "M/d/yyyy h:mm a")}
@@ -350,7 +350,7 @@ router.route('/approve/:id').put(async (req, res, next) => {
 
 	// Send email to locks that something needs done
 	var lockers = await find_lockers()
-	if (event.lockStartTime) {
+	if (event_data.lockStartTime) {
 		var subject=`${event_data.name} needs locks to be scheduled`
 		var body=`A new event ${event_data.name} has been approved.\nThe event details are as follows:
 		Room: ${room_data.name}
