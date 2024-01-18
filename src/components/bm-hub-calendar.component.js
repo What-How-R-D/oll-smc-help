@@ -95,7 +95,7 @@ export default class BMhubList extends Component {
 					
 				this.setState({
 					all_events: [...all_events.map(
-						({ startTime, endTime, name, room, status, _id, requester, notes, contact, email, phone, lockStartTime, lockEndTime, repeat }) => ({
+						({ startTime, endTime, name, room, status, _id, requester, notes, contact, email, phone, locksStartTime, lockEndTime, repeat }) => ({
 						start: new Date(startTime),
 						end: new Date(endTime),
 						title: rooms_map.get(room) + ": " + name,
@@ -107,7 +107,7 @@ export default class BMhubList extends Component {
 						contact: contact,
 						email: email,
 						phone: phone,
-						locksStartTime: new Date(lockStartTime),
+						locksStartTime: new Date(locksStartTime),
 						lockEndTime: new Date(lockEndTime),
 						repeat:repeat,
 						})), 
@@ -207,6 +207,8 @@ export default class BMhubList extends Component {
 			var contact = ""
 			var email = ""
 			var phone = ""
+
+			console.log(event)
 			if (event.requester){ 
 				var url = `http://${process.env.REACT_APP_NODE_IP}:4000/users/find-id/`
 				var user = await axios.get(url + event.requester)
@@ -235,7 +237,7 @@ export default class BMhubList extends Component {
 			const formattedEnd = event.end.toLocaleString('en-US', dateTimeOptions);
 			text += `<br><br>Start Time: ${formattedStart}<br>End Time: ${formattedEnd}`
 			
-			if (event.lockStartTime) {
+			if (event.locksStartTime) {
 				const formattedUnlock = event.locksStartTime.toLocaleString('en-US', dateTimeOptions);
 				const formattedLock = event.lockEndTime.toLocaleString('en-US', dateTimeOptions);
 				text += `<br>Doors Unlock Time: ${formattedUnlock}<br>Doors Re-lock Time: ${formattedLock}<br>`
