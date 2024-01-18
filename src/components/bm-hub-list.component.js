@@ -162,6 +162,8 @@ export default class BMhubList extends Component {
 					<th>Room</th>
 					<th>Start Time</th>
 					<th>End Time</th>
+					<th>Doors Unlock Time</th>
+					<th>Doors Re-Lock Time</th>
 					<th>Attendance</th>
 					<th>Status</th>
 					<th>Notes</th>
@@ -183,6 +185,8 @@ export default class BMhubList extends Component {
 					<th>Room</th>
 					<th>Start Time</th>
 					<th>End Time</th>
+					<th>Doors Unlock Time</th>
+					<th>Doors Re-Lock Time</th>
 					<th>Attendance</th>
 					<th>Status</th>
 					<th>Notes</th>

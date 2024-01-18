@@ -205,6 +205,23 @@ export default class RoomTableRow extends Component {
     }
   }
 
+  getUnlockTime(){
+    if (new Date(this.props.obj.lockStartTime).getFullYear() > 2000){
+      return <td>{format(new Date(this.props.obj.lockStartTime), "M/d/yyyy h:mm a")}</td>
+    } else {
+      return <td>N/A</td>
+    }
+  }
+
+  getRelockTime(){
+    if (new Date(this.props.obj.lockStartTime).getFullYear() > 2000){
+      return <td>{format(new Date(this.props.obj.lockEndTime), "M/d/yyyy h:mm a")}</td>
+    } else {
+      return <td>N/A</td>
+    }
+  }
+
+
   render() {
     return (
       <tr>
@@ -216,6 +233,8 @@ export default class RoomTableRow extends Component {
         <td>{this.props.obj.room}</td>
         <td>{format(new Date(this.props.obj.startTime), "M/d/yyyy h:mm a")}</td>
         <td>{format(new Date(this.props.obj.endTime), "M/d/yyyy h:mm a")}</td>
+        {this.getUnlockTime()}
+        {this.getRelockTime()}
         <td>{this.props.obj.attendance}</td>
         <td>{this.props.obj.status}</td>
         <td>{this.props.obj.notes}</td>
