@@ -29,7 +29,7 @@ async function processEvents() {
     // Process each event
     for (const event of eventsWithoutGCalId) {
         // Call calendarEvent function for each event
-        console.log("Updating event", event.name);
+        console.log("Updating event", event.name, event.status);
         if (event.status === "Pending") {
 			const event_gcal_id = await calendarEvent(event, " - PENDING");
 		} else if (event.status === "Approved") {
