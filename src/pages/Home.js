@@ -5,7 +5,7 @@ import EventRequest from "../components/event-details.component";
 import MyEvents from "../components/event-list-user.component";
 
 const Home = (props) => {
-	const [loggedIn] = useState(false);
+	const [loggedIn] = props.isLoggedIn;
 
 	let html;
 	if (loggedIn) {
