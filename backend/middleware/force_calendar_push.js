@@ -33,7 +33,7 @@ async function processEvents() {
         if (event.status === "Pending") {
 			const event_gcal_id = await calendarEvent(event, " - PENDING");
 		} else if (event.status === "Approved") {
-			const gcal_id = await calendarEvent(event, "");
+			const event_gcal_id = await calendarEvent(event, "");
 		}
         event.event_gcal_id = event_gcal_id;
         await event.save();
