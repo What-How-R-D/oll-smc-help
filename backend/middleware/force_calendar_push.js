@@ -35,8 +35,6 @@ async function processEvents() {
 			event_gcal_id = await calendarEvent(event, " - PENDING");
 		} else if (event.status === "Approved") {
 			event_gcal_id = await calendarEvent(event, "");
-		} else if (event.status === "Canceled") {
-			event_gcal_id = await calendarEvent(event, " - CANCELED");
 		}
         console.log(event_gcal_id);
         event.event_gcal_id = event_gcal_id;
