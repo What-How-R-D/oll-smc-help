@@ -37,6 +37,7 @@ async function processEvents() {
 		} else if (event.status === "Canceled") {
 			const event_gcal_id = await calendarEvent(event, " - CANCELED");
 		}
+        console.log(event_gcal_id);
         event.event_gcal_id = event_gcal_id;
         await event.save();
     }
