@@ -4,7 +4,9 @@ let eventSchema = require('../models/event')
 const calendarEvent = require("../middleware/calendar_event")
 
 async function processEvents() {
-    console.log('Processing all events missing gcal id');
+    console.log(
+		"Processing all events missing gcal id and deleting canceled/rejected with gcal id"
+	);
     // eventSchema.find((error, data) => {
 	// 	if (error) {
     //         console.log(error)
@@ -40,6 +42,20 @@ async function processEvents() {
         event.event_gcal_id = event_gcal_id;
         await event.save();
     }
+
+    const eventsToProcess = await eventSchema
+		.find({
+			event_gcal_id: { $exists: true, $ne: null },
+			status: { $in: ["Rejected", "Canceled"] },
+		})
+		.exec();
+	for (const event of eventsToProcess) {
+		console.log("Processing event for removal", event.name, event.status);
+		// Call calendarEvent function for each event (pass a flag or handle as needed)
+		event_gcal_id = await calendarEvent(event, (kind = "delete"));
+		event.event_gcal_id = event_gcal_id;
+		await event.save();
+	}
 
     console.log('Processing complete');
 }

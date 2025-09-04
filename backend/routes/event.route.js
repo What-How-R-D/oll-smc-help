@@ -638,7 +638,19 @@ router.route('/find-user-sorted/:id/:start/:end').get((req, res) => {
 			  return next(error)
 			} else {
 				userEvent=data.filter(item => item.requester === req.params.id)
-				  
+				console.log(
+					"Filtering events for user: " +
+						req.params.id +
+						" between " +
+						new Date(parseInt(req.params.start)).toLocaleDateString(
+							"en-US"
+						) +
+						" and " +
+						new Date(parseInt(req.params.end)).toLocaleDateString(
+							"en-US"
+						)
+				);
+				
 				var valid_events = userEvent.filter(item => new Date(item.endTime).getTime() > req.params.start)
 				valid_events.sort((a, b) => new Date(a.startTime).getTime() > new Date(b.startTime).getTime() ? 1 : -1 )
 				
