@@ -69,13 +69,19 @@ module.exports = async function (event_data, status, kind="create") {
 		).then((event) => {console.log("GCalender event updated:", event.data); return event.data.id})
 		.catch((err) => { console.log("Error Updating Calender Event:", err); });
 	} else if (kind==='create') {
-		var gcal_id = await calendar.events.insert({
-			auth: jwtClient,
-			calendarId: room_data.calendar_id,
-			resource: event,
-		}
-		).then((event) => {console.log("GCalender event created:", event.data); return event.data.id})
-		.catch((err) => { console.log("Error Creating Calender Event:", err); });
+		var gcal_id = await calendar.events
+			.insert({
+				auth: jwtClient,
+				calendarId: room_data.calendar_id,
+				resource: event,
+			})
+			.then((event) => {
+				console.log("GCalender event created:", event.data);
+				return event.data.id;
+			})
+			.catch((err) => {
+				console.log("Error Creating Calender Event:", err.data, err);
+			});
 	} else if (kind==='delete') {
 		var gcal_id = await calendar.events.delete({
 			auth: jwtClient,
