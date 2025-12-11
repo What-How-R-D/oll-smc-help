@@ -30,18 +30,19 @@ async function processEvents() {
 
     // Process each event
     for (const event of eventsWithoutGCalId) {
-        // Call calendarEvent function for each event
-        console.log("Updating event", event.name, event.status);
-        let event_gcal_id;
+		// Call calendarEvent function for each event
+		let event_gcal_id;
 		if (event.status === "Pending") {
+			console.log("Updating event", event.name, event.status);
 			event_gcal_id = await calendarEvent(event, " - PENDING");
 		} else if (event.status === "Approved") {
+			console.log("Updating event", event.name, event.status);
 			event_gcal_id = await calendarEvent(event, "");
 		}
-        console.log(event_gcal_id);
-        event.event_gcal_id = event_gcal_id;
-        await event.save();
-    }
+		// console.log(event_gcal_id);
+		event.event_gcal_id = event_gcal_id;
+		await event.save();
+	}
 
     const eventsToProcess = await eventSchema
 		.find({
