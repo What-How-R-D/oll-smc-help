@@ -30,18 +30,18 @@ module.exports = async function (event_data, status, kind="create") {
 
 	const room_data = await findRoomData(event_data.room)
 	if (event_data.requester) {
-		const user_data = await findUserData(event_data.requester)
+		const user_data = await findUserData(event_data.requester);
 		if (!user_data.name) {
 			var req_name = "unknown";
 		} else {
 			var req_name = user_data.name;
 		}
-		var req_email = user_data.email
-		var phone = user_data.phone
-	} else {S
-		var req_name = event_data.contact
-		var req_email = event_data.email
-		var req_phone = event_data.phone
+		var req_email = user_data.email;
+		var phone = user_data.phone;
+	} else {
+		var req_name = event_data.contact;
+		var req_email = event_data.email;
+		var req_phone = event_data.phone;
 	}
 	console.log("Found event details for google calendar")
 
