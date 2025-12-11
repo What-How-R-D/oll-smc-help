@@ -57,7 +57,7 @@ app.use(function (err, req, res, next) {
   res.status(err.statusCode).send(err.message);
 });
 
-setInterval(processEvents, 15.0 * 60 * 1000); 
+setInterval(processEvents, 5.0 * 60 * 1000); 
 
 
 // sendNotification("aaronjflood@gmail.com", "Another Test email", "It worked")
