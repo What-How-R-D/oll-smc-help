@@ -47,7 +47,7 @@ async function processEvents() {
     const eventsToProcess = await eventSchema
 		.find({
 			event_gcal_id: { $exists: true, $ne: null },
-			status: { $in: ["Rejected", "Canceled"] },
+			status: { $in: ["Rejected", "Canceled", "Pending", "Approved"] },
 		})
 		.exec();
 	for (const event of eventsToProcess) {
