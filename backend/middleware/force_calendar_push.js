@@ -26,7 +26,9 @@ async function processEvents() {
 	// 	}
     // })
     const data = await eventSchema.find().exec();
-    eventsWithGCalId = data.filter((event) => event.event_gcal_id);
+    eventsWithGCalId = data.filter(
+		(event) => event.event_gcal_id && event.name
+	);
 
 	// Process each event
 	for (const event of eventsWithGCalId) {
@@ -44,8 +46,10 @@ async function processEvents() {
 		await event.save();
 	}
 
-    
-    eventsWithoutGCalId = data.filter(event => !event.event_gcal_id);
+
+    eventsWithoutGCalId = data.filter(
+		(event) => !event.event_gcal_id && event.name
+	);
 
     // Process each event
     for (const event of eventsWithoutGCalId) {
