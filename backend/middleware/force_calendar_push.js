@@ -76,7 +76,7 @@ async function processEvents() {
 	for (const event of eventsToProcess) {
 		console.log("Processing event for removal", event.name, event.status);
 		// Call calendarEvent function for each event (pass a flag or handle as needed)
-		event_gcal_id = await calendarEvent(event, (kind = "delete"));
+		event_gcal_id = await calendarEvent(event, "", "delete");
 		event.event_gcal_id = event_gcal_id;
 		await event.save();
 	}
