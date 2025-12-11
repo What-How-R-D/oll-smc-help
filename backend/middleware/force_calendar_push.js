@@ -26,26 +26,26 @@ async function processEvents() {
 	// 	}
 	// })
 
-	// const data = await eventSchema.find().exec();
-	// eventsWithGCalId = data.filter(
-	// 	(event) => event.event_gcal_id && event.name
-	// );
+	const data = await eventSchema.find().exec();
+	eventsWithGCalId = data.filter(
+		(event) => event.event_gcal_id && event.name
+	);
 
-	// // Process each event
-	// for (const event of eventsWithGCalId) {
-	// 	// Call calendarEvent function for each event
-	// 	let event_gcal_id;
-	// 	if (event.status === "Pending") {
-	// 		console.log("Updating event", event.name, event.status);
-	// 		event_gcal_id = await calendarEvent(event, " - PENDING", "update");
-	// 	} else if (event.status === "Approved") {
-	// 		console.log("Updating event", event.name, event.status, "update");
-	// 		event_gcal_id = await calendarEvent(event, "");
-	// 	}
-	// 	// console.log(event_gcal_id);
-	// 	event.event_gcal_id = event_gcal_id;
-	// 	await event.save();
-	// }
+	// Process each event
+	for (const event of eventsWithGCalId) {
+		// Call calendarEvent function for each event
+		let event_gcal_id;
+		if (event.status === "Pending") {
+			console.log("Updating event", event.name, event.status);
+			event_gcal_id = await calendarEvent(event, " - PENDING", "update");
+		} else if (event.status === "Approved") {
+			console.log("Updating event", event.name, event.status, "update");
+			event_gcal_id = await calendarEvent(event, "", "update");
+		}
+		// console.log(event_gcal_id);
+		event.event_gcal_id = event_gcal_id;
+		await event.save();
+	}
 
 	eventsWithoutGCalId = data.filter(
 		(event) => !event.event_gcal_id && event.name
